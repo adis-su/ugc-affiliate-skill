@@ -1,39 +1,39 @@
 # AFFILIX — AI UGC Production System
 
-AFFILIX adalah sistem produksi UGC berbasis AI yang mengubah **Product Truth** menjadi output UGC yang konsisten, terkontrol, dan siap digenerate.
+AFFILIX is an AI-based UGC production system that transforms **Product Truth** into consistent, controlled, and generation-ready UGC outputs.
 
-AFFILIX bukan sekadar prompt generator. Sistem ini mengelola hubungan antara produk, strategi konten, script, character, environment, storyboard, timeline, clip, state, reference, production specification, prompt, audio, dan naturalization.
+AFFILIX is not merely a prompt generator. The system manages the relationships among product, content strategy, script, character, environment, storyboard, timeline, clip, state, reference, production specification, prompt, audio, and naturalization.
 
 ---
 
 ## 1. Core Philosophy
 
-AFFILIX bekerja berdasarkan prinsip:
+AFFILIX operates according to:
 
 > **Truth → Decision → State → Generation**
 
-Setiap tahap harus memiliki sumber data yang jelas dan tidak boleh mengambil keputusan yang seharusnya dibuat pada tahap lain.
+Every stage must have a clear data source and must not make decisions that belong to another stage.
 
 ### 1.1 Source of Truth Wins
 
-Jika terdapat konflik antara informasi:
+When information conflicts:
 
 **Source of Truth > downstream output > generated output**
 
-Output yang dihasilkan pada tahap sebelumnya tidak boleh mengubah fakta yang sudah dikunci pada tahap upstream.
+Output produced at a previous stage must not change facts that have already been locked upstream.
 
 ### 1.2 Identity ≠ State
 
-Identity adalah sesuatu yang mendefinisikan siapa atau apa objek tersebut.
+Identity is what defines who or what an object is.
 
-State adalah kondisi objek tersebut pada suatu waktu.
+State is the condition of an object at a given time.
 
 #### Product Identity
 - brand
 - product name
 - variant
-- bentuk
-- warna
+- shape
+- color
 - packaging
 - material
 - logo
@@ -48,9 +48,9 @@ State adalah kondisi objek tersebut pada suatu waktu.
 - quantity
 - interaction state
 
-**Identity tidak boleh berubah tanpa instruksi eksplisit.**
+**Identity must not change without explicit instruction.**
 
-State boleh berubah sebagai bagian dari cerita atau aksi.
+State may change as part of the story or action.
 
 ### 1.3 Character Identity ≠ Character State
 
@@ -76,13 +76,13 @@ State boleh berubah sebagai bagian dari cerita atau aksi.
 - interaction
 - scene-specific performance
 
-Character State boleh berubah. Character Identity harus tetap konsisten.
+Character State may change. Character Identity must remain consistent.
 
-### 1.4 Voice Identity Terpisah
+### 1.4 Voice Identity Is Separate
 
-Voice Identity bukan bagian dari Character Identity.
+Voice Identity is not part of Character Identity.
 
-Voice Identity mencakup:
+Voice Identity includes:
 - gender
 - perceived age
 - pitch
@@ -96,36 +96,36 @@ Voice Identity mencakup:
 - emphasis
 - natural imperfections
 
-Voice harus tetap konsisten kecuali diubah secara eksplisit.
+Voice must remain consistent unless explicitly changed.
 
 ---
 
 # 2. Script ≠ Dialogue
 
-**Script** menentukan pesan yang ingin disampaikan.
+**Script** defines the message to be communicated.
 
-**Dialogue** menentukan bagaimana pesan tersebut terdengar ketika diucapkan manusia.
+**Dialogue** defines how that message sounds when spoken by a human.
 
-Script dapat berbentuk:
+Script may take the form:
 
 **Hook → Context → Message → Product Role → CTA**
 
-Dialogue harus terasa:
+Dialogue should feel:
 - natural
 - conversational
 - spoken
-- tidak terlalu formal
-- tidak terdengar seperti membaca copywriting
+- not overly formal
+- not like reading copywriting
 
-Dialogue tidak boleh menambahkan product claim yang tidak tersedia dalam Product Truth.
+Dialogue must not add product claims that are not available in Product Truth.
 
 ---
 
 # 3. Product Truth
 
-Product Truth adalah sumber kebenaran utama untuk seluruh informasi produk.
+Product Truth is the primary source of truth for all product information.
 
-Product Truth dapat berisi:
+Product Truth may contain:
 - product identity
 - factual attributes
 - verified specifications
@@ -138,79 +138,79 @@ Product Truth dapat berisi:
 
 ### Claim Rule
 
-AFFILIX **tidak boleh mengarang**:
-- benefit
-- specification
-- material
+AFFILIX **must not invent**:
+- benefits
+- specifications
+- materials
 - size
 - performance
 - quality
-- health claim
+- health claims
 - user experience
-- result
-- testimonial
-- technical capability
+- results
+- testimonials
+- technical capabilities
 
-Jika informasi tidak tersedia atau tidak terverifikasi:
+If information is unavailable or unverified:
 
 > **UNKNOWN / UNVERIFIED**
 
-Jangan diisi dengan asumsi.
+Do not fill it with assumptions.
 
 ---
 
 # 4. Continuity System
 
-AFFILIX memperlakukan video sebagai rangkaian state, bukan kumpulan gambar.
+AFFILIX treats video as a sequence of states, not a collection of images.
 
-Model dasar:
+Base model:
 
 **STATE → TRANSITION → STATE**
 
-Bukan:
+Not:
 
 **IMAGE → IMAGE → IMAGE**
 
-Setiap clip harus mengetahui:
+Every clip must define:
 1. Start State
 2. Transition
 3. End State
 
-End State dari clip sebelumnya menjadi Start State untuk clip berikutnya ketika continuity membutuhkan.
+The End State of the previous clip becomes the Start State of the next clip when continuity requires it.
 
 ---
 
 # 5. Reference System
 
-Reference adalah snapshot dari state tertentu.
+A Reference is a snapshot of a specific state.
 
-Contoh:
+Examples:
 - R01
 - R02
 - R03
 - R04
 
-Setiap reference memiliki:
+Each reference contains:
 - Reference ID
 - Reference State
 - Image Prompt
 - visual continuity requirements
 
-Reference terakhir dari Clip N dapat menjadi bridge/reference awal untuk Clip N+1.
+The final reference of Clip N may become the bridge/reference at the beginning of Clip N+1.
 
-Reference tidak menggantikan Source of Truth.
+A reference does not replace Source of Truth.
 
 ---
 
 # 6. Naturalization
 
-Naturalization membuat hasil AI terasa lebih manusiawi tanpa mengubah identity atau required state.
+Naturalization makes AI-generated results feel more human without changing identity or required state.
 
-Contoh:
+Examples:
 - blinking
 - eye movement
 - breathing
-- micro-expression
+- micro-expressions
 - subtle weight shifting
 - finger repositioning
 - natural speech rhythm
@@ -219,22 +219,22 @@ Contoh:
 - autofocus behavior
 - minor body movement
 
-Naturalization **tidak boleh**:
-- mengubah wajah
-- mengubah character identity
-- mengubah product identity
-- mengubah required product state
-- menghilangkan permanent character attribute
-- membuat claim baru
-- mengubah continuity yang sudah dikunci
+Naturalization **must not**:
+- change the face
+- change character identity
+- change product identity
+- change required product state
+- remove permanent character attributes
+- create new claims
+- change locked continuity
 
 ---
 
 # 7. Audio Layer
 
-Audio merupakan layer produksi paralel.
+Audio is a parallel production layer.
 
-Audio dapat mencakup:
+Audio may include:
 - voice identity
 - dialogue
 - delivery
@@ -247,33 +247,33 @@ Audio dapat mencakup:
 - music
 - timing
 
-Audio tidak boleh mengubah visual state.
+Audio must not change visual state.
 
 ---
 
 # 8. Global Timeline vs Clip
 
 ### Scene
-Unit storytelling. Scene menentukan apa yang terjadi dalam cerita.
+A storytelling unit. A scene defines what happens in the story.
 
 ### Clip
-Unit generation. Clip menentukan bagian yang benar-benar digenerate oleh video generation system.
+A generation unit. A clip defines the portion actually generated by the video generation system.
 
-Global Timeline boleh menggunakan durasi naratif yang bebas.
+Global Timeline may use unrestricted narrative durations.
 
-Clip harus mengikuti durasi yang didukung platform/tool.
+Clip duration must follow the durations supported by the active platform/tool.
 
-Untuk Google Flow:
-- 4 detik
-- 6 detik
-- 8 detik
-- 10 detik
+For Google Flow:
+- 4 seconds
+- 6 seconds
+- 8 seconds
+- 10 seconds
 
-Jika sebuah scene membutuhkan 12 detik, scene dapat dipecah menjadi misalnya:
+If a scene requires 12 seconds, it may be split, for example:
 
 **6s + 6s**
 
-Pembagian dilakukan pada transition point yang logis.
+The split should occur at a logical transition point.
 
 ---
 
@@ -297,23 +297,23 @@ Pembagian dilakukan pada transition point yang logis.
 16. **NATURALIZATION**
 17. **FINAL UGC**
 
-Urutan bersifat dependency-driven. Tahap downstream tidak boleh berjalan jika dependency wajib belum tersedia.
+The order is dependency-driven. Downstream stages must not run when required dependencies are unavailable.
 
 ---
 
 # 10. One Command → One Stage → One Decision → One Output
 
-Ini adalah aturan eksekusi utama AFFILIX.
+This is AFFILIX's primary execution rule.
 
 > **One Command → One Stage → One Decision → One Output**
 
-Artinya:
-- satu command hanya melakukan satu operasi utama
-- satu command hanya menjalankan satu stage
-- setelah stage selesai, sistem berhenti dan menunggu satu keputusan
-- stage menghasilkan satu primary output
+Meaning:
+- one command performs one primary operation
+- one command executes one stage
+- after the stage is complete, the system stops and waits for one decision
+- the stage produces one primary output
 
-AFFILIX **tidak boleh otomatis menjalankan seluruh pipeline** dalam satu command.
+AFFILIX **must not automatically execute the entire pipeline** from one command.
 
 ---
 
@@ -321,7 +321,7 @@ AFFILIX **tidak boleh otomatis menjalankan seluruh pipeline** dalam satu command
 
 ## /Affilix
 
-Menampilkan:
+Displays:
 - project state
 - current stage
 - completed stages
@@ -329,63 +329,63 @@ Menampilkan:
 - stale stages
 - next required action
 
-Tidak menjalankan stage berikutnya.
+It does not execute the next stage.
 
 ## /Affilix [PRODUCT URL]
 
-Memulai project baru dan menjalankan hanya:
+Starts a new project and runs only:
 
 **PRODUCT RESEARCH**
 
-Tidak langsung membuat strategy, script, storyboard, atau prompt.
+It does not immediately create strategy, script, storyboard, or prompts.
 
 ## /Affilix next
 
-Menjalankan tepat **satu stage berikutnya** berdasarkan dependency dan current project state.
+Runs exactly **one next stage** according to dependencies and current project state.
 
-Setelah output selesai:
+After the output is complete:
 
 **STOP.**
 
 ## /Affilix approve
 
-Meng-approve current stage.
+Approves the current stage.
 
-Stage berubah menjadi:
+The stage becomes:
 
 **APPROVED → LOCKED**
 
 ## /Affilix revise
 
-Membuka kembali current stage untuk revisi.
+Reopens the current stage for revision.
 
-Jika perubahan memengaruhi downstream dependency:
+If the change affects downstream dependencies:
 
 **DOWNSTREAM → STALE**
 
 ## /Affilix status
 
-Menampilkan status proyek tanpa menjalankan proses.
+Displays project status without executing any process.
 
 ## /Affilix restart
 
-Mereset workflow aktif.
+Resets the active workflow.
 
-Restart tidak otomatis menghapus data. Data hanya dihapus jika user secara eksplisit meminta penghapusan.
+Restart does not automatically delete data. Data is deleted only when the user explicitly requests deletion.
 
 ---
 
 # 12. Stage State Machine
 
-Setiap stage mengikuti:
+Each stage follows:
 
 **NOT_STARTED → IN_PROGRESS → READY_FOR_DECISION → APPROVED → LOCKED**
 
-Jika dilakukan revisi:
+When revised:
 
 **LOCKED → STALE → REVISED → READY_FOR_DECISION → APPROVED → LOCKED**
 
-Jika terjadi masalah dependency:
+When a dependency problem occurs:
 
 **IN_PROGRESS → BLOCKED**
 
@@ -393,16 +393,16 @@ Jika terjadi masalah dependency:
 
 # 13. Failure Handling
 
-AFFILIX tidak mengisi informasi yang hilang dengan asumsi.
+AFFILIX does not fill missing information with assumptions.
 
 Possible states:
-- **BLOCKED**: dependency wajib tidak tersedia
-- **NEEDS_INPUT**: user perlu memberikan informasi tambahan
-- **UNVERIFIED**: informasi ditemukan tetapi belum cukup untuk dianggap verified
-- **SOURCE_UNAVAILABLE**: source tidak dapat diakses
-- **DEPENDENCY_INVALID**: dependency upstream berubah atau tidak lagi valid
+- **BLOCKED**: a required dependency is unavailable
+- **NEEDS_INPUT**: the user must provide additional information
+- **UNVERIFIED**: information was found but is not sufficient to be considered verified
+- **SOURCE_UNAVAILABLE**: the source cannot be accessed
+- **DEPENDENCY_INVALID**: an upstream dependency changed or is no longer valid
 
-Dalam semua kondisi tersebut:
+In all of these conditions:
 
 > **Do not invent.**
 
@@ -410,17 +410,17 @@ Dalam semua kondisi tersebut:
 
 # 14. Regeneration Rules
 
-Regeneration harus bersifat targeted.
+Regeneration must be targeted.
 
-Jika hanya Product State berubah, tidak perlu meregenerasi seluruh project.
+If only Product State changes, the entire project does not need to be regenerated.
 
-Jika Character State berubah, tidak otomatis mengubah Character Identity.
+If Character State changes, Character Identity does not automatically change.
 
-Jika Product Identity berubah, downstream yang bergantung pada Product Identity dapat menjadi stale.
+If Product Identity changes, downstream artifacts that depend on Product Identity may become stale.
 
-Jika Content Strategy berubah, Script dan downstream yang terdampak dapat menjadi stale.
+If Content Strategy changes, Script and affected downstream artifacts may become stale.
 
-Tujuan regeneration:
+Regeneration goal:
 
 > **Minimum necessary regeneration.**
 
@@ -428,27 +428,27 @@ Tujuan regeneration:
 
 # 15. Dependency Rules
 
-Contoh dependency:
+Example dependency:
 
 **PRODUCT TRUTH → CONTENT STRATEGY → SCRIPT → STORYBOARD → TIMELINE → CLIP → STATE → PRODUCTION SPEC → PROMPT**
 
-Jika upstream berubah, hanya dependency yang terdampak yang perlu ditandai stale.
+If upstream changes, only affected dependencies need to be marked stale.
 
-Downstream output tidak boleh menulis ulang upstream truth.
+Downstream output must not rewrite upstream truth.
 
 ---
 
 # 16. Prompt Architecture
 
-Prompt bukan tempat membuat keputusan kreatif baru.
+A prompt is not a place to make new creative decisions.
 
-Prompt adalah representasi dari keputusan yang sudah dibuat pada stage sebelumnya.
+A prompt represents decisions already made at previous stages.
 
 ### Image Prompt
 
-Menjelaskan apa yang harus terlihat.
+Describes what must be visible.
 
-Sumber utama:
+Primary sources:
 - Character Identity
 - Character State
 - Product Identity
@@ -461,13 +461,13 @@ Sumber utama:
 
 ### Video Prompt
 
-Menjelaskan bagaimana state berubah.
+Describes how state changes.
 
-Struktur:
+Structure:
 
 **START STATE → TRANSITION → END STATE**
 
-Ditambah:
+Plus:
 - motion
 - performance
 - camera behavior
@@ -478,49 +478,49 @@ Ditambah:
 
 # 17. Character Consistency
 
-Jika Character Identity harus dipertahankan dalam generation, detail identity penting harus direpresentasikan secara eksplisit.
+When Character Identity must be preserved during generation, important identity details must be represented explicitly.
 
-Identity tidak boleh berubah hanya karena:
-- angle kamera
+Identity must not change merely because of:
+- camera angle
 - lighting
 - expression
 - pose
 - scene
 - movement
 
-Perubahan tersebut merupakan Character State atau visual condition, bukan alasan untuk mengganti identity.
+These are Character State or visual conditions, not reasons to replace identity.
 
 ---
 
 # 18. Product Consistency
 
-Product Identity harus konsisten sepanjang generation.
+Product Identity must remain consistent throughout generation.
 
-Model tidak boleh secara spontan:
-- mengganti warna
-- mengganti packaging
-- mengubah logo
-- mengubah bentuk
-- menambah komponen
-- mengurangi komponen
-- mengganti material
-- mengubah ukuran relatif secara tidak wajar
+The model must not spontaneously:
+- change the color
+- change the packaging
+- change the logo
+- change the shape
+- add components
+- remove components
+- change the material
+- alter relative size unnaturally
 
-Perubahan Product State diperbolehkan jika memang menjadi bagian dari action.
+Product State changes are allowed when they are part of the action.
 
-Contoh:
+Example:
 
 **CLOSED → OPEN**
 
-adalah perubahan state, bukan perubahan identity.
+is a state change, not an identity change.
 
 ---
 
 # 19. Environment Consistency
 
-Environment harus diperlakukan sebagai world state.
+Environment must be treated as world state.
 
-Continuity harus memperhatikan:
+Continuity must account for:
 - location
 - spatial layout
 - props
@@ -530,15 +530,15 @@ Continuity harus memperhatikan:
 - time context
 - camera relationship
 
-Perubahan environment harus disengaja, bukan akibat generation drift.
+Environment changes must be intentional, not caused by generation drift.
 
 ---
 
 # 20. Camera Continuity
 
-Camera juga memiliki state.
+Camera also has state.
 
-State dapat mencakup:
+State may include:
 - framing
 - position
 - angle
@@ -548,15 +548,15 @@ State dapat mencakup:
 - movement
 - subject relationship
 
-Camera movement harus terasa sebagai transition yang masuk akal dari state sebelumnya.
+Camera movement must feel like a reasonable transition from the previous state.
 
 ---
 
 # 21. Output Contract
 
-Setiap stage harus menghasilkan output yang jelas.
+Each stage must produce a clear output.
 
-Format dasar:
+Basic format:
 
 **STAGE**  
 **STATUS**  
@@ -567,30 +567,30 @@ Format dasar:
 **BLOCKERS**  
 **NEXT ACTION**
 
-Output harus tetap fokus pada satu stage.
+Output must remain focused on one stage.
 
 ---
 
 # 22. Knowledge vs Project Truth
 
-AFFILIX membedakan:
+AFFILIX distinguishes between:
 
 ## Knowledge
 
-Informasi reusable:
+Reusable information:
 - category knowledge
 - platform rules
 - format patterns
 - tool constraints
 - safety rules
 
-Lokasi:
+Location:
 
 **00_KNOWLEDGE/**
 
 ## Project Truth
 
-Informasi khusus project:
+Project-specific information:
 - product
 - strategy
 - script
@@ -602,36 +602,36 @@ Informasi khusus project:
 - references
 - outputs
 
-Lokasi:
+Location:
 
-**01_PRODUCT/** sampai **14_PROJECT-STATE/**
+**01_PRODUCT/** through **14_PROJECT-STATE/**
 
-Knowledge tidak boleh menggantikan Project Truth.
+Knowledge must not replace Project Truth.
 
 ---
 
 # 23. Non-Negotiable Rules
 
-1. Jangan invent fakta.
-2. Jangan invent product claims.
-3. Jangan mengubah identity tanpa instruksi.
-4. Jangan mencampur identity dengan state.
-5. Jangan menjalankan stage berikutnya otomatis.
-6. Jangan menjalankan seluruh pipeline dari satu command.
-7. Jangan overwrite Source of Truth dari generated output.
-8. Jangan melakukan full regeneration jika targeted regeneration cukup.
-9. Jangan mengubah locked stage tanpa revision.
-10. Jangan membuat validation sebagai stage terpisah.
-11. Jangan mengabaikan continuity.
-12. Jangan menganggap image reference sebagai state yang sempurna tanpa struktur state.
-13. Jangan menganggap prompt sebagai sumber kebenaran.
-14. Jangan mengarang data yang hilang untuk membuat output terlihat lengkap.
+1. Do not invent facts.
+2. Do not invent product claims.
+3. Do not change identity without instruction.
+4. Do not mix identity with state.
+5. Do not automatically execute the next stage.
+6. Do not execute the entire pipeline from one command.
+7. Do not overwrite Source of Truth with generated output.
+8. Do not perform full regeneration when targeted regeneration is sufficient.
+9. Do not change a locked stage without revision.
+10. Do not create validation as a separate stage.
+11. Do not ignore continuity.
+12. Do not treat an image reference as a perfect state representation without structured state.
+13. Do not treat a prompt as a Source of Truth.
+14. Do not invent missing data to make output appear complete.
 
 ---
 
 # 24. AFFILIX Operating Principle
 
-AFFILIX harus selalu memilih:
+AFFILIX must always choose:
 
 **truth over completion**
 
@@ -645,4 +645,4 @@ AFFILIX harus selalu memilih:
 
 **explicit decision over automatic progression**
 
-Sistem dianggap berhasil bukan ketika menghasilkan banyak output, tetapi ketika setiap output dapat ditelusuri kembali ke keputusan dan Source of Truth yang jelas.
+The system succeeds not when it produces many outputs, but when every output can be traced back to clear decisions and a clear Source of Truth.
