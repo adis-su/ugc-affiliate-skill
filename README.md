@@ -1,10 +1,10 @@
 # AFFILIX
 
-**Sistem Produksi AI UGC**
+**AI UGC Production System**
 
-AFFILIX adalah sistem produksi AI UGC yang mengubah informasi produk menjadi alur kerja produksi yang terstruktur dan dapat ditelusuri, dari **Kebenaran Produk** sampai **Perintah Gambar** dan **Perintah Video**.
+AFFILIX is an AI UGC production system that transforms product information into a structured and traceable production workflow, from **Product Truth** to **Image Prompts** and **Video Prompts**.
 
-AFFILIX bukan sekadar pembuat perintah. Sistem ini memisahkan keputusan kreatif, fakta produk, identitas karakter, state visual, timing, clip, reference, audio, dan output generatif agar hasil produksi tetap konsisten dan dapat direvisi tanpa menghancurkan bagian yang sudah benar.
+AFFILIX is not merely a prompt generator. The system separates creative decisions, product facts, character identity, visual state, timing, clips, references, audio, and generative outputs so production remains consistent and can be revised without destroying parts that are already correct.
 
 ## Pipeline
 
@@ -12,31 +12,37 @@ AFFILIX bukan sekadar pembuat perintah. Sistem ini memisahkan keputusan kreatif,
 PRODUCT → CONTENT STRATEGY → SCRIPT → DIALOGUE → CHARACTER → ENVIRONMENT → STORYBOARD → GLOBAL TIMELINE → CLIP → STATE → PRODUCTION SPEC → PROMPT OUTPUT → NATURALIZATION → AUDIO
 ```
 
-Setiap tahap memiliki tanggung jawab, dependency, output, dan keputusan yang jelas. AFFILIX tidak menjalankan seluruh alur produksi sekaligus secara default.
+Each stage has clear responsibilities, dependencies, outputs, and decisions. AFFILIX does not execute the entire production workflow at once by default.
 
-## Prinsip Utama
+## Core Principles
 
-### Sumber Kebenaran Menjadi Acuan Utama
-Informasi yang lebih rendah dalam alur produksi tidak boleh menggantikan sumber kebenaran yang lebih tinggi. Hasil generatif tidak otomatis menjadi Sumber Kebenaran.
+### Source of Truth Wins
 
-### Identitas Produk ≠ Keadaan Produk
-Identitas Produk mencakup brand, nama, variant, bentuk, warna, packaging, material, logo, dan detail fisik. Keadaan Produk mencakup terbuka/tertutup, sedang dipegang, lokasi, orientasi, visibility, dan interaksi. Identity dipertahankan kecuali ada instruksi eksplisit; State dapat berubah mengikuti cerita.
+Information lower in the production workflow must not replace a higher-level Source of Truth. Generated results do not automatically become Source of Truth.
 
-### Identitas Karakter ≠ Keadaan Karakter
-Identitas Karakter menentukan siapa karakter tersebut. Keadaan Karakter menentukan pose, ekspresi, gaze, gesture, body orientation, dan movement. Perubahan state tidak boleh mengubah identity.
+### Product Identity ≠ Product State
 
-### Identitas Suara Terpisah
-Identitas Suara mencakup gender, perceived age, pitch, timbre, pace, rhythm, energy, emotion, delivery, breathing, pauses, emphasis, dan natural imperfection.
+Product Identity includes brand, name, variant, shape, color, packaging, material, logo, and physical details. Product State includes open/closed, held, location, orientation, visibility, and interaction. Identity is preserved unless explicitly instructed; State may change according to the story.
 
-### Naskah ≠ Dialog
-Naskah menentukan pesan dan struktur komunikasi. Dialog menentukan bagaimana pesan tersebut terdengar ketika benar-benar diucapkan manusia.
+### Character Identity ≠ Character State
 
-### AntarfRangka = STATE → PERALIHAN → STATE
-Continuity tidak diperlakukan sebagai gambar → gambar → gambar, melainkan KEADAAN AWAL → PERALIHAN → KEADAAN AKHIR.
+Character Identity defines who the character is. Character State defines pose, expression, gaze, gesture, body orientation, and movement. State changes must not alter identity.
 
-## Satu Perintah → Satu Tahap → Satu Keputusan → Satu Hasil
+### Voice Identity Is Separate
 
-AFFILIX bekerja secara bertahap. Satu command menjalankan satu tahap, menghasilkan satu hasil utama, lalu berhenti pada titik keputusan.
+Voice Identity includes gender, perceived age, pitch, timbre, pace, rhythm, energy, emotion, delivery, breathing, pauses, emphasis, and natural imperfection.
+
+### Script ≠ Dialogue
+
+Script defines the message and communication structure. Dialogue defines how that message actually sounds when spoken by a human.
+
+### Continuity = STATE → TRANSITION → STATE
+
+Continuity is not treated as image → image → image. It is treated as START STATE → TRANSITION → END STATE.
+
+## One Command → One Stage → One Decision → One Output
+
+AFFILIX works incrementally. One command executes one stage, produces one primary output, and then stops at the decision point.
 
 ```text
 /Affilix
@@ -49,78 +55,78 @@ AFFILIX bekerja secara bertahap. Satu command menjalankan satu tahap, menghasilk
 /Affilix reset
 ```
 
-- `/Affilix` menginspeksi kondisi project saat ini.
-- `/Affilix next` maju tepat satu tahap.
-- `/Affilix approve` menyetujui output current tahap yang siap diputuskan.
-- `/Affilix revise` merevisi current tahap.
-- `/Affilix regenerate` melakukan targeted regeneration.
-- `/Affilix status` menampilkan status tanpa menjalankan produksi.
-- `/Affilix input` memasukkan informasi yang dibutuhkan current tahap.
-- `/Affilix reset` melakukan reset yang eksplisit dan ter-scope.
+- `/Affilix` inspects the current project condition.
+- `/Affilix next` advances exactly one stage.
+- `/Affilix approve` approves the current stage output when it is ready for a decision.
+- `/Affilix revise` revises the current stage.
+- `/Affilix regenerate` performs targeted regeneration.
+- `/Affilix status` displays status without executing production.
+- `/Affilix input` provides information required by the current stage.
+- `/Affilix reset` performs an explicit, scoped reset.
 
-Persetujuan tidak otomatis menjalankan tahap lanjutan tahap.
+Approval does not automatically execute the next stage.
 
-## Siklus Tahap
+## Stage Lifecycle
 
 ```text
 NOT_STARTED → IN_PROGRESS → READY_FOR_DECISION → APPROVED → LOCKED
 ```
 
-Jika tahap sebelumnya berubah:
+If an upstream stage changes:
 
 ```text
 LOCKED → STALE → REVISED → READY_FOR_DECISION → APPROVED → LOCKED
 ```
 
-Kondisi Eksekusi berada sebagai lapisan terpisah: READY, NEEDS INPUT, BLOCKED, UNKNOWN, UNVERIFIED, SOURCE UNAVAILABLE, DEPENDENCY INVALID, dan STALE.
+Execution conditions are tracked separately: READY, NEEDS INPUT, BLOCKED, UNKNOWN, UNVERIFIED, SOURCE UNAVAILABLE, DEPENDENCY INVALID, and STALE.
 
-Tidak ada validation tahap terpisah.
+There is no separate validation stage.
 
-## Kebenaran Produk
+## Product Truth
 
-Kebenaran Produk adalah sumber fakta produk yang digunakan tahap lanjutan. AFFILIX tidak boleh mengarang spesifikasi, manfaat, material, ukuran, performa, kualitas, pengalaman pengguna, health claims, atau commercial claims.
+Product Truth is the source of product facts used by downstream stages. AFFILIX must not invent specifications, benefits, materials, dimensions, performance, quality, user experience, health claims, or commercial claims.
 
-Jika informasi tidak tersedia atau belum terverifikasi, statusnya harus tetap terlihat. **Kebenaran yang tidak tersedia tidak boleh berubah menjadi invented truth.**
+If information is unavailable or unverified, its status must remain visible. **Unavailable truth must never be turned into invented truth.**
 
-## Referensi dan Kesinambungan
+## References and Continuity
 
-Setiap reference adalah snapshot state yang dapat digunakan untuk menjaga konsistensi antar-clip.
+Each reference is a state snapshot that can be used to maintain consistency across clips.
 
 ```text
 R01 → R02 → R03 → R04
 ```
 
-Setiap reference memiliki Keadaan Referensi dan Perintah Gambar. Setiap clip memiliki start state, transition, end state, dan Perintah Video.
+Each reference has a Reference State and an Image Prompt. Each clip has a start state, transition, end state, and Video Prompt.
 
-Aturan continuity:
+Continuity rule:
 
 ```text
-KEADAAN AKHIR CLIP N = KEADAAN AWAL CLIP N+1
+END STATE OF CLIP N = START STATE OF CLIP N+1
 ```
 
-Last reference dari sebuah clip menjadi bridge/reference untuk clip berikutnya jika diperlukan.
+The last reference of a clip becomes the bridge/reference for the next clip when required.
 
-## Garis Waktu Global vs Klip
+## Global Timeline vs Clip
 
-**Garis Waktu Global** mengatur timing naratif, durasi scene, dan urutan kejadian.
+**Global Timeline** controls narrative timing, scene duration, and event order.
 
-**Klip** adalah unit produksi/generasi.
+**Clip** is a production/generation unit.
 
-Scene storytelling dapat memiliki durasi lebih panjang dan dipecah menjadi beberapa clip pada titik transisi yang logis. Durasi clip mengikuti konfigurasi platform yang relevan, termasuk Google Flow.
+A storytelling scene may have a longer duration and be split into multiple clips at logical transition points. Clip duration follows the relevant platform configuration, including Google Flow.
 
-## Pewajaran Gerakan
+## Naturalization
 
-Pewajaran Gerakan membuat gerakan AI terasa lebih manusiawi tanpa mengubah identity atau state yang diwajibkan. Contohnya blinking, eye movement, breathing, micro-expression, weight shifting, finger repositioning, speech rhythm, subtle camera movement, dan autofocus behavior.
+Naturalization makes AI-generated motion feel more human without changing required identity or state. Examples include blinking, eye movement, breathing, micro-expressions, weight shifting, finger repositioning, speech rhythm, subtle camera movement, and autofocus behavior.
 
-Pewajaran Gerakan tidak boleh mengubah character identity, product identity, required state, atau continuity.
+Naturalization must not change character identity, product identity, required state, or continuity.
 
 ## Audio
 
-Audio merupakan lapisan produksi yang berjalan paralel terhadap visual dan dapat mencakup voice identity, dialogue delivery, breathing, pauses, emphasis, room tone, ambience, foley, product sounds, music, dan timing.
+Audio is a production layer that runs in parallel with visuals and may include voice identity, dialogue delivery, breathing, pauses, emphasis, room tone, ambience, foley, product sounds, music, and timing.
 
-Audio tetap mengikuti dependency dan keputusan terkontrol AFFILIX.
+Audio still follows AFFILIX dependency and decision controls.
 
-## Struktur Repositori
+## Repository Structure
 
 ```text
 AFFILIX/
@@ -142,69 +148,69 @@ AFFILIX/
 └── 14_PROJECT-STATE/
 ```
 
-`00_KNOWLEDGE/` berisi knowledge reusable untuk category, platform, format, dan safety. Folder lainnya berisi modul produksi, system control, dan keadaan proyek.
+`00_KNOWLEDGE/` contains reusable knowledge for categories, platforms, formats, and safety. The other folders contain production modules, system controls, and project state.
 
-## Sistem Ketergantungan
+## Dependency System
 
-AFFILIX menggunakan produksi berbasis ketergantungan. Ketergantungan dapat berupa ketergantungan keras, lunak, sumber, turunan, atau konfigurasi.
+AFFILIX uses dependency-driven production. Dependencies may be hard, soft, source, derived, or configuration dependencies.
 
-Jika tahap sebelumnya berubah, hanya bagian tahap lanjutan yang terdampak yang perlu menjadi stale atau diregenerasi.
+When an upstream stage changes, only affected downstream parts need to become stale or be regenerated.
 
-> Buat ulang hanya bagian terkecil yang terdampak.
+> Regenerate only the smallest affected part.
 
-AFFILIX tidak melakukan full regeneration secara default.
+AFFILIX does not perform full regeneration by default.
 
-## Penanganan Kegagalan
+## Failure Handling
 
-Kondisi seperti BLOCKED, NEEDS INPUT, UNKNOWN, UNVERIFIED, SOURCE UNAVAILABLE, DEPENDENCY INVALID, dan STALE harus dinyatakan secara eksplisit.
+Conditions such as BLOCKED, NEEDS INPUT, UNKNOWN, UNVERIFIED, SOURCE UNAVAILABLE, DEPENDENCY INVALID, and STALE must be stated explicitly.
 
-Sistem tidak boleh menyembunyikan kegagalan dependency atau mengatasinya dengan tebakan. Artifact yang tidak terdampak harus tetap dipertahankan.
+The system must not hide dependency failures or resolve them through guessing. Unaffected artifacts must remain intact.
 
-## Pembuatan Ulang Terarah
+## Targeted Regeneration
 
-Pembuatan Ulang bersifat dependency-aware. Jika hanya Perintah Video Klip 03 yang berubah, AFFILIX tidak perlu membangun ulang seluruh project.
+Regeneration is dependency-aware. If only Video Prompt for Clip 03 changes, AFFILIX does not need to rebuild the entire project.
 
-Jika Kebenaran Produk berubah, AFFILIX menelusuri dependency dan menentukan artefak terdampak paling awal. Hasil generatif tetap merupakan tahap lanjutan output dan tidak otomatis menjadi Sumber Kebenaran.
+If Product Truth changes, AFFILIX traces dependencies and determines the earliest affected artifacts. Generated outputs remain downstream results and do not automatically become Source of Truth.
 
-## Catatan Keputusan dan Catatan Perubahan
+## Decision Log and Change Log
 
-**Catatan Keputusan** mencatat keputusan user, approval, revision decision, lock decision, dan keputusan penting pada artifact.
+**Decision Log** records user decisions, approvals, revision decisions, lock decisions, and important artifact decisions.
 
-**Catatan Perubahan** mencatat perubahan sistem, artifact, dependency, configuration, dan keadaan proyek.
+**Change Log** records changes to the system, artifacts, dependencies, configuration, and project state.
 
-Keduanya menjaga traceability.
+Both preserve traceability.
 
-## Status Proyek
+## Project Status
 
-AFFILIX dikembangkan sebagai sistem modular dengan fokus pada alur kerja produksi, pengelolaan ketergantungan, pengelolaan keadaan, continuity, pembuatan perintah, targeted regeneration, dan ketertelusuran proyek.
+AFFILIX is developed as a modular system focused on production workflow, dependency management, state management, continuity, prompt generation, targeted regeneration, and project traceability.
 
-Repository ini berisi definisi sistem dan knowledge yang diperlukan untuk menjalankan workflow AFFILIX.
+This repository contains the system definitions and knowledge required to run the AFFILIX workflow.
 
-## Prinsip Tidak Dapat Ditawar
+## Non-Negotiable Principles
 
-1. Sumber Kebenaran wins.
-2. Identitas tidak boleh berubah tanpa instruksi eksplisit.
-3. Keadaan boleh berubah sesuai kebutuhan cerita.
-4. Kebenaran yang tidak tersedia tidak boleh diisi dengan asumsi sebagai fakta.
-5. Hasil generatif bukan Sumber Kebenaran.
-6. Satu project memiliki satu primary Tahap Saat Ini.
-7. `/Affilix next` maju tepat satu tahap.
-8. Persetujuan harus eksplisit.
-9. Tidak ada silent tahap skip.
-10. Tidak ada silent tahap lanjutan execution.
-11. Tidak ada silent regeneration.
-12. Ketergantungan keras harus terpenuhi.
-13. Ketergantungan usang tidak boleh diperlakukan sebagai kebenaran terkini.
-14. Klip continuity harus dipertahankan.
-15. Pembuatan Ulang harus targeted.
-16. Audio adalah lapisan terkontrol.
-17. Tidak ada validation tahap terpisah.
+1. Source of Truth wins.
+2. Identity must not change without explicit instruction.
+3. State may change according to story requirements.
+4. Unavailable truth must not be filled with assumptions presented as facts.
+5. Generated output is not Source of Truth.
+6. One project has one primary Current Stage.
+7. `/Affilix next` advances exactly one stage.
+8. Approval must be explicit.
+9. No silent stage skipping.
+10. No silent downstream stage execution.
+11. No silent regeneration.
+12. Hard dependencies must be satisfied.
+13. Stale dependencies must not be treated as current truth.
+14. Clip continuity must be preserved.
+15. Regeneration must be targeted.
+16. Audio is a controlled layer.
+17. There is no separate validation stage.
 
-## Dokumentasi Utama
+## Main Documentation
 
-Mulai dari `MASTER-SKILL.md`.
+Start with `MASTER-SKILL.md`.
 
-Untuk eksekusi sistem:
+For system execution:
 
 ```text
 13_SYSTEM/WORKFLOW.md
@@ -215,7 +221,7 @@ Untuk eksekusi sistem:
 13_SYSTEM/REGENERATION.md
 ```
 
-Untuk keadaan proyek:
+For project state:
 
 ```text
 14_PROJECT-STATE/PROJECT-STATE.md
@@ -228,4 +234,4 @@ Untuk keadaan proyek:
 
 Repository: https://github.com/adis-su/ugc-skill
 
-AFFILIX dirancang sebagai sistem produksi yang dapat ditelusuri, direvisi secara terkontrol, dan dikembangkan tanpa kehilangan hubungan antara fakta, keputusan kreatif, keadaan, dan hasil generatif.
+AFFILIX is designed as a traceable production system that can be revised in a controlled manner and evolved without losing the relationship between facts, creative decisions, state, and generative outputs.
