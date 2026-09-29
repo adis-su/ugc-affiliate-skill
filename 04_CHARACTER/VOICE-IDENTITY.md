@@ -4,7 +4,7 @@
 
 Voice Identity menjawab **seperti apa suara karakter dan bagaimana suara tersebut terdengar konsisten**, bukan apa yang dikatakan.
 
-Voice Identity adalah layer terpisah dari Character Identity.
+Voice Identity adalah layer terpisah dari Character Identity dan harus dapat diterjemahkan ke workflow voice generation seperti Google Flow tanpa mengubah source of truth AFFILIX.
 
 ## 1. Purpose
 
@@ -14,184 +14,263 @@ Voice Identity digunakan oleh:
 - Character Performance
 - Video Prompt
 - Naturalization
+- Google Flow voice configuration / voice performance instructions
 
 Voice Identity harus tetap konsisten sepanjang production kecuali ada explicit revision.
 
-## 2. Voice Identity vs Dialogue
-
-Voice Identity menentukan **how the character sounds**.
-
-Dialogue menentukan **what the character says**.
-
-Voice Identity tidak boleh berubah hanya karena wording dialogue berubah.
-
-## 3. Voice Record
-
-Gunakan struktur berikut:
+## 2. Rositasari — Master Voice Identity
 
 ### Basic
-- Voice Name / ID:
-- Gender Presentation:
-- Perceived Age:
-- Language:
-- Accent / Pronunciation Context:
+- Voice Name / ID: Rositasari Voice
+- Gender Presentation: Female
+- Perceived Age: Late 20s to early 30s
+- Language: Indonesian
+- Accent / Pronunciation Context: Natural Indonesian conversational pronunciation; avoid exaggerated regional accent unless explicitly instructed
 
 ### Vocal Characteristics
-- Pitch:
-- Timbre:
-- Resonance:
-- Brightness / Warmth:
-- Texture:
-- Vocal Weight:
+- Pitch: Medium, slightly warm
+- Timbre: Warm, clear, soft, natural
+- Resonance: Natural, close, intimate
+- Brightness / Warmth: Warm with enough brightness for speech clarity
+- Texture: Clean but not overly polished
+- Vocal Weight: Light-to-medium
 
-### Delivery
-- Pace:
-- Rhythm:
-- Energy:
-- Articulation:
-- Emotional Range:
-- Conversational Style:
+### Baseline Delivery
+- Pace: Moderate
+- Rhythm: Conversational and varied, never metronomic
+- Energy: Medium to medium-high
+- Articulation: Clear but relaxed
+- Emotional Range: Calm, curious, pleased, surprised, excited, mildly skeptical, concerned
+- Conversational Style: Friendly, approachable, spontaneous, intimate
 
-### Natural Behavior
-- Breathing:
-- Pauses:
-- Hesitation:
-- Emphasis:
-- Self-Correction:
-- Sentence Endings:
-- Filler Behavior:
+### Core Vocal Direction
 
-## 4. Perceived Age
+Rositasari memiliki suara perempuan dewasa muda dengan karakter hangat, natural, dan approachable. Suaranya berada di register medium dengan timbre lembut namun tetap jelas.
 
-Perceived vocal age harus konsisten dengan project character context.
+Delivery terasa conversational dan spontaneous, seperti berbicara langsung kepada seseorang yang dikenalnya, bukan membaca iklan. Energinya cukup hidup untuk menarik perhatian tetapi tidak hiperaktif.
 
-Perceived age adalah vocal perception, bukan perubahan Character Identity.
+Saat antusias, tempo dapat sedikit meningkat dan pitch naik secara alami. Gunakan variasi intonasi, jeda pendek, subtle breathing, dan micro-hesitations untuk mempertahankan kesan manusiawi.
 
-Voice generation tidak boleh secara tidak sengaja membuat karakter terdengar jauh lebih muda atau lebih tua tanpa instruction.
+Emphasis digunakan secara selektif pada kata atau frasa penting.
 
-## 5. Pitch
+### Avoid
+- Announcer voice
+- Commercial voice
+- Overly polished delivery
+- Robotic rhythm
+- Excessive enthusiasm
+- Perfect sentence timing
+- Artificially deep or artificially high pitch
+- Forced emotional acting
+- Excessive breathiness
+- Exaggerated accent
 
-Catat pitch sebagai qualitative description atau project-specific range jika memang tersedia.
+## 3. Voice Identity vs Voice Performance
+
+**Voice Identity** menjawab:
+
+> Who is Rositasari vocally?
+
+**Voice Performance** menjawab:
+
+> How is Rositasari delivering this specific line in this specific scene?
+
+Voice Identity tetap stabil.
+
+Voice Performance dapat berubah berdasarkan:
+- scene
+- emotion
+- action
+- dialogue intent
+- audience context
+- physical activity
 
 Contoh:
-- medium
-- medium-high
-- low-medium
 
-Jangan menggunakan angka teknis yang tidak memiliki basis.
+| Clip | Voice Identity | Performance |
+|---|---|---|
+| C01 | Rositasari | Calm, conversational |
+| C02 | Rositasari | Curious, slightly excited |
+| C03 | Rositasari | Impressed, slightly faster |
+| C04 | Rositasari | Reassuring, relaxed |
 
-Pitch harus tetap stabil secara identity, sementara natural variation diperbolehkan selama delivery.
+Performance berubah. Identitas suara tidak.
 
-## 6. Timbre
+## 4. Google Flow Translation
 
-Timbre menjelaskan karakter suara.
+Voice Identity AFFILIX adalah **master specification**, bukan sekadar prompt yang harus ditempel mentah-mentah ke setiap generation.
 
-Possible descriptors:
-- warm
-- clear
-- soft
-- slightly husky
-- bright
-- mellow
-- textured
+Jika menggunakan Google Flow, terjemahkan Voice Identity menjadi dua layer:
 
-Gunakan kombinasi descriptor yang cukup spesifik untuk menjaga consistency.
+### Layer A — Voice Reference / Custom Voice
 
-## 7. Pace and Rhythm
+Gunakan voice reference atau custom voice untuk menetapkan identitas suara dasar Rositasari jika fitur/model Flow yang digunakan mendukungnya.
 
-Pace dapat dipengaruhi oleh:
-- emotion
-- sentence complexity
-- action
-- emphasis
-- audience context
+Target identitas:
 
-Voice Identity menetapkan baseline.
+```
+Female adult voice.
+Perceived age: late 20s to early 30s.
+Medium pitch, slightly warm.
+Warm, clear, soft, natural timbre.
+Clean but not overly polished vocal texture.
+Natural Indonesian conversational pronunciation.
+Friendly, approachable, intimate vocal character.
+```
 
-Scene-specific performance dapat mengubah pace secara terkontrol tanpa mengganti identity.
+### Layer B — Voice Performance Instruction
 
-## 8. Energy
+Untuk setiap clip, tambahkan hanya performa yang spesifik terhadap scene.
 
-Energy dapat berada pada spectrum:
+Template:
+
+```
+Use Rositasari's established voice identity.
+
+Voice performance:
+[energy]
+[emotion]
+[pace]
+[rhythm]
+[intonation]
+[emphasis]
+[pauses]
+[breathing]
+[natural imperfections]
+
+Do not change Rositasari's core vocal identity.
+
+Dialogue:
+"[dialogue]"
+```
+
+Contoh:
+
+```
+Use Rositasari's established voice identity.
+
+Voice performance:
+Friendly and genuinely curious.
+Medium energy.
+Moderate conversational pace with a slight increase when expressing excitement.
+Natural pitch variation.
+Short conversational pauses.
+Subtle breathing.
+Selective emphasis on key words.
+Small natural timing variation.
+
+Do not sound like an announcer or commercial narrator.
+Do not change Rositasari's core vocal identity.
+
+Dialogue:
+"Eh, ternyata yang ini gampang banget dipakainya."
+```
+
+## 5. Google Flow Usage Rule
+
+AFFILIX harus memperlakukan Google Flow sebagai **downstream execution environment**, bukan sebagai source of truth.
+
+Relationship:
+
+```
+VOICE IDENTITY
+      ↓
+Rositasari Master Voice
+      ↓
+Google Flow Voice Reference / Custom Voice
+      ↓
+Voice Performance per Clip
+      ↓
+Dialogue
+```
+
+Jika kemampuan voice/reference berbeda antar model atau versi Flow, jangan mengubah Voice Identity untuk menyesuaikan keterbatasan tool.
+
+Sesuaikan **translation layer**, bukan source of truth.
+
+## 6. Voice Performance Structure
+
+Untuk setiap clip, Voice Performance dapat menggunakan:
+
+### Energy
 - calm
 - moderate
 - lively
 - energetic
 
-Energy adalah delivery characteristic, bukan emotional state permanen.
-
-Character Performance menentukan perubahan energy per scene.
-
-## 9. Emotional Range
-
-Catat emotional range yang masuk akal untuk karakter:
+### Emotion
 - calm
 - curious
 - pleased
 - surprised
-- concerned
 - excited
+- concerned
+- mildly skeptical
 
-Emotional variation tidak berarti voice identity berubah.
+### Pace
+- slow
+- moderate
+- slightly fast
+- controlled acceleration
 
-Voice should remain recognizable across emotional states.
+### Rhythm
+- conversational
+- relaxed
+- slightly punchy
+- reflective
 
-## 10. Breathing
+### Intonation
+- neutral
+- rising curiosity
+- warm emphasis
+- surprised lift
+- reassuring fall
 
-Natural breathing dapat membantu believable speech.
+### Emphasis
+Gunakan selective emphasis pada kata atau frasa yang memang penting terhadap dialogue.
 
-Catat:
-- breathing intensity
-- breathing frequency
-- audible vs subtle
-- breath placement
-
-Breathing harus mengikuti physical activity dan dialogue timing.
-
-Breathing tidak boleh mengganggu speech clarity.
-
-## 11. Pauses
-
-Pause dapat digunakan untuk:
+### Pauses
+Gunakan short natural pauses untuk:
 - thought transition
 - emphasis
 - reaction
 - emotional shift
-- natural speech rhythm
 
-Pause pattern harus terasa consistent dengan character.
+### Breathing
+Natural, subtle, dan mengikuti physical activity serta dialogue timing.
 
-Jangan menambahkan pause secara mekanis di setiap sentence.
-
-## 12. Natural Imperfection
-
-Natural voice dapat memiliki:
-- slight hesitation
+### Micro-imperfections
+Gunakan secara ringan:
+- tiny hesitation
+- slight timing variation
 - small restart
 - uneven emphasis
-- tiny timing variation
 - subtle breath
 
-Natural imperfection harus controlled.
+Jangan membuat speech terdengar rusak.
 
-Tujuannya adalah believable human delivery, bukan membuat speech terdengar rusak.
+## 7. Dialogue Relationship
 
-## 13. Pronunciation
+Voice Identity menentukan **how it sounds**.
 
-Catat pronunciation requirement untuk:
+Dialogue menentukan **what is said**.
+
+Performance menentukan **how this particular dialogue is delivered**.
+
+Ketiganya tidak boleh dicampur.
+
+## 8. Pronunciation
+
+Untuk Google Flow dan voice generation, pronunciation requirement harus dicatat jika penting untuk:
 - character name
 - product name
 - brand
 - technical terminology
 - local terms
 
-Product name dan brand pronunciation harus konsisten jika penting untuk identity atau clarity.
+Jika pronunciation critical tetapi belum diketahui, gunakan `UNKNOWN` dan jangan menebak.
 
-Jika pronunciation tidak diketahui, jangan menebak untuk istilah yang critical.
-
-## 14. Voice and Character Relationship
-
-Voice Identity dan Character Identity saling terkait tetapi tidak sama.
+## 9. Voice and Character Relationship
 
 Character Identity:
 - face
@@ -201,16 +280,34 @@ Character Identity:
 Voice Identity:
 - pitch
 - timbre
+- resonance
+- vocal texture
+- vocal weight
+- language identity
+- characteristic vocal range
+
+Character State:
+- expression
+- gaze
+- pose
+- gesture
+- movement
+
+Voice Performance:
+- energy
+- emotion
 - pace
 - rhythm
-- vocal energy
-- delivery
+- intonation
+- emphasis
+- pauses
+- breathing
 
-Perubahan visual character tidak otomatis mengubah voice identity.
+Perubahan Character State tidak otomatis mengubah Voice Identity.
 
-## 15. Audio Design Relationship
+## 10. Audio Design Relationship
 
-Voice Identity memberi baseline.
+Voice Identity memberi baseline karakter suara.
 
 Audio Design mengatur:
 - recording context
@@ -223,7 +320,7 @@ Audio Design mengatur:
 
 Audio Design tidak boleh mengubah identity suara tanpa explicit instruction.
 
-## 16. Naturalization Compatibility
+## 11. Naturalization Compatibility
 
 Naturalization dapat memperhalus:
 - breath timing
@@ -239,7 +336,7 @@ Naturalization tidak boleh mengubah:
 - language identity
 - pronunciation identity
 
-## 17. Voice Continuity
+## 12. Voice Continuity
 
 Track voice continuity across:
 - clips
@@ -250,16 +347,18 @@ Track voice continuity across:
 
 Voice harus tetap recognizable meskipun camera, environment, atau emotional state berubah.
 
-## 18. Missing Voice Data
+Jika Google Flow menggunakan voice reference, gunakan reference yang sama atau equivalent locked voice configuration sepanjang continuity chain, selama kompatibel dengan model yang digunakan.
+
+## 13. Missing Voice Data
 
 Jika voice identity belum cukup:
 - mark UNKNOWN
 - identify required specification
 - avoid inventing highly specific vocal characteristics
 
-Generic voice descriptors dapat digunakan sementara jika project belum mengunci identity, tetapi tidak boleh dianggap final.
+Generic descriptors dapat digunakan sementara jika project belum mengunci identity, tetapi tidak boleh dianggap final.
 
-## 19. Voice Identity Status
+## 14. Voice Identity Status
 
 Status dapat mengikuti:
 - NOT_STARTED
@@ -272,29 +371,34 @@ Status dapat mengikuti:
 
 Setelah LOCKED, Voice Identity menjadi constraint downstream.
 
-## 20. Revision Rules
+## 15. Revision Rules
 
 Voice Identity harus direvisi jika:
 - user mengubah voice specification
 - character concept berubah secara explicit
-- voice generation requirement berubah
+- voice generation requirement berubah secara material
 - pronunciation requirement berubah
 
-Perubahan dapat membuat Dialogue, Audio Design, dan Video Prompt menjadi STALE sesuai dependency rules.
+Perubahan dapat membuat Dialogue, Audio Design, Voice Performance, dan Video Prompt menjadi STALE sesuai dependency rules.
 
 Regeneration harus targeted.
 
-## 21. Non-Negotiable Rules
+## 16. Non-Negotiable Rules
 
 1. Voice Identity adalah source of truth untuk character voice.
-2. Voice Identity berbeda dari Character Identity.
-3. Voice Identity berbeda dari Dialogue.
-4. Voice Identity berbeda dari Performance.
-5. Core vocal characteristics harus konsisten.
-6. Emotional variation tidak boleh menghapus voice identity.
-7. Natural imperfection harus controlled.
-8. Pronunciation harus konsisten untuk important terms.
-9. Naturalization tidak boleh mengubah core voice identity.
-10. Missing voice data tidak boleh diisi dengan tebakan detail.
-11. Locked voice identity menjadi downstream constraint.
-12. Voice revision harus memicu targeted stale propagation.
+2. Rositasari memiliki baseline voice identity yang stabil.
+3. Voice Identity berbeda dari Character Identity.
+4. Voice Identity berbeda dari Dialogue.
+5. Voice Identity berbeda dari Voice Performance.
+6. Core vocal characteristics harus konsisten.
+7. Emotional variation tidak boleh menghapus voice identity.
+8. Natural imperfection harus controlled.
+9. Pronunciation harus konsisten untuk important terms.
+10. Naturalization tidak boleh mengubah core voice identity.
+11. Google Flow adalah downstream execution environment, bukan source of truth.
+12. Gunakan voice reference/custom voice bila tersedia dan sesuai model.
+13. Gunakan Voice Performance instruction untuk variasi per clip.
+14. Jangan menyesuaikan source of truth hanya karena keterbatasan generation tool.
+15. Missing voice data tidak boleh diisi dengan tebakan detail.
+16. Locked voice identity menjadi downstream constraint.
+17. Voice revision harus memicu targeted stale propagation.
