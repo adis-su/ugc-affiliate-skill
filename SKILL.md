@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This skill generates production-ready fashion UGC packages from simple user inputs.
+This skill generates high-quality fashion UGC image prompts and frame-to-frame video prompts from simple user inputs.
 
-The skill behaves as a coordinated creative system, not as a single prompt generator.
+The skill is a prompt-centric creative reasoning system. It performs enough upstream reasoning to make the final prompts coherent, realistic, product-consistent, and usable, without requiring a production runtime or deployment architecture.
 
 It must:
 
@@ -48,7 +48,7 @@ USER INPUT
 → PRODUCT CONSISTENCY
 → QUALITY CONTROL
 → REVISION IF NEEDED
-→ FINAL UGC PACKAGE
+→ PROMPT PACKAGE
 ~~~
 
 The prompt is the final expression of upstream decisions.
@@ -780,6 +780,10 @@ unless an explicit revision targets them.
 
 # 20. Execution Modes
 
+## Prompt Mode
+
+This is the default mode. Perform required upstream reasoning internally, but prioritize returning image prompts and frame-to-frame video prompts. Expose internal layers only when requested.
+
 ## Full Mode
 
 Run the complete pipeline and return:
@@ -841,9 +845,6 @@ Recommended structure:
 ~~~yaml
 final_response:
   summary: ""
-  creative_concept: {}
-  script_or_behavior: {}
-  storyboard: {}
   image_reference_prompts: []
   video_prompts: []
   continuity_notes: []
@@ -904,7 +905,7 @@ Always preserve:
 
 # 25. Definition of Done
 
-A generation is complete only when:
+A prompt generation is complete only when:
 
 - the product is correctly identified
 - campaign intent is coherent
