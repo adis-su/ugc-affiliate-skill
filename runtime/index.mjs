@@ -265,7 +265,7 @@ function buildImagePrompts(scenes, input, product, campaign, concept) {
       `Lighting: natural or ordinary ambient lighting appropriate to the environment`,
       `UGC realism: ${scene.niche_realism.join(", ")}`,
       `Evidence: ${campaign.required_evidence.join(", ")}`,
-      `Continuity: same character, product, wardrobe, environment geometry and camera relationship`,
+      `Continuity: same Rositasari Character Identity Lock across every scene, same product identity, wardrobe, environment geometry and camera relationship`,
       `Negative constraints only where relevant: no identity drift, product duplication, impossible anatomy, or unexplained state change`,
       "single visual state; do not describe future actions"
     ].join("; ")
