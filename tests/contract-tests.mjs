@@ -312,7 +312,7 @@ test("AFFILIX rejects a silent-format and spoken-mode conflict", async () => {
   let session = activateAffilixSession(createAffilixSession());
   session = applyAffilixCampaignConfig(session, {
     objective: "Conversion",
-    format: "Product Demo",
+    format: "Silent Mirror Selfie",
     angle: "How I Use It",
     speech: "Spoken"
   });
