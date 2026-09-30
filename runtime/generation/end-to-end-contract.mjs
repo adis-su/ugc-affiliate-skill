@@ -19,7 +19,17 @@ export function validateGenerationIdentityContract({ scene, references = [], spe
   }
 
   if (speech_required) {
-    const voice = resolveVoiceReference(scene?.creator_identity?.voice_identity_lock ?? scene?.voice_identity, references);
+    const voiceIdentity = scene?.creator_identity?.voice_identity_lock ?? scene?.voice_identity ?? null;
+    if (!voiceIdentity) {
+      blockers.push({
+        code: "VOICE_IDENTITY_MISSING",
+        stage: "identity",
+        severity: "BLOCKER",
+        message: "Spoken generation requires a resolved Voice Identity.",
+        field: "creator_identity.voice_identity_lock"
+      });
+    }
+    const voice = resolveVoiceReference(voiceIdentity, references);
     if (!voice.valid) blockers.push(voice.error);
   }
 
@@ -49,6 +59,11 @@ export function buildGenerationRequest({ scene, prompt, references = [], speech_
       character: scene?.creator_identity ?? null,
       product: scene?.product_identity ?? null,
       voice: scene?.voice_identity ?? scene?.creator_identity?.voice_identity_lock ?? null
-    }
+    },
+    voice_generation: speech_required ? {
+      text: scene?.spoken_text ?? null,
+      voice_identity: scene?.voice_identity ?? scene?.creator_identity?.voice_identity_lock ?? null,
+      references: references.filter((reference) => reference?.type === "voice")
+    } : null
   };
 }
