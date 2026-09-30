@@ -257,7 +257,7 @@ function buildImagePrompts(scenes, input, product, campaign, concept) {
     scene_id: scene.scene_id,
     continuity_anchors: [scene.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"],
     prompt: [
-      `Character Identity: ${scene.creator_identity.creator}; use the locked character reference when available`,
+      `Character Identity: ${scene.creator_identity.creator}; use the locked character reference when available; preserve the defined facial structure, skin profile, age appearance, body profile, and hijab-wearing identity`,
       `Current creator state: ${scene.creator_state.action}; gaze and pose remain consistent with the scene state`,
       `Product Identity: ${product.record.product_name}; preserve the Product Identity Lock`,
       `Product State: ${scene.product_state.state}`,
