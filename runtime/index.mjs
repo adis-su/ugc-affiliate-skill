@@ -255,7 +255,7 @@ function buildImagePrompts(scenes, input, product, campaign, concept) {
     scene_id: scene.scene_id,
     continuity_anchors: [scene.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"],
     prompt: [
-      `Character Identity Lock: ${JSON.stringify(scene.creator_identity)}; Rositasari Character Identity is the source of truth; preserve all defined facial, eye, eyebrow, nose, lip, skin, age, height, appearance, and hijab attributes`,
+      `Character Identity Lock: Rositasari; preserve all defined facial, eye, eyebrow, nose, lip, skin, age, height, appearance, and hijab attributes from the resolved Character Identity Lock`,
       `Current creator state: ${scene.creator_state.action}; gaze and pose remain consistent with the scene state`,
       `Product Identity: ${product.record.product_name}; preserve the Product Identity Lock`,
       `Product State: ${scene.product_state.state}`,
@@ -289,7 +289,7 @@ function buildVideoPrompts(scenes, input, product) {
         "Camera Movement: subtle smartphone drift or reframing only when motivated by creator movement",
         "Environment Movement: minimal and physically caused; preserve room geometry and object placement",
         `Ending Frame Anchor: exact visual state of ${to.scene_id}`,
-        "Continuity: same character identity, product identity, wardrobe, environment and compatible camera relationship",
+        "Continuity: same Rositasari Character Identity Lock, product identity, wardrobe, environment and compatible camera relationship",
         "No teleportation, morphing, duplicated objects, unexplained state changes, or cinematic camera choreography"
       ].join("; "),
       continuity_anchors: [from.scene_id, to.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"]
@@ -300,7 +300,7 @@ function buildVideoPrompts(scenes, input, product) {
 function validatePromptSemantics(result, input) {
   const blockers = [];
   for (const image of result.image_prompts) {
-    const required = ["Character Identity:", "Product Identity:", "Product State:", "Visible behavior:", "Camera/composition:", "UGC realism:"];
+    const required = ["Character Identity Lock:", "Product Identity:", "Product State:", "Visible behavior:", "Camera/composition:", "UGC realism:"];
     for (const token of required) if (!image.prompt.includes(token)) blockers.push(blocker("IMAGE_PROMPT_INVALID", "validation", `Image prompt ${image.scene_id} is missing ${token}`, image.scene_id));
     if (/then|after that|future action/i.test(image.prompt)) blockers.push(blocker("IMAGE_PROMPT_INVALID", "validation", `Image prompt ${image.scene_id} contains future-action language.`, image.scene_id));
     if (!/single visual state/i.test(image.prompt)) blockers.push(blocker("IMAGE_PROMPT_INVALID", "validation", `Image prompt ${image.scene_id} does not anchor a single visual state.`, image.scene_id));
