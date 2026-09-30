@@ -27,7 +27,9 @@
           "scene_count": 3,
           "custom_instructions": null
         },
-        "platform": ["TikTok"]
+        "platform": [
+          "TikTok"
+        ]
       },
       "expected": {
         "status": "PASS",
@@ -63,7 +65,9 @@
           "scene_count": 3,
           "custom_instructions": null
         },
-        "platform": ["Instagram Reels"]
+        "platform": [
+          "Instagram Reels"
+        ]
       },
       "expected": {
         "status": "PASS",
@@ -97,7 +101,9 @@
           "scene_count": 3,
           "custom_instructions": null
         },
-        "platform": ["Facebook Reels"]
+        "platform": [
+          "Facebook Reels"
+        ]
       },
       "expected": {
         "status": "PASS",
@@ -133,7 +139,10 @@
           "scene_count": 4,
           "custom_instructions": null
         },
-        "platform": ["TikTok", "Instagram Reels"]
+        "platform": [
+          "TikTok",
+          "Instagram Reels"
+        ]
       },
       "expected": {
         "status": "PASS",
@@ -164,11 +173,15 @@
           "duration_sec": 6,
           "scene_count": 3
         },
-        "platform": ["TikTok"]
+        "platform": [
+          "TikTok"
+        ]
       },
       "expected": {
         "status": "BLOCK",
-        "errors": ["CREATOR_NOT_FOUND"],
+        "errors": [
+          "CREATOR_NOT_FOUND"
+        ],
         "scene_count": 0,
         "image_prompt_count": 0,
         "video_prompt_count": 0
@@ -194,11 +207,15 @@
           "duration_sec": 6,
           "scene_count": 3
         },
-        "platform": ["TikTok"]
+        "platform": [
+          "TikTok"
+        ]
       },
       "expected": {
         "status": "BLOCK",
-        "errors": ["INVALID_FORMAT_ANGLE"],
+        "errors": [
+          "INVALID_FORMAT_ANGLE"
+        ],
         "scene_count": 0,
         "image_prompt_count": 0,
         "video_prompt_count": 0
@@ -224,11 +241,15 @@
           "duration_sec": 4,
           "scene_count": 5
         },
-        "platform": ["TikTok"]
+        "platform": [
+          "TikTok"
+        ]
       },
       "expected": {
         "status": "BLOCK",
-        "errors": ["INVALID_DURATION_SCENE_COUNT"],
+        "errors": [
+          "INVALID_DURATION_SCENE_COUNT"
+        ],
         "scene_count": 0,
         "image_prompt_count": 0,
         "video_prompt_count": 0
@@ -255,11 +276,15 @@
           "scene_count": 2,
           "custom_instructions": "Add spoken dialogue and lip-sync."
         },
-        "platform": ["TikTok"]
+        "platform": [
+          "TikTok"
+        ]
       },
       "expected": {
         "status": "BLOCK",
-        "errors": ["SPEECH_MODE_CONFLICT"],
+        "errors": [
+          "SPEECH_MODE_CONFLICT"
+        ],
         "scene_count": 0,
         "image_prompt_count": 0,
         "video_prompt_count": 0
@@ -289,7 +314,9 @@
           "duration_sec": 8,
           "scene_count": 3
         },
-        "platform": ["Instagram Reels"]
+        "platform": [
+          "Instagram Reels"
+        ]
       },
       "fixture_setup": {
         "mock_product_source": {
@@ -298,7 +325,9 @@
       },
       "expected": {
         "status": "BLOCK",
-        "errors": ["PRODUCT_CONFLICT"],
+        "errors": [
+          "PRODUCT_CONFLICT"
+        ],
         "scene_count": 0,
         "image_prompt_count": 0,
         "video_prompt_count": 0
@@ -324,14 +353,18 @@
           "duration_sec": 8,
           "scene_count": 3
         },
-        "platform": ["TikTok"]
+        "platform": [
+          "TikTok"
+        ]
       },
       "fixture_setup": {
         "mock_generation_fault": "scene_03_character_identity_drift"
       },
       "expected": {
         "status": "BLOCK",
-        "errors": ["IDENTITY_DRIFT"],
+        "errors": [
+          "IDENTITY_DRIFT"
+        ],
         "scene_count": 3,
         "image_prompt_count": 3,
         "video_prompt_count": 2
@@ -357,14 +390,19 @@
           "duration_sec": 8,
           "scene_count": 3
         },
-        "platform": ["Shopee Video"]
+        "platform": [
+          "Shopee Video"
+        ]
       },
       "fixture_setup": {
         "mock_generation_fault": "scene_02_product_teleportation"
       },
       "expected": {
         "status": "BLOCK",
-        "errors": ["PRODUCT_DRIFT", "CONTINUITY_BREAK"],
+        "errors": [
+          "PRODUCT_DRIFT",
+          "CONTINUITY_BREAK"
+        ],
         "scene_count": 3,
         "image_prompt_count": 3,
         "video_prompt_count": 2
@@ -391,17 +429,152 @@
           "duration_sec": 8,
           "scene_count": 3
         },
-        "platform": ["TikTok"]
+        "platform": [
+          "TikTok"
+        ]
       },
       "fixture_setup": {
         "mock_generation_fault": "invented_clinical_claim"
       },
       "expected": {
         "status": "BLOCK",
-        "errors": ["UNSUPPORTED_DETAIL"],
+        "errors": [
+          "UNSUPPORTED_DETAIL"
+        ],
         "scene_count": 3,
         "image_prompt_count": 3,
         "video_prompt_count": 2
+      }
+    },
+    {
+      "id": "positive-product-retrieval-provenance",
+      "type": "positive",
+      "input": {
+        "niche": "Beauty",
+        "product": {
+          "product_name": "Example Retrieved Lip Product",
+          "product_url": "https://example.com/lip-product",
+          "product_facts": {
+            "color": "red"
+          },
+          "retrieved_facts": {
+            "brand": "Example Brand",
+            "category": "lip product",
+            "color": "red",
+            "finish": "glossy"
+          }
+        },
+        "campaign": {
+          "objective": "Product Consideration",
+          "stage": "Consideration",
+          "cta": "Check the Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Product Application",
+          "angle": "Finish",
+          "duration_sec": 8,
+          "scene_count": 3,
+          "custom_instructions": null
+        },
+        "platform": [
+          "Instagram Reels"
+        ]
+      },
+      "expected": {
+        "status": "PASS",
+        "errors": [],
+        "scene_count": 3,
+        "image_prompt_count": 3,
+        "video_prompt_count": 2
+      }
+    },
+    {
+      "id": "positive-creator-reference-injection",
+      "type": "positive",
+      "input": {
+        "niche": "Fashion",
+        "product": {
+          "product_name": "Example Reference Top",
+          "product_facts": {
+            "color": "cream"
+          }
+        },
+        "campaign": {
+          "objective": "Product Discovery",
+          "stage": "Consideration",
+          "cta": "View Product"
+        },
+        "creator": "Rositasari",
+        "creator_identity": {
+          "character": {
+            "reference": "creator-reference://rositasari-character-v1",
+            "style": "casual everyday UGC styling"
+          },
+          "voice": {
+            "voice_reference": "creator-reference://rositasari-voice-v1",
+            "tone": "conversational"
+          }
+        },
+        "content": {
+          "format": "Talking Head",
+          "angle": "Wardrobe Essential",
+          "duration_sec": 10,
+          "scene_count": 4,
+          "custom_instructions": null
+        },
+        "platform": [
+          "TikTok"
+        ]
+      },
+      "expected": {
+        "status": "PASS",
+        "errors": [],
+        "scene_count": 4,
+        "image_prompt_count": 4,
+        "video_prompt_count": 3,
+        "speech_mode": "spoken"
+      }
+    },
+    {
+      "id": "negative-product-explicit-vs-retrieved-conflict",
+      "type": "negative",
+      "input": {
+        "niche": "Beauty",
+        "product": {
+          "product_name": "Example Conflicting Lip Product",
+          "product_url": "https://example.com/conflict",
+          "product_facts": {
+            "color": "red"
+          },
+          "retrieved_facts": {
+            "color": "blue"
+          }
+        },
+        "campaign": {
+          "objective": "Product Consideration",
+          "stage": "Consideration",
+          "cta": "View Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Product Application",
+          "angle": "Shade / Color",
+          "duration_sec": 8,
+          "scene_count": 3
+        },
+        "platform": [
+          "Instagram Reels"
+        ]
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": [
+          "PRODUCT_CONFLICT"
+        ],
+        "scene_count": 0,
+        "image_prompt_count": 0,
+        "video_prompt_count": 0
       }
     }
   ]
