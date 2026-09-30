@@ -133,6 +133,12 @@ Include only identity attributes relevant to visual continuity:
 
 Do not regenerate the creator conceptually for each scene.
 
+### Canonical Character Identity Rule
+
+When the selected creator is Rositasari, `creators/rositasari.md` and the resolved Creator Library entry are the canonical Character Identity source of truth. Every generated Image Prompt must explicitly carry the resolved Character Identity Lock as an identity anchor. The prompt must preserve Rositasari's defined age, height, Southeast Asian visual appearance, hijab identity, facial features, skin characteristics, and all other defined identity attributes. A supplied character reference may condition generation, but it must not silently override the canonical identity.
+
+The same canonical identity lock applies to every scene. Scene State may change pose, gaze, expression, wardrobe, or temporary physical state when the creative brief requires it, but it must not redefine the creator.
+
 ### Character Reference
 
 When a Character Reference exists:
@@ -729,7 +735,7 @@ The canonical fields are an **output format**, not a second source of truth. Pop
 
 The generation prompt may be rendered as a natural-language paragraph after assembly, but the semantic field order must remain stable:
 
-`Subject → Creator State → Product → Product State → Environment → Camera → Lighting → UGC Realism → Continuity → Evidence → Forbidden Changes`
+`Character Identity Lock → Subject / Creator State → Product → Product State → Environment → Camera → Lighting → UGC Realism → Continuity → Evidence → Forbidden Changes`
 
 Do not add fields ad hoc per scene.
 
