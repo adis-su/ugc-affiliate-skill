@@ -45,11 +45,14 @@ Strategy, analysis, creative concepts, behavior, and scene planning are supporti
 Input
 → Understanding
 → Creative Logic
+→ Storyboard / Scene Planning
+→ Scene State Model
 → Content Behavior
 → Prompt Assembly
 → Image / Video Prompt Generation
 → Human Realism
 → Consistency
+→ Validation / Targeted Repair
 → Output
 
 ## Input
@@ -263,7 +266,10 @@ Duration, scene count, references, campaign stage, and other execution details a
 - Angle Logic
 - Format × Angle Matrix
 - Creative Concept
-- Scene Planning
+- Storyboard / Scene Planning
+- Scene State Model
+
+Storyboard is the production blueprint for the scene sequence. It defines State In, behavior, causal State Change, and State Out. Scene State remains the single shared visual source of truth for Image Prompt and Video Prompt generation.
 
 ### 03. Content Behavior
 - Script Engine
