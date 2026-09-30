@@ -58,6 +58,7 @@ function assertPromptContracts(result) {
     assert.ok(prompt.scene_id);
     assert.ok(prompt.prompt);
     assert.ok(Array.isArray(prompt.continuity_anchors));
+    assert.equal(prompt.continuity_anchors.length, 4);
   }
 
   for (const [index, prompt] of result.video_prompts.entries()) {
@@ -173,6 +174,11 @@ test("product URL adapter validates invalid URLs without throwing", async () => 
 test("async runtime can consume an injected retrieved product source", async () => {
   const fixture = fixtures.find((item) => item.id === "positive-product-retrieval-provenance");
   assert.ok(fixture);
+  const result = await runAsync(fixture.input, {
+    retrieved_product_source: { status: "RESOLVED", source_url: fixture.input.product.product_url, facts: fixture.input.product.retrieved_facts }
+  });
+  assert.equal(result.validation.status, "PASS");
+  assert.equal(result.validation.contract_checks.includes("product_source_provenance"), true);
 });
 
 
