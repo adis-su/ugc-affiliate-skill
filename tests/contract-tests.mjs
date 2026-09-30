@@ -320,3 +320,25 @@ test("AFFILIX rejects a silent-format and spoken-mode conflict", async () => {
   assert.equal(checked.status, "BLOCK");
   assert.ok(checked.blockers.some((item) => item.code === "SPEECH_MODE_CONFLICT"));
 });
+
+
+test("AFFILIX input router advances activation and preserves campaign state", async () => {
+  const { createAffilixSession, handleAffilixInput, AFFILIX_STAGES, isAffilixConfigurationReady } = await import("../runtime/index.mjs");
+  let session = handleAffilixInput(createAffilixSession(), { command: "/Affilix" });
+  assert.equal(session.stage, AFFILIX_STAGES.WAITING_PRODUCT_URL);
+  session = handleAffilixInput(session, { product_url: "https://example.com/product" });
+  assert.equal(session.stage, AFFILIX_STAGES.PRODUCT_RESOLUTION);
+  session = { ...session, stage: AFFILIX_STAGES.CAMPAIGN_CONFIGURATION };
+  session = handleAffilixInput(session, { campaign: {
+    objective: "Conversion",
+    format: "Product Demo",
+    angle: "How I Use It",
+    platform: "TikTok",
+    cta: "Check Product",
+    creator: "Rositasari",
+    speech: "Spoken"
+  }});
+  assert.equal(session.campaign.objective, "Affiliate Conversion");
+  assert.equal(session.campaign.cta, "Check the Product");
+  assert.equal(isAffilixConfigurationReady(session), true);
+});
