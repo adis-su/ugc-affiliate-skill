@@ -1,3 +1,6 @@
+import { resolveCreator } from "./knowledge/creator-library.mjs";
+import { resolveNiche, NICHE_KNOWLEDGE } from "./knowledge/niche-knowledge.mjs";
+
 export const SUPPORTED_CREATORS = new Set(["Rositasari"]);
 
 export const PLATFORMS = new Set([
@@ -89,6 +92,10 @@ export function validateRequest(input) {
   if (input.niche && !NICHES[input.niche]) blockers.push(blocker("INVALID_ENUM", "validate", `Unsupported niche: ${input.niche}`, "niche"));
   if (input.creator && !SUPPORTED_CREATORS.has(input.creator)) {
     blockers.push(blocker("CREATOR_NOT_FOUND", "creator", `Creator is not available: ${input.creator}`, "creator"));
+  }
+  if (input.niche) {
+    const nicheResult = resolveNiche(input.niche);
+    if (nicheResult.blocker) blockers.push(nicheResult.blocker);
   }
 
   const niche = NICHES[input.niche];
@@ -236,6 +243,7 @@ function buildImagePrompts(scenes, input, product, campaign, concept) {
       concept.ugc_guardrail,
       "natural anatomy and believable product interaction",
       "preserve product identity and environment continuity",
+      `human realism: ${nicheKnowledge.human_realism.join(", ")}`,
       "single visual state, no future action sequence"
     ].join("; ")
   }));
@@ -310,9 +318,31 @@ export function run(input) {
     });
   }
 
+  const creator = resolveCreator(input.creator);
+  if (creator.blocker) {
+    return blockedOutput({
+      ...baseValidation("BLOCK", [creator.blocker]),
+      contract_checks: ["creator_resolution"]
+    });
+  }
+
+  const nicheKnowledge = resolveNiche(input.niche);
+  if (nicheKnowledge.blocker) {
+    return blockedOutput({
+      ...baseValidation("BLOCK", [nicheKnowledge.blocker]),
+      contract_checks: ["niche_resolution"]
+    });
+  }
+
   const campaign = campaignIntelligence(input, product);
   const concept = creativeConcept(input, campaign);
   const scenes = buildSceneStates(input, product, campaign, concept);
+  for (const scene of scenes) {
+    scene.creator_identity = creator.character_identity_lock;
+    scene.voice_identity = speechMode(input) === "spoken" ? creator.voice_identity_lock : null;
+    scene.niche_realism = nicheKnowledge.human_realism;
+    scene.product_consistency = nicheKnowledge.product_consistency;
+  }
   const images = buildImagePrompts(scenes, input, product, campaign, concept);
   const videos = buildVideoPrompts(scenes, input, product);
   const fault = input.fixture_setup?.mock_generation_fault;
