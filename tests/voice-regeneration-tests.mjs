@@ -7,8 +7,8 @@ test("voice pacing drift is retryable", () => {
   assert.equal(result.retryable, true);
 });
 
-test("missing approved voice reference is not retryable", () => {
-  const result = classifyVoiceRegeneration([{ code: "VOICE_REFERENCE_MISSING" }]);
+test("voice identity drift remains non-retryable", () => {
+  const result = classifyVoiceRegeneration([{ code: "VOICE_IDENTITY_DRIFT" }]);
   assert.equal(result.retryable, false);
 });
 
