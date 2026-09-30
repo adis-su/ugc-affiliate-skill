@@ -73,6 +73,12 @@ generateVideo({
 
 Adapters must not invent missing references. If a required reference is unavailable, return a structured blocker.
 
+### Character Reference Contract
+
+Visual generation requires a `character` reference. The reference may be supplied as an approved `id` or `uri` and is attached to every image generation request and every video transition request. The runtime remains provider-neutral; provider adapters translate the reference into provider-specific attachment syntax.
+
+For Rositasari, the repository currently defines the Character Identity but does not fabricate an actual reference asset. A real approved reference must be supplied before generation can proceed.
+
 ## Asset Contract
 
 Every generated asset must retain:
