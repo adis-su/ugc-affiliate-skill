@@ -1,0 +1,14 @@
+"$schema": "https://json-schema.org/draft/2020-12/schema"
+title: UGC Format Resolution
+type: object
+additionalProperties: false
+required: [format, execution_mode, dialogue_required, behavior_required]
+properties:
+  format: {type: string}
+  execution_mode: {type: string}
+  dialogue_required: {type: boolean}
+  behavior_required: {type: boolean}
+  camera_relationship: {type: string}
+  product_visibility: {type: string}
+  interaction_level: {type: string}
+  format_constraints: {type: array, items: {type: string}}
