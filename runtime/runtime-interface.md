@@ -25,6 +25,7 @@ Request
 │   ├── angle
 │   ├── duration_sec
 │   ├── scene_count
+│   ├── generator
 │   └── custom_instructions
 └── platform[]
 ```
@@ -380,14 +381,20 @@ VideoPrompt
 ├── transition_id
 ├── from_scene
 ├── to_scene
+├── clip_id
+├── duration_sec
+├── target_total_duration_sec
 ├── prompt
 ├── continuity_anchors[]
 └── validation
 ```
 
+The runtime also exposes flow_timeline at the GenerationOutput level.
+
 ### Required Invariants
 
 - one consecutive scene pair → one video prompt,
+- each video prompt carries a generator-valid clip duration,
 - start state matches Scene N,
 - end state matches Scene N+1,
 - every meaningful state change has a physical cause,
@@ -431,6 +438,7 @@ GenerationOutput
 ├── scene_plan[]
 ├── image_prompts[]
 ├── video_prompts[]
+├── flow_timeline
 ├── spoken_script?
 ├── silent_behavior_script?
 └── validation
@@ -443,6 +451,7 @@ If scene count is N:
 - `scene_plan.length = N`
 - `image_prompts.length = N`
 - `video_prompts.length = max(N - 1, 0)`
+- flow_timeline.clip_durations exactly sum to duration_sec
 
 Speech fields:
 
