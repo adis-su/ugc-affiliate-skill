@@ -1,0 +1,26 @@
+name: valid-silent-mirror
+input:
+  product:
+    name: Oversized Cotton Shirt
+    url: https://example.com/product
+  campaign:
+    objective: affiliate_conversion
+    stage: conversion
+    cta: Check the Product
+  creator:
+    gender: Female
+    age_range: 25-34
+    appearance: Natural Indonesian woman, shoulder-length dark hair
+    body_type: Average
+    style: Minimalist
+    reference: null
+  content:
+    format: Silent Mirror Selfie
+    angle: Styling
+    duration: {value: 10, unit: seconds}
+    scene_count: 5
+  platform: [TikTok]
+expected:
+  validation_status: pass
+  blocking_issues: 0
+  major_issues: 0
