@@ -80,7 +80,7 @@ Voice Identity:
 - subtle, approachable emotion
 - avoid robotic timing, uniform pacing, exaggerated enthusiasm, synthetic pauses, and over-pronunciation
 
-An actual approved Character Reference and Voice Reference must be supplied before their corresponding generation paths are allowed to proceed. Never fabricate an approved reference.
+Reference availability is handled by the skill at the relevant generation stage. Never fabricate an approved reference.
 
 ## Guided User Input Flow
 
