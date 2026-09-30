@@ -1,0 +1,408 @@
+{
+  "schema_version": "1.0",
+  "description": "Machine-readable contract fixtures for the UGC Affiliate Skill.",
+  "fixtures": [
+    {
+      "id": "positive-fashion-silent-mirror",
+      "type": "positive",
+      "input": {
+        "niche": "Fashion",
+        "product": {
+          "product_name": "Example Oversized Shirt",
+          "product_url": null,
+          "product_facts": {
+            "color": "neutral"
+          }
+        },
+        "campaign": {
+          "objective": "Product Discovery",
+          "stage": "Consideration",
+          "cta": "View Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Silent Mirror Selfie",
+          "angle": "Fit Check",
+          "duration_sec": 6,
+          "scene_count": 3,
+          "custom_instructions": null
+        },
+        "platform": ["TikTok"]
+      },
+      "expected": {
+        "status": "PASS",
+        "errors": [],
+        "scene_count": 3,
+        "image_prompt_count": 3,
+        "video_prompt_count": 2,
+        "speech_mode": "silent"
+      }
+    },
+    {
+      "id": "positive-beauty-product-application",
+      "type": "positive",
+      "input": {
+        "niche": "Beauty",
+        "product": {
+          "product_name": "Example Lip Product",
+          "product_url": null,
+          "product_facts": {
+            "color": "red"
+          }
+        },
+        "campaign": {
+          "objective": "Product Consideration",
+          "stage": "Consideration",
+          "cta": "Check the Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Product Application",
+          "angle": "Finish",
+          "duration_sec": 8,
+          "scene_count": 3,
+          "custom_instructions": null
+        },
+        "platform": ["Instagram Reels"]
+      },
+      "expected": {
+        "status": "PASS",
+        "errors": [],
+        "scene_count": 3,
+        "image_prompt_count": 3,
+        "video_prompt_count": 2,
+        "speech_mode": "silent_or_optional"
+      }
+    },
+    {
+      "id": "positive-home-problem-solution",
+      "type": "positive",
+      "input": {
+        "niche": "Home",
+        "product": {
+          "product_name": "Example Storage Organizer",
+          "product_url": null,
+          "product_facts": {}
+        },
+        "campaign": {
+          "objective": "Product Awareness",
+          "stage": "Awareness",
+          "cta": "None"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Problem → Solution",
+          "angle": "Organization",
+          "duration_sec": 8,
+          "scene_count": 3,
+          "custom_instructions": null
+        },
+        "platform": ["Facebook Reels"]
+      },
+      "expected": {
+        "status": "PASS",
+        "errors": [],
+        "scene_count": 3,
+        "image_prompt_count": 3,
+        "video_prompt_count": 2,
+        "speech_mode": "silent_or_optional"
+      }
+    },
+    {
+      "id": "positive-fashion-talking-head",
+      "type": "positive",
+      "input": {
+        "niche": "Fashion",
+        "product": {
+          "product_name": "Example Knit Top",
+          "product_url": null,
+          "product_facts": {
+            "color": "cream"
+          }
+        },
+        "campaign": {
+          "objective": "Affiliate Conversion",
+          "stage": "Conversion",
+          "cta": "Shop Now"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Talking Head",
+          "angle": "Wardrobe Essential",
+          "duration_sec": 10,
+          "scene_count": 4,
+          "custom_instructions": null
+        },
+        "platform": ["TikTok", "Instagram Reels"]
+      },
+      "expected": {
+        "status": "PASS",
+        "errors": [],
+        "scene_count": 4,
+        "image_prompt_count": 4,
+        "video_prompt_count": 3,
+        "speech_mode": "spoken"
+      }
+    },
+    {
+      "id": "negative-missing-creator",
+      "type": "negative",
+      "input": {
+        "niche": "Fashion",
+        "product": {
+          "product_name": "Example Shirt"
+        },
+        "campaign": {
+          "objective": "Product Discovery",
+          "stage": "Consideration",
+          "cta": "View Product"
+        },
+        "creator": "UnknownCreator",
+        "content": {
+          "format": "Silent Mirror Selfie",
+          "angle": "Fit Check",
+          "duration_sec": 6,
+          "scene_count": 3
+        },
+        "platform": ["TikTok"]
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": ["CREATOR_NOT_FOUND"],
+        "scene_count": 0,
+        "image_prompt_count": 0,
+        "video_prompt_count": 0
+      }
+    },
+    {
+      "id": "negative-invalid-format-angle",
+      "type": "negative",
+      "input": {
+        "niche": "Fashion",
+        "product": {
+          "product_name": "Example Shirt"
+        },
+        "campaign": {
+          "objective": "Product Discovery",
+          "stage": "Consideration",
+          "cta": "View Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Product Application",
+          "angle": "Texture",
+          "duration_sec": 6,
+          "scene_count": 3
+        },
+        "platform": ["TikTok"]
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": ["INVALID_FORMAT_ANGLE"],
+        "scene_count": 0,
+        "image_prompt_count": 0,
+        "video_prompt_count": 0
+      }
+    },
+    {
+      "id": "negative-impossible-duration-density",
+      "type": "negative",
+      "input": {
+        "niche": "Beauty",
+        "product": {
+          "product_name": "Example Foundation"
+        },
+        "campaign": {
+          "objective": "Product Consideration",
+          "stage": "Consideration",
+          "cta": "Check the Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Tutorial",
+          "angle": "Transformation",
+          "duration_sec": 4,
+          "scene_count": 5
+        },
+        "platform": ["TikTok"]
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": ["INVALID_DURATION_SCENE_COUNT"],
+        "scene_count": 0,
+        "image_prompt_count": 0,
+        "video_prompt_count": 0
+      }
+    },
+    {
+      "id": "negative-silent-speech-conflict",
+      "type": "negative",
+      "input": {
+        "niche": "Fashion",
+        "product": {
+          "product_name": "Example Dress"
+        },
+        "campaign": {
+          "objective": "Product Awareness",
+          "stage": "Awareness",
+          "cta": "None"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Silent Mirror Selfie",
+          "angle": "Styling",
+          "duration_sec": 6,
+          "scene_count": 2,
+          "custom_instructions": "Add spoken dialogue and lip-sync."
+        },
+        "platform": ["TikTok"]
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": ["SPEECH_MODE_CONFLICT"],
+        "scene_count": 0,
+        "image_prompt_count": 0,
+        "video_prompt_count": 0
+      }
+    },
+    {
+      "id": "negative-product-conflict",
+      "type": "negative",
+      "input": {
+        "niche": "Beauty",
+        "product": {
+          "product_name": "Example Lip Product",
+          "product_url": "https://example.com/product",
+          "product_facts": {
+            "color": "red"
+          }
+        },
+        "campaign": {
+          "objective": "Product Consideration",
+          "stage": "Consideration",
+          "cta": "View Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Product Application",
+          "angle": "Shade / Color",
+          "duration_sec": 8,
+          "scene_count": 3
+        },
+        "platform": ["Instagram Reels"]
+      },
+      "fixture_setup": {
+        "mock_product_source": {
+          "color": "blue"
+        }
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": ["PRODUCT_CONFLICT"],
+        "scene_count": 0,
+        "image_prompt_count": 0,
+        "video_prompt_count": 0
+      }
+    },
+    {
+      "id": "negative-character-drift",
+      "type": "negative",
+      "input": {
+        "niche": "Fashion",
+        "product": {
+          "product_name": "Example Top"
+        },
+        "campaign": {
+          "objective": "Product Discovery",
+          "stage": "Consideration",
+          "cta": "View Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Outfit Showcase",
+          "angle": "Styling",
+          "duration_sec": 8,
+          "scene_count": 3
+        },
+        "platform": ["TikTok"]
+      },
+      "fixture_setup": {
+        "mock_generation_fault": "scene_03_character_identity_drift"
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": ["IDENTITY_DRIFT"],
+        "scene_count": 3,
+        "image_prompt_count": 3,
+        "video_prompt_count": 2
+      }
+    },
+    {
+      "id": "negative-product-teleportation",
+      "type": "negative",
+      "input": {
+        "niche": "Home",
+        "product": {
+          "product_name": "Example Desk Organizer"
+        },
+        "campaign": {
+          "objective": "Product Demonstration",
+          "stage": "Consideration",
+          "cta": "View Product"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Product Demo",
+          "angle": "Functionality",
+          "duration_sec": 8,
+          "scene_count": 3
+        },
+        "platform": ["Shopee Video"]
+      },
+      "fixture_setup": {
+        "mock_generation_fault": "scene_02_product_teleportation"
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": ["PRODUCT_DRIFT", "CONTINUITY_BREAK"],
+        "scene_count": 3,
+        "image_prompt_count": 3,
+        "video_prompt_count": 2
+      }
+    },
+    {
+      "id": "negative-unsupported-detail",
+      "type": "negative",
+      "input": {
+        "niche": "Beauty",
+        "product": {
+          "product_name": "Example Serum",
+          "product_facts": {}
+        },
+        "campaign": {
+          "objective": "Product Education",
+          "stage": "Consideration",
+          "cta": "Learn More"
+        },
+        "creator": "Rositasari",
+        "content": {
+          "format": "Talking Head",
+          "angle": "Skin Concern",
+          "duration_sec": 8,
+          "scene_count": 3
+        },
+        "platform": ["TikTok"]
+      },
+      "fixture_setup": {
+        "mock_generation_fault": "invented_clinical_claim"
+      },
+      "expected": {
+        "status": "BLOCK",
+        "errors": ["UNSUPPORTED_DETAIL"],
+        "scene_count": 3,
+        "image_prompt_count": 3,
+        "video_prompt_count": 2
+      }
+    }
+  ]
+}
