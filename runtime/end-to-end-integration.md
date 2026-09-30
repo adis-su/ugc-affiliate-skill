@@ -214,27 +214,6 @@ Every clip duration must be supported by the active model.
 
 ## Stage 9 — Creative Concept
 
-Approximate density:
-
-| Duration | Typical Scene Count |
-|---|---:|
-| 4 sec | 1–2 |
-| 6 sec | 2–3 |
-| 8 sec | 3–4 |
-| 10 sec | 4–5 |
-
-These are planning defaults, not permission to override explicit input.
-
-If the combination is physically implausible:
-
-- preserve the user's explicit count when possible,
-- simplify behavior,
-- reduce action density,
-- flag a warning,
-- only block when the requested sequence cannot be made coherent.
-
-## Stage 8 — Creative Concept
-
 Resolve one coherent concept from:
 
 1. campaign job,
