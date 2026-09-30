@@ -1,0 +1,60 @@
+"$schema": "https://json-schema.org/draft/2020-12/schema"
+title: Fashion UGC User Input
+type: object
+additionalProperties: false
+required: [product, campaign, creator, content, platform]
+properties:
+  product:
+    type: object
+    additionalProperties: false
+    required: [name, url]
+    properties:
+      name: {type: string, minLength: 1}
+      url: {type: string, format: uri}
+  campaign:
+    type: object
+    additionalProperties: false
+    required: [objective, stage, cta]
+    properties:
+      objective:
+        type: string
+        enum: [product_awareness, product_discovery, product_consideration, affiliate_conversion, product_launch, product_education, brand_product_introduction]
+      stage:
+        type: string
+        enum: [awareness, consideration, conversion]
+      cta:
+        type: string
+        minLength: 1
+  creator:
+    type: object
+    additionalProperties: false
+    required: [gender, age_range, appearance, body_type, style, reference]
+    properties:
+      gender: {type: string, minLength: 1}
+      age_range: {type: string, minLength: 1}
+      appearance: {type: string, minLength: 1}
+      body_type: {type: string, minLength: 1}
+      style: {type: string, minLength: 1}
+      reference: {}
+  content:
+    type: object
+    additionalProperties: false
+    required: [format, angle, duration, scene_count]
+    properties:
+      format: {type: string, minLength: 1}
+      angle: {type: string, minLength: 1}
+      duration:
+        type: object
+        additionalProperties: false
+        required: [value, unit]
+        properties:
+          value: {type: number, exclusiveMinimum: 0}
+          unit: {type: string, const: seconds}
+      scene_count:
+        oneOf:
+          - {type: string, const: auto}
+          - {type: integer, minimum: 1}
+  platform:
+    type: array
+    minItems: 1
+    items: {type: string, minLength: 1}
