@@ -68,6 +68,10 @@ The engine consumes six input groups.
 ### 3.4 Identity Sources
 
 - Character Identity Lock
+
+The Character Identity Lock is mandatory for every video transition. When the selected creator is Rositasari, the canonical source is `creators/rositasari.md` and the resolved Creator Library entry. Every Video Prompt must explicitly carry that same canonical identity anchor. A supplied character reference may condition generation, but it must not override the canonical Rositasari identity.
+
+The lock preserves defined identity attributes such as age, height, Southeast Asian visual appearance, hijab identity, facial features, skin characteristics, and other stable creator attributes. Scene State may change pose, gaze, expression, wardrobe, and temporary physical state without redefining the creator.
 - Character Reference
 - Product Identity Lock
 - Product Reference
@@ -928,7 +932,7 @@ Populate them only from:
 
 The generation prompt may be rendered as a natural-language paragraph after assembly, but the semantic field order must remain stable:
 
-`Starting State → Trigger → Creator Movement → Product Movement → Material Response → Camera Movement → Environment Response → Speech → Ending State → Continuity Lock → Forbidden Motion`
+`Character Identity Lock → Starting State → Trigger → Creator Movement → Product Movement → Material Response → Camera Movement → Environment Response → Speech → Ending State → Continuity Lock → Forbidden Motion`
 
 Do not add fields ad hoc per transition.
 
