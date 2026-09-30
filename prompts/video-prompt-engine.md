@@ -1,8 +1,10 @@
 # Video Prompt Engine Specification
 
-The Video Prompt Engine converts consecutive Scene States into one frame-to-frame video transition.
+The Video Prompt Engine converts consecutive Scene States into one frame-to-frame video transition and prepares that transition for the target video generator.
 
 It is the second final-output generation engine.
+
+The engine is generator-aware. Scene planning remains narrative; Clip Duration Planning resolves the requested total runtime into valid Google Flow generation durations without changing the scene state model.
 
 ## 1. Purpose
 
@@ -34,7 +36,7 @@ Causality has priority over visual spectacle.
 
 ## 3. Inputs
 
-The engine consumes five input groups.
+The engine consumes six input groups.
 
 ### 3.1 Starting Scene
 
@@ -80,6 +82,16 @@ The engine consumes five input groups.
 - Product interaction physics
 - Smartphone camera behavior
 - Natural environment movement
+
+### 3.6 Generation Constraints
+
+- Target total duration
+- Requested scene count
+- Generator / model
+- Supported clip durations
+- Clip count derived from scene transitions
+
+For the Google Flow target, use the active model's supported durations. Current Google Flow documentation lists 4s, 6s, and 8s for Veo 3.1 video generation, while Gemini Omni Flash 1.1 supports 4s, 6s, 8s, and 10s. The active model must remain the runtime source of truth.
 
 ## 4. Transition Model
 
@@ -527,9 +539,64 @@ Typical forbidden motion:
 - duplicated spoken script
 - speech in silent formats
 
-## 7. Temporal Rules
+## 7. Clip Duration Planning
 
-Motion density must respect duration.
+The requested campaign duration is not itself a Google Flow clip duration.
+
+### 7.1 Generator Rule
+
+Resolve:
+
+`TOTAL CAMPAIGN DURATION → VALID FLOW CLIP DURATIONS`
+
+Never invent a duration that the active Google Flow model does not expose.
+
+For the currently documented Google Flow models:
+
+| Model | Supported generation durations |
+|---|---|
+| Veo 3.1 Lite | 4s / 6s / 8s |
+| Veo 3.1 Fast | 4s / 6s / 8s |
+| Veo 3.1 Quality | 4s / 6s / 8s |
+| Gemini Omni Flash 1.1 | 4s / 6s / 8s / 10s |
+
+### 7.2 Scene vs Clip
+
+A **Scene** is a narrative / visual state.
+
+A **Clip** is one generation request sent to Google Flow.
+
+Therefore:
+
+`Scene ≠ Clip`
+
+The canonical relationship is:
+
+`N Scenes → N Image Prompts → N−1 Scene Transitions → Generator Clip Plan`
+
+The Clip Plan may use one generated clip for each transition, with the clip duration determined by the total-duration partition. It must not create fake 2s, 3s, 5s, 7s, or 9s Flow durations.
+
+### 7.3 Exact Partition Rule
+
+The planner must find an exact sum:
+
+`SUM(Clip Durations) = Target Total Duration`
+
+If no exact partition exists for the requested scene count and active generator, the request is invalid until the planner can reduce scene count, change the requested total duration, or use a supported generation workflow.
+
+Example:
+
+`18s + 5 scenes → 4 transitions → 4s + 4s + 4s + 6s = 18s`
+
+The last 6s clip carries the S04 → S05 transition. The S05 image remains the exact ending-state anchor; it does not need to be a separate 2s generation.
+
+### 7.4 Duration Selection
+
+Prefer an exact partition with balanced clip durations. Do not add filler scenes merely to make arithmetic work.
+
+### 7.5 Temporal Rules
+
+Motion density must respect the resolved clip duration.
 
 ### 4 Seconds
 
@@ -743,7 +810,9 @@ For N scenes:
 
 `Image Prompts = N`
 
-`Video Prompts = N - 1`
+`Scene Transition Prompts = N - 1`
+
+`Generated Flow Clips = resolved by the Clip Duration Plan`
 
 Examples:
 
@@ -754,6 +823,8 @@ Examples:
 - 5 scenes → 4 video prompts
 
 Never create a video prompt for a nonexistent transition.
+
+A transition prompt may carry a `CLIP DURATION` selected by the generator-aware duration planner. Scene count and generated clip count are separate concepts.
 
 ### 10.2 Required Output Shape
 
@@ -782,8 +853,14 @@ The final Video Prompt must use a stable, ordered transition structure so every 
 TRANSITION:
 {scene_a} → {scene_b}
 
+CLIP:
+{clip_id}
+
 DURATION:
-{duration}
+{clip_duration}
+
+TARGET TOTAL DURATION:
+{total_duration}
 
 STARTING STATE:
 - Creator: {creator_start}
@@ -858,7 +935,10 @@ Do not add fields ad hoc per transition.
 ### 11.3 Field Rules
 
 - `TRANSITION` identifies the exact consecutive scene pair.
-- `DURATION` constrains motion density.
+- `CLIP` identifies the Google Flow generation unit associated with the transition.
+- `DURATION` is the exact supported Google Flow clip duration.
+- `TARGET TOTAL DURATION` is the requested final assembled runtime.
+- Clip duration must come from the resolved generator duration plan.
 - `STARTING STATE` must match Scene N.
 - `TRIGGER` explains the cause of the required state change.
 - `CREATOR MOVEMENT` describes the dominant human motion.
@@ -898,6 +978,7 @@ User Input
 → Campaign Intelligence
 → Format × Angle
 → Duration / Scene Count
+→ Generator / Clip Duration Planning
 → Creative Logic
 → Scene Planning
 → Content Behavior
@@ -920,6 +1001,9 @@ The Video Prompt Engine only translates them into physically plausible motion.
 Throughout execution:
 
 - one scene pair → one Video Prompt
+- every generated clip uses a duration supported by the active Google Flow model
+- total generated clip duration exactly matches the requested campaign duration when exact generation is required
+- scene count and clip count are not treated as the same concept
 - starting state is anchored
 - ending state is anchored
 - every meaningful change has a cause
