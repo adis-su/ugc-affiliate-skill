@@ -1,0 +1,11 @@
+"$schema": "https://json-schema.org/draft/2020-12/schema"
+title: Product Consistency
+type: object
+additionalProperties: false
+required: [identity_lock, source_of_truth, scene_states, continuity_rules, high_risk_attributes]
+properties:
+  identity_lock: {type: object}
+  source_of_truth: {type: array, items: {type: string}}
+  scene_states: {type: array, items: {type: object}}
+  continuity_rules: {type: array, items: {type: string}}
+  high_risk_attributes: {type: array, items: {type: string}}
