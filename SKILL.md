@@ -2068,3 +2068,300 @@ The following must remain true throughout execution:
 - No unsupported factual invention.
 - Every state change has a physical or intentional cause.
 - Every final prompt maps to a defined scene state.
+
+
+## Input Schema & Request Contract
+
+The runtime accepts a structured UGC generation request. The schema below defines the canonical request contract before normalization.
+
+### Request Object
+
+| Field | Type | Required | Allowed / Default |
+|---|---|---:|---|
+| niche | enum | Yes | Fashion / Beauty / Home |
+| product | object | Yes | Product Name + optional Product URL |
+| campaign | object | Yes | Objective + Stage + CTA |
+| creator | enum | Yes | Rositasari |
+| content | object | Yes | Format + Angle + Duration + Scene Count |
+| platform | array | Yes | TikTok / Instagram Reels / Facebook Reels / Shopee Video |
+
+### Product Object
+
+| Field | Type | Required | Notes |
+|---|---|---:|---|
+| product_name | string | Yes | Human-readable product name |
+| product_url | string | No | Retrieved when supplied |
+| product_facts | object | No | User-supplied product facts; preserve as source facts |
+
+Rules:
+
+- product_name cannot be empty.
+- product_url is a retrieval source, not proof that every marketing claim on the page is factual.
+- product_facts may contain only facts explicitly supplied by the user.
+- Do not silently replace user-supplied product facts with retrieved claims when they conflict. Preserve the conflict for validation.
+
+### Campaign Object
+
+| Field | Type | Required | Allowed |
+|---|---|---:|---|
+| objective | enum | Yes | Product Awareness / Product Discovery / Product Consideration / Affiliate Conversion / Product Launch / Product Education / Brand / Product Introduction |
+| stage | enum | Yes | Awareness / Consideration / Conversion |
+| cta | enum or string | Yes | None / Soft CTA / Check the Product / Shop Now / View Product / Learn More / Custom CTA |
+
+Rules:
+
+- Objective and Stage are independent but must remain semantically plausible.
+- cta may be a supported option or a custom string.
+- Custom CTA must be preserved exactly before validation.
+
+### Creator Field
+
+creator must resolve to an entry in Creator Library.
+
+Current supported creator:
+
+- Rositasari
+
+Creator resolution must load:
+
+- Character Identity
+- Character Reference when available
+- Voice Identity when speech is used
+- Voice Reference when available
+
+Do not infer missing creator identity attributes from the creator name.
+
+### Content Object
+
+| Field | Type | Required | Allowed / Default |
+|---|---|---:|---|
+| format | enum | Yes | Niche-specific |
+| angle | enum | Yes | Niche-specific |
+| duration_sec | integer | Yes | 4 / 6 / 8 / 10, or custom integer |
+| scene_count | integer or Auto | Yes | Auto / 1–5, or custom integer when explicitly supported |
+| custom_instructions | string | No | Preserved exactly |
+
+### Fashion Format Values
+
+- Silent Mirror Selfie
+- Outfit Showcase
+- Try-On
+- GRWM
+- Talking Head
+- POV
+- Lifestyle
+- Before / After
+
+### Fashion Angle Values
+
+- Outfit Inspiration
+- Styling
+- Fit Check
+- Occasion-Based
+- Trend
+- Wardrobe Essential
+
+### Beauty Format Values
+
+- GRWM
+- Tutorial
+- Product Application
+- Before / After
+- Talking Head
+- Close-Up Demo
+- Routine
+- First Impression
+- POV
+
+### Beauty Angle Values
+
+- Shade / Color
+- Texture
+- Finish
+- Skin Concern
+- Makeup Look
+- Routine
+- Transformation
+
+### Home Format Values
+
+- Product Showcase
+- Room Makeover
+- Before / After
+- Lifestyle
+- POV
+- Problem → Solution
+- Unboxing
+- Product Demo
+- Routine
+
+### Home Angle Values
+
+- Space Improvement
+- Organization
+- Convenience
+- Aesthetic Upgrade
+- Problem Solving
+- Functionality
+- Before / After
+
+### Platform Field
+
+Supported platforms:
+
+- TikTok
+- Instagram Reels
+- Facebook Reels
+- Shopee Video
+
+Rules:
+
+- At least one platform is required.
+- Multiple platforms may be selected.
+- Platform selection does not change the core scene state.
+- Platform-specific output constraints may be applied later without changing product or creator identity.
+
+### Cross-Field Dependencies
+
+#### Niche → Format
+
+content.format must belong to the selected niche.
+
+#### Niche → Angle
+
+content.angle must belong to the selected niche.
+
+#### Format → Speech
+
+Formats that do not inherently require speech may still use speech when the content design explicitly calls for it.
+
+Silent formats must not contain spoken dialogue or voice-over.
+
+#### Creator → Voice
+
+Voice Identity is required only when speech or voice-over is used.
+
+#### Duration → Scene Count
+
+Default planning ranges:
+
+- 4 sec → 1–2 scenes
+- 6 sec → 2–3 scenes
+- 8 sec → 3–4 scenes
+- 10 sec → 4–5 scenes
+
+These are planning defaults, not absolute mathematical limits. Physical plausibility remains the final constraint.
+
+#### Campaign → CTA
+
+CTA behavior must remain compatible with the campaign objective and selected format.
+
+The runtime must not invent a CTA when cta = None.
+
+### Minimal Valid Request
+
+A request is structurally valid when it contains:
+
+- supported niche,
+- product name,
+- campaign objective,
+- campaign stage,
+- CTA,
+- supported creator,
+- supported format,
+- supported angle,
+- duration,
+- scene count,
+- at least one platform.
+
+### Canonical Request Example
+
+    niche: Fashion
+
+    product:
+      product_name: Example everyday knit top
+      product_url: null
+      product_facts:
+        color: neutral
+        use_case: everyday outfit
+
+    campaign:
+      objective: Product Discovery
+      stage: Consideration
+      cta: View Product
+
+    creator: Rositasari
+
+    content:
+      format: Silent Mirror Selfie
+      angle: Fit Check
+      duration_sec: 6
+      scene_count: 3
+      custom_instructions: "Keep the content casual and phone-shot."
+
+    platform:
+      - TikTok
+
+### Invalid Request Examples
+
+#### Invalid Creator
+
+    creator: Unknown Creator
+
+Result: Blocker. Creator cannot be resolved from Creator Library.
+
+#### Invalid Niche / Format Pair
+
+    niche: Beauty
+    content:
+      format: Silent Mirror Selfie
+
+Result: Blocker unless the runtime can make an unambiguous normalization supported by the contract.
+
+#### Unsupported Product Claim
+
+    product:
+      product_name: Example lip product
+      product_facts:
+        claim: "guarantees all-day wear"
+
+Result: The claim must not be presented as independently verified unless supported by retrieved or otherwise authoritative product information.
+
+### Normalization Rules
+
+Normalize only representation, never meaning.
+
+Allowed:
+
+- fashion → Fashion
+- instagram reels → Instagram Reels
+- 6 sec → duration_sec: 6
+- auto → scene_count: Auto
+- extra whitespace or capitalization differences
+
+Not allowed:
+
+- inventing a missing product name,
+- inventing creator identity details,
+- inventing product attributes,
+- silently changing a user's explicit format,
+- silently changing an explicit scene count,
+- silently changing an explicit CTA.
+
+### Request Validation Result
+
+Before creative generation, the runtime should internally produce:
+
+- normalized request,
+- validation status,
+- resolved niche,
+- resolved format,
+- resolved angle,
+- resolved creator,
+- resolved product source,
+- resolved duration,
+- resolved scene count,
+- validation blockers,
+- validation warnings.
+
+Only a request without Blockers may proceed to creative planning.
