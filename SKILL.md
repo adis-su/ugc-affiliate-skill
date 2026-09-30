@@ -449,3 +449,314 @@ Example:
 → inspect outfit → slight body turn → small garment adjustment → final mirror view
 
 The exact sequence may change based on the product, but the visual evidence must still prove the selected angle.
+
+
+# Scene Behavior Library
+
+The Scene Behavior Library converts a selected Format × Angle direction into a sequence of believable scene states.
+
+The library is a generation framework, not a fixed storyboard. Product type, campaign objective, duration, and scene count determine the final sequence.
+
+## Scene Design Rules
+
+Every scene has:
+
+- Purpose — why the scene exists
+- State — what is visibly true at that moment
+- Action — what the creator is doing
+- Product State — how the product is positioned or being used
+- Behavior Cue — small human behavior that makes the action believable
+- Camera State — approximate phone position and framing
+- Continuity Lock — attributes that must remain unchanged
+- Transition Intent — what naturally changes toward the next scene
+
+A scene should contain one dominant action. Avoid packing multiple unrelated actions into a single short scene.
+
+## Universal Scene Patterns
+
+### Reveal
+
+Use when the product or final result is initially hidden.
+
+context → reveal → inspect → reaction
+
+### Demonstration
+
+Use when the product's function or appearance needs to be shown.
+
+setup → interaction → visible result
+
+### Problem → Solution
+
+Use when the angle depends on solving a visible problem.
+
+problem state → product interaction → improved state
+
+### Transformation
+
+Use for Before / After and makeover-style content.
+
+before state → transition action → after state
+
+### Inspection
+
+Use for fit, texture, finish, detail, and first-impression content.
+
+initial view → inspect / interact → closer evidence → reaction
+
+### Routine
+
+Use when the product naturally belongs inside a repeated activity.
+
+routine context → product use → completed routine
+
+### Selection
+
+Use when the creator chooses among items or prepares a look.
+
+options → selection → use → result
+
+## Scene Count Adaptation
+
+### 1 Scene
+
+Use one complete visual beat.
+
+Structure:
+
+context + action + evidence
+
+Do not attempt a full transformation or multi-step tutorial in one scene.
+
+### 2 Scenes
+
+Use:
+
+setup → result
+
+or:
+
+before → after
+
+or:
+
+interaction → reaction
+
+### 3 Scenes
+
+Default structure:
+
+setup → interaction → result
+
+This is the preferred structure for many 6–8 second UGC concepts.
+
+### 4 Scenes
+
+Use:
+
+hook → interaction → detail / proof → result
+
+Keep each action extremely simple.
+
+### 5 Scenes
+
+Use:
+
+hook → setup → interaction → detail / reaction → result
+
+Five scenes should only be used when the actions can remain visually simple. More scenes do not automatically create better content.
+
+## Duration Adaptation
+
+Approximate pacing guidance:
+
+| Duration | Scene Count | Behavior Density |
+|---|---:|---|
+| 4 sec | 1–2 | One clear action |
+| 6 sec | 2–3 | Simple sequence |
+| 8 sec | 3–4 | Demonstration or reveal |
+| 10 sec | 4–5 | Short narrative sequence |
+
+If the requested combination exceeds realistic human movement speed, reduce behavior density before adding more visual complexity.
+
+## Scene State Model
+
+Track these states across scenes.
+
+### Creator State
+
+- Position
+- Orientation
+- Pose
+- Facial expression
+- Hand position
+- Hair state
+- Clothing state
+- Makeup state
+
+### Product State
+
+- Location
+- Orientation
+- Held / worn / placed state
+- Open / closed state
+- Applied / unapplied state
+- Visible features
+- Interaction state
+
+### Environment State
+
+- Location
+- Major object placement
+- Lighting direction
+- Background geometry
+- Relevant environmental movement
+
+### Camera State
+
+- Phone position
+- Orientation
+- Framing
+- Approximate distance
+- Perspective
+- Handheld / supported state
+
+A transition may change a state only when the movement between the two scenes explains the change.
+
+## Transition Patterns
+
+### Body Transition
+
+neutral stance → weight shift → turn → new stance
+
+Use for fashion and mirror content.
+
+### Hand Transition
+
+hand at rest → reach → grip → interact → release / reposition
+
+Use for product demonstrations and routines.
+
+### Camera Transition
+
+stable frame → slight handheld reframing → new composition
+
+Use when a creator naturally repositions a phone.
+
+Avoid unexplained camera jumps.
+
+### Product Transition
+
+visible → picked up → used → placed
+
+or:
+
+worn → adjusted → inspected
+
+or:
+
+closed → opened → used
+
+Every product-state change must have a plausible physical cause.
+
+### Facial Transition
+
+neutral → attention → subtle reaction
+
+Avoid exaggerated expression changes unless explicitly requested.
+
+## Silent Behavior Patterns
+
+Silent formats should use visible intention rather than empty posing.
+
+Useful patterns:
+
+- Notice → inspect → react
+- Pick up → inspect → use
+- Look → adjust → reveal
+- Reach → place → step back → inspect
+- Compare → choose → use
+- Before → interact → after
+
+Choose the smallest sequence that communicates the angle.
+
+## Spoken Behavior Patterns
+
+For talking formats, visual behavior supports the spoken point.
+
+Use:
+
+look at camera → speak → demonstrate / gesture → finish
+
+The creator should not perform complex physical actions while delivering dense dialogue.
+
+Voice Identity controls how the speech sounds. Scene Behavior controls what the creator visibly does.
+
+## Niche Behavior Priorities
+
+### Fashion
+
+Prefer:
+
+- mirror inspection
+- small body turns
+- garment adjustments
+- natural walking
+- accessory interaction
+- looking at fit rather than posing continuously
+
+Avoid:
+
+- runway behavior
+- exaggerated model poses
+- unexplained outfit changes
+
+### Beauty
+
+Prefer:
+
+- product pickup
+- opening / closing packaging
+- controlled application
+- mirror inspection
+- subtle facial reaction
+- showing finish under plausible light
+
+Avoid:
+
+- impossible application paths
+- excessive face movement
+- instant unexplained makeup transformations
+
+### Home
+
+Prefer:
+
+- reaching
+- placing
+- organizing
+- operating
+- stepping back to inspect
+- ordinary household movement
+
+Avoid:
+
+- objects appearing from nowhere
+- impossible object movement
+- room geometry changes between scenes
+
+## Scene Behavior Output
+
+For every planned scene, internally resolve:
+
+Scene Purpose → Scene State → Action → Product State → Behavior Cue → Camera State → Continuity Lock → Transition Intent
+
+Then use that resolved state to build the Image Prompt.
+
+For every consecutive pair, use:
+
+Starting State + Physical Action + Ending State
+
+to build the Frame-to-Frame Video Prompt.
+
+Do not generate the Image Prompt and Video Prompt independently. Both must derive from the same scene state model.
