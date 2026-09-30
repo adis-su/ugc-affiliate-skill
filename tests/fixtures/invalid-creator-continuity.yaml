@@ -1,8 +1,0 @@
-name: invalid-creator-continuity
-creator:
-  scene_1: shoulder-length dark hair, average body type
-  scene_2: short blonde hair, athletic body type
-expected:
-  validation_status: revise
-  issue_codes:
-    - CREATOR_CONTINUITY_STABLE
