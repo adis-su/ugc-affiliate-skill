@@ -23,7 +23,7 @@ export class RealVoiceProviderAdapter {
   async generateVoice(request) {
     const config = this.configStatus();
     if (!config.valid) return { status: "BLOCK", provider: this.provider, request_id: request?.request_id, error: { code: config.code, stage: "voice_generation", severity: "BLOCKER", message: "Real voice provider configuration is incomplete.", missing: config.missing } };
-    if (!request?.request_id || !request?.text || !Array.isArray(request.references) || !request.references.some((reference) => reference?.type === "voice")) return { status: "BLOCK", provider: this.provider, error: { code: "REQUEST_INVALID", stage: "voice_generation", severity: "BLOCKER", message: "Real voice generation requires request_id, text, and an approved voice reference." } };
+    if (!request?.request_id || !request?.text || !Array.isArray(request.references)) return { status: "BLOCK", provider: this.provider, error: { code: "REQUEST_INVALID", stage: "voice_generation", severity: "BLOCKER", message: "Real voice generation requires request_id, text, and a voice identity." } };
     try {
       const response = await this.fetchImpl(this.apiUrl, { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + this.apiKey }, body: JSON.stringify({ model: this.model, text: request.text, voice_identity: request.voice_identity ?? null, references: request.references, options: request.options ?? {} }) });
       if (!response?.ok) return { status: "BLOCK", provider: this.provider, request_id: request.request_id, error: { code: "REQUEST_FAILED", stage: "voice_generation", severity: "BLOCKER", message: "Voice provider request failed with HTTP " + (response?.status ?? "unknown") + "." } };
