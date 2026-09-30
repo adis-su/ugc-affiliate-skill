@@ -149,7 +149,7 @@ Current supported creator:
 
 Resolve the creator from the Creator Library. Do not infer creator identity from the name alone.
 
-Creator Identity and Character Reference govern visual continuity. Voice Identity and Voice Reference govern spoken continuity.
+Rositasari Character Identity governs visual continuity. Rositasari Voice Identity governs spoken continuity. References may be used as optional conditioning inputs when available.
 
 #### Step 8 — Speech
 
@@ -159,7 +159,7 @@ Determine whether the content is:
 
 For silent content, do not generate dialogue, voice-over, or lip-sync.
 
-For spoken content, Voice Identity and an approved Voice Reference are required for production voice generation. If the approved Voice Reference is missing, return a structured blocker rather than fabricating one.
+For spoken content, use the Rositasari Voice Identity as the source of truth for spoken delivery. A voice reference may be used when available, but it is not an approval gate.
 
 ### Input State
 
@@ -2962,7 +2962,7 @@ The runtime must never enrich a creator by inventing personal, physical, or voca
 Use creator information in this priority order:
 
 1. Explicit creator identity fields in the Creator Library.
-2. Character Reference or Voice Reference supplied by the creator record.
+2. Optional Character Reference or Voice Reference supplied by the creator record.
 3. Directly observable attributes from an approved creator reference.
 4. Creative choices that do not assert identity facts.
 5. Unknown.
@@ -3017,7 +3017,7 @@ Voice Identity is only required when spoken dialogue or voice-over is used.
 
 ### Character Reference Handling
 
-The Character Reference is the visual anchor for creator continuity when available.
+Character Identity is the visual anchor for creator continuity. A Character Reference may strengthen visual conditioning when available.
 
 Rules:
 
@@ -3033,7 +3033,7 @@ A missing reference reduces visual anchoring strength. It does not authorize ide
 
 ### Voice Reference Handling
 
-The Voice Reference is the audio anchor for spoken continuity when available.
+Voice Identity is the audio source of truth for spoken continuity. A Voice Reference may strengthen audio conditioning when available.
 
 Rules:
 
