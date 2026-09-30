@@ -27,6 +27,59 @@ const blockedOutput = (validation) => ({
   validation
 });
 
+const GOOGLE_FLOW_DURATIONS = [4, 6, 8, 10];
+
+function planFlowClipDurations(totalDurationSec, transitionCount, allowedDurations = GOOGLE_FLOW_DURATIONS) {
+  if (!Number.isInteger(totalDurationSec) || totalDurationSec <= 0) {
+    return { status: "BLOCK", reason: "TOTAL_DURATION_INVALID", durations: [] };
+  }
+  if (transitionCount === 0) {
+    return allowedDurations.includes(totalDurationSec)
+      ? { status: "PASS", durations: [totalDurationSec], total_duration_sec: totalDurationSec }
+      : { status: "BLOCK", reason: "TOTAL_DURATION_NOT_GENERATABLE", durations: [] };
+  }
+  const options = [...allowedDurations].sort((a, b) => a - b);
+  const memo = new Map();
+  function solve(remaining, slots) {
+    const key = String(remaining) + ":" + String(slots);
+    if (memo.has(key)) return memo.get(key);
+    if (slots === 0) return remaining === 0 ? [] : null;
+    if (remaining < options[0] * slots || remaining > options[options.length - 1] * slots) return null;
+    const candidates = [];
+    for (const duration of options) {
+      const rest = solve(remaining - duration, slots - 1);
+      if (rest) candidates.push([duration, ...rest]);
+    }
+    if (!candidates.length) {
+      memo.set(key, null);
+      return null;
+    }
+    candidates.sort((a, b) => {
+      const spreadA = Math.max(...a) - Math.min(...a);
+      const spreadB = Math.max(...b) - Math.min(...b);
+      if (spreadA !== spreadB) return spreadA - spreadB;
+      return a.join(",").localeCompare(b.join(","));
+    });
+    memo.set(key, candidates[0]);
+    return candidates[0];
+  }
+  const durations = solve(totalDurationSec, transitionCount);
+  if (!durations) return { status: "BLOCK", reason: "NO_EXACT_FLOW_PARTITION", durations: [], allowed_durations: options };
+  return { status: "PASS", durations, allowed_durations: options, total_duration_sec: durations.reduce((sum, value) => sum + value, 0), transition_count: transitionCount };
+}
+
+function resolveFlowTimeline(input) {
+  const sceneCount = input.content.scene_count;
+  const transitionCount = Math.max(sceneCount - 1, 0);
+  return {
+    generator: "Google Flow",
+    model_duration_options: GOOGLE_FLOW_DURATIONS,
+    scene_count: sceneCount,
+    transition_count: transitionCount,
+    ...planFlowClipDurations(input.content.duration_sec, transitionCount)
+  };
+}
+
 function isSpeechRequested(input) {
   return /speech|spoken|dialogue|lip-sync|voice[- ]?over/i.test(input?.content?.custom_instructions ?? "");
 }
@@ -132,13 +185,13 @@ export function validateRequest(input) {
     blockers.push(blocker("INVALID_FORMAT_ANGLE", "creative", `Angle is not supported by ${input.niche}: ${input.content.angle}`, "content.angle"));
   }
 
-  const [min, max] = SCENE_LIMITS[input.content?.duration_sec] ?? [null, null];
-  if (min !== null && typeof input.content.scene_count === "number" &&
-      (input.content.scene_count < min || input.content.scene_count > max)) {
+  const flowTimeline = resolveFlowTimeline(input);
+  if (flowTimeline.status === "BLOCK") {
     blockers.push(blocker(
-      "INVALID_DURATION_SCENE_COUNT", "scene-planning",
-      `Duration ${input.content.duration_sec}s supports ${min}–${max} scenes, received ${input.content.scene_count}.`,
-      "content.scene_count"
+      "INVALID_FLOW_TIMELINE", "duration-planning",
+      `Target duration ${input.content.duration_sec}s cannot be partitioned into ${flowTimeline.transition_count} Google Flow transition clips using supported durations (4s, 6s, 8s, 10s).`,
+      "content.duration_sec",
+      "Reduce or merge scene boundaries, change the target duration, or use a supported generation workflow."
     ));
   }
 
@@ -272,14 +325,20 @@ function buildImagePrompts(scenes, input, product, campaign, concept) {
   }));
 }
 
-function buildVideoPrompts(scenes, input, product) {
+function buildVideoPrompts(scenes, input, product, flowTimeline) {
   return scenes.slice(0, -1).map((from, index) => {
     const to = scenes[index + 1];
     return {
       transition_id: `${from.scene_id}_to_${to.scene_id}`,
       from_scene: from.scene_id,
       to_scene: to.scene_id,
+      clip_id: "clip_" + String(index + 1).padStart(2, "0"),
+      duration_sec: flowTimeline.durations[index],
+      target_total_duration_sec: input.content.duration_sec,
       prompt: [
+        `Clip: clip_${String(index + 1).padStart(2, "0")}`,
+        `Duration: ${flowTimeline.durations[index]} seconds`,
+        `Target Total Duration: ${input.content.duration_sec} seconds`,
         `Starting Frame Anchor: exact visual state of ${from.scene_id}`,
         `Physical Cause: ${to.transition_cause}`,
         `Human Movement: one primary movement from ${from.behavior_cue} to ${to.behavior_cue}`,
@@ -461,7 +520,8 @@ export async function runAsync(input, options = {}) {
     scene.product_consistency = nicheKnowledge.product_consistency;
   }
   const images = buildImagePrompts(scenes, input, product, campaign, concept);
-  const videos = buildVideoPrompts(scenes, input, product);
+  const flowTimeline = resolveFlowTimeline(input);
+  const videos = buildVideoPrompts(scenes, input, product, flowTimeline);
   const fault = input.fixture_setup?.mock_generation_fault;
   const generationBlockers = [];
 
@@ -499,6 +559,7 @@ export async function runAsync(input, options = {}) {
     scene_plan: scenes,
     image_prompts: images,
     video_prompts: videos,
+    flow_timeline: flowTimeline,
     ...(spoken ? { spoken_script: buildSpokenScript(input, scenes, campaignIntelligence(input, product), creator) } : {}),
     ...(SILENT_FORMATS.has(input.content.format) ? { silent_behavior_script: buildSilentBehaviorScript(input, scenes) } : {}),
     validation: {
@@ -567,11 +628,12 @@ function runCoreSync(input) {
   const scenes = buildSceneStates(input, product, campaign, concept);
   for (const scene of scenes) { scene.creator_identity = creator.character_identity_lock; scene.voice_identity = speechMode(input) === "spoken" ? creator.voice_identity_lock : null; scene.niche_realism = nicheKnowledge.human_realism; scene.product_consistency = nicheKnowledge.product_consistency; }
   const images = buildImagePrompts(scenes, input, product, campaign, concept);
-  const videos = buildVideoPrompts(scenes, input, product);
-  return buildResult(input, product, concept, scenes, images, videos, creator, nicheKnowledge);
+  const flowTimeline = resolveFlowTimeline(input);
+  const videos = buildVideoPrompts(scenes, input, product, flowTimeline);
+  return buildResult(input, product, concept, scenes, images, videos, creator, nicheKnowledge, flowTimeline);
 }
 
-function buildResult(input, product, concept, scenes, images, videos, creator, nicheKnowledge) {
+function buildResult(input, product, concept, scenes, images, videos, creator, nicheKnowledge, flowTimeline) {
   const generationBlockers = [];
   const spoken = speechMode(input) === "spoken";
   if (input.fixture_setup?.mock_generation_fault === "scene_03_character_identity_drift") generationBlockers.push(blocker("IDENTITY_DRIFT", "validation", "Character identity changed between scene states.", "scene_03"));
@@ -581,7 +643,7 @@ function buildResult(input, product, concept, scenes, images, videos, creator, n
   }
   if (input.fixture_setup?.mock_generation_fault === "invented_clinical_claim") generationBlockers.push(blocker("UNSUPPORTED_DETAIL", "validation", "Generated content contains a product claim not supported by Product Intelligence.", "product"));
 
-  const result = { creative_summary: { niche: input.niche, product: input.product.product_name, campaign_objective: input.campaign.objective, campaign_stage: input.campaign.stage, cta: input.campaign.cta, creator: input.creator, format: input.content.format, angle: input.content.angle, duration_sec: input.content.duration_sec, scene_count: input.content.scene_count, creative_concept: concept.core_idea }, scene_plan: scenes, image_prompts: images, video_prompts: videos, ...(spoken ? { spoken_script: buildSpokenScript(input, scenes, campaign, creator) } : {}), ...(SILENT_FORMATS.has(input.content.format) ? { silent_behavior_script: buildSilentBehaviorScript(input, scenes) } : {}), validation: { ...baseValidation(generationBlockers.length ? "BLOCK" : "PASS", generationBlockers), contract_checks: ["request_validation","product_intelligence","campaign_intelligence","creative_concept","scene_state_model","image_prompt_count","video_prompt_count","character_identity_lock","character_reference_status","voice_identity_lock","product_identity_lock","product_source_provenance","speech_mode"], output_counts: { scene_plan: scenes.length, image_prompts: images.length, video_prompts: videos.length }, continuity_checks: ["scene-to-scene character continuity","scene-to-scene product continuity","scene-to-scene environment continuity"] } };
+  const result = { flow_timeline: flowTimeline, creative_summary: { niche: input.niche, product: input.product.product_name, campaign_objective: input.campaign.objective, campaign_stage: input.campaign.stage, cta: input.campaign.cta, creator: input.creator, format: input.content.format, angle: input.content.angle, duration_sec: input.content.duration_sec, scene_count: input.content.scene_count, creative_concept: concept.core_idea }, scene_plan: scenes, image_prompts: images, video_prompts: videos, ...(spoken ? { spoken_script: buildSpokenScript(input, scenes, campaign, creator) } : {}), ...(SILENT_FORMATS.has(input.content.format) ? { silent_behavior_script: buildSilentBehaviorScript(input, scenes) } : {}), validation: { ...baseValidation(generationBlockers.length ? "BLOCK" : "PASS", generationBlockers), contract_checks: ["request_validation","product_intelligence","campaign_intelligence","creative_concept","scene_state_model","image_prompt_count","video_prompt_count","character_identity_lock","character_reference_status","voice_identity_lock","product_identity_lock","product_source_provenance","speech_mode"], output_counts: { scene_plan: scenes.length, image_prompts: images.length, video_prompts: videos.length, flow_clips: flowTimeline.durations.length }, continuity_checks: ["scene-to-scene character continuity","scene-to-scene product continuity","scene-to-scene environment continuity"] } };
   const repairPass = validateAndRepair(result, input); result.validation.repair_actions = repairPass.repairs; result.validation.revalidation = { executed: true, initial_blockers_detected: repairPass.initialBlockers.length > 0, remaining_blockers: repairPass.blockers.map(item => item.code) }; if (repairPass.blockers.length) { result.validation.status = "BLOCK"; result.validation.blockers.push(...repairPass.blockers); } return result;
 }
 
