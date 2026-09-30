@@ -37,7 +37,59 @@ function speechMode(input) {
   return isSpeechRequested(input) ? "spoken" : "silent_or_optional";
 }
 
-function validateCreatorIdentity(creator, input) {\n  const blockers = [];\n  const speech = speechMode(input) === "spoken";\n  const hasCharacterReference = creator.character_reference_status === "available";\n  const hasVoiceReference = creator.voice_reference_status === "available";\n  if (!hasCharacterReference) {\n    blockers.push(blocker("CREATOR_IDENTITY_INSUFFICIENT", "creator", "Character identity reference is required for visual generation.", "creator_identity.character.reference", "Provide an approved Character Reference for the creator."));\n  }\n  if (speech && !hasVoiceReference) {\n    blockers.push(blocker("VOICE_IDENTITY_INSUFFICIENT", "creator", "Voice identity reference is required when spoken content is generated.", "creator_identity.voice.voice_reference", "Provide an approved Voice Reference for spoken content."));\n  }\n  return blockers;\n}\n\nexport function validateRequest(input) {
+function buildSpokenScript(input, scenes, campaign, creator) {
+  const duration = input.content.duration_sec;
+  const targetWords = Math.max(6, Math.floor(duration * 2.2));
+  const evidence = campaign.required_evidence.join(", ");
+  const voice = creator.voice_identity_lock;
+  const lines = scenes.map((scene, index) => {
+    const cue = index === 0 ? "hook" : index === scenes.length - 1 ? "result" : "evidence";
+    const text = cue === "hook"
+      ? `Ini ${input.product.product_name}, aku lagi lihat ${evidence}.`
+      : cue === "result"
+        ? `Hasilnya kelihatan jelas, jadi kamu bisa lihat produknya seperti apa.`
+        : `Bagian ini yang paling kelihatan saat produknya dipakai.`;
+    return { scene_id: scene.scene_id, text };
+  });
+  const wordCount = lines.reduce((sum, line) => sum + line.text.trim().split(/\s+/).length, 0);
+  return {
+    status: "READY",
+    voice_identity_lock: voice,
+    duration_sec: duration,
+    target_word_count: targetWords,
+    word_count: wordCount,
+    duration_fit: wordCount <= Math.ceil(targetWords * 1.25),
+    lines
+  };
+}
+
+function buildSilentBehaviorScript(input, scenes) {
+  return {
+    sequence: scenes.map(scene => scene.behavior_cue).join(" → "),
+    scenes: scenes.map(scene => ({
+      scene_id: scene.scene_id,
+      behavior: scene.behavior_cue,
+      speech: "none",
+      lip_sync: "none"
+    }))
+  };
+}
+
+function validateCreatorIdentity(creator, input) {
+  const blockers = [];
+  const speech = speechMode(input) === "spoken";
+  const hasCharacterReference = creator.character_reference_status === "available";
+  const hasVoiceReference = creator.voice_reference_status === "available";
+  if (!hasCharacterReference) {
+    blockers.push(blocker("CREATOR_IDENTITY_INSUFFICIENT", "creator", "Character identity reference is required for visual generation.", "creator_identity.character.reference", "Provide an approved Character Reference for the creator."));
+  }
+  if (speech && !hasVoiceReference) {
+    blockers.push(blocker("VOICE_IDENTITY_INSUFFICIENT", "creator", "Voice identity reference is required when spoken content is generated.", "creator_identity.voice.voice_reference", "Provide an approved Voice Reference for spoken content."));
+  }
+  return blockers;
+}
+
+export function validateRequest(input) {
   const blockers = [];
   if (!input || typeof input !== "object") {
     return [blocker("INVALID_INPUT", "normalize", "Request must be an object.")];
@@ -342,7 +394,9 @@ export async function runAsync(input, options = {}) {
     });
   }
 
-  const creator = retrieveCreatorIntelligence(creatorBase, input);\n  const creatorBlockers = validateCreatorIdentity(creator, input);\n  if (creatorBlockers.length) return blockedOutput({ ...baseValidation("BLOCK", creatorBlockers), contract_checks: ["creator_identity_resolution"] });\n  const creatorBlockers = validateCreatorIdentity(creator, input);\n  if (creatorBlockers.length) return blockedOutput({ ...baseValidation("BLOCK", creatorBlockers), contract_checks: ["creator_identity_resolution"] });
+  const creator = retrieveCreatorIntelligence(creatorBase, input);
+  const creatorBlockers = validateCreatorIdentity(creator, input);
+  if (creatorBlockers.length) return blockedOutput({ ...baseValidation("BLOCK", creatorBlockers), contract_checks: ["creator_identity_resolution"] });
 
   const nicheKnowledge = resolveNiche(input.niche);
   if (nicheKnowledge.blocker) {
@@ -403,8 +457,8 @@ export async function runAsync(input, options = {}) {
     scene_plan: scenes,
     image_prompts: images,
     video_prompts: videos,
-    ...(spoken ? { spoken_script: { status: "PENDING_SCRIPT_ENGINE" } } : {}),
-    ...(SILENT_FORMATS.has(input.content.format) ? { silent_behavior_script: { sequence: "notice → inspect → reveal" } } : {}),
+    ...(spoken ? { spoken_script: buildSpokenScript(input, scenes, campaignIntelligence(input, product), creator) } : {}),
+    ...(SILENT_FORMATS.has(input.content.format) ? { silent_behavior_script: buildSilentBehaviorScript(input, scenes) } : {}),
     validation: {
       ...baseValidation(generationBlockers.length ? "BLOCK" : "PASS", generationBlockers),
       contract_checks: [
@@ -442,6 +496,45 @@ export async function runAsync(input, options = {}) {
   return result;
 }
 
-export function run(input) {\n  const requestBlockers = validateRequest(input);\n  if (requestBlockers.length) return runBlockedSync(requestBlockers);\n  return runCoreSync(input);\n}\n\nfunction runBlockedSync(blockers) {\n  return blockedOutput({ ...baseValidation("BLOCK", blockers), contract_checks: ["request_validation"] });\n}\n\nfunction runCoreSync(input) {\n  const product = resolveProduct(input);\n  if (product.blocker) return blockedOutput({ ...baseValidation("BLOCK", [product.blocker]), contract_checks: ["product_source_conflict"] });\n  const creatorBase = resolveCreator(input.creator);\n  if (creatorBase.blocker) return blockedOutput({ ...baseValidation("BLOCK", [creatorBase.blocker]), contract_checks: ["creator_resolution"] });\n  const creator = retrieveCreatorIntelligence(creatorBase, input);\n  const nicheKnowledge = resolveNiche(input.niche);\n  if (nicheKnowledge.blocker) return blockedOutput({ ...baseValidation("BLOCK", [nicheKnowledge.blocker]), contract_checks: ["niche_resolution"] });\n  const creativeKnowledge = resolveCreativeKnowledge(input);\n  const campaign = campaignIntelligence(input, product);\n  const concept = creativeConcept(input, campaign);\n  concept.decision_hierarchy = creativeKnowledge.rules.decision_hierarchy;\n  concept.behavior_pattern = creativeKnowledge.behavior.sequence;\n  const scenes = buildSceneStates(input, product, campaign, concept);\n  for (const scene of scenes) { scene.creator_identity = creator.character_identity_lock; scene.voice_identity = speechMode(input) === "spoken" ? creator.voice_identity_lock : null; scene.niche_realism = nicheKnowledge.human_realism; scene.product_consistency = nicheKnowledge.product_consistency; }\n  const images = buildImagePrompts(scenes, input, product, campaign, concept);\n  const videos = buildVideoPrompts(scenes, input, product);\n  return buildResult(input, product, concept, scenes, images, videos, creator, nicheKnowledge);\n}\n\nfunction buildResult(input, product, concept, scenes, images, videos, creator, nicheKnowledge) {\n  const generationBlockers = [];\n  const spoken = speechMode(input) === "spoken";\n  const result = { creative_summary: { niche: input.niche, product: input.product.product_name, campaign_objective: input.campaign.objective, campaign_stage: input.campaign.stage, cta: input.campaign.cta, creator: input.creator, format: input.content.format, angle: input.content.angle, duration_sec: input.content.duration_sec, scene_count: input.content.scene_count, creative_concept: concept.core_idea }, scene_plan: scenes, image_prompts: images, video_prompts: videos, ...(spoken ? { spoken_script: { status: "PENDING_SCRIPT_ENGINE" } } : {}), ...(SILENT_FORMATS.has(input.content.format) ? { silent_behavior_script: { sequence: "notice → inspect → reveal" } } : {}), validation: { ...baseValidation(generationBlockers.length ? "BLOCK" : "PASS", generationBlockers), contract_checks: ["request_validation","product_intelligence","campaign_intelligence","creative_concept","scene_state_model","image_prompt_count","video_prompt_count","character_identity_lock","character_reference_status","voice_identity_lock","product_identity_lock","product_source_provenance","speech_mode"], output_counts: { scene_plan: scenes.length, image_prompts: images.length, video_prompts: videos.length }, continuity_checks: ["scene-to-scene character continuity","scene-to-scene product continuity","scene-to-scene environment continuity"] } };\n  const repairPass = validateAndRepair(result, input); result.validation.repair_actions = repairPass.repairs; result.validation.revalidation = { executed: true, initial_blockers_detected: repairPass.repairs.length > 0, remaining_blockers: repairPass.blockers.map(item => item.code) }; if (repairPass.blockers.length) { result.validation.status = "BLOCK"; result.validation.blockers.push(...repairPass.blockers); } return result;\n}\n\nexport function expectedVideoPromptCount(sceneCount) {
+export function run(input) {
+  const requestBlockers = validateRequest(input);
+  if (requestBlockers.length) return runBlockedSync(requestBlockers);
+  return runCoreSync(input);
+}
+
+function runBlockedSync(blockers) {
+  return blockedOutput({ ...baseValidation("BLOCK", blockers), contract_checks: ["request_validation"] });
+}
+
+function runCoreSync(input) {
+  const product = resolveProduct(input);
+  if (product.blocker) return blockedOutput({ ...baseValidation("BLOCK", [product.blocker]), contract_checks: ["product_source_conflict"] });
+  const creatorBase = resolveCreator(input.creator);
+  if (creatorBase.blocker) return blockedOutput({ ...baseValidation("BLOCK", [creatorBase.blocker]), contract_checks: ["creator_resolution"] });
+  const creator = retrieveCreatorIntelligence(creatorBase, input);
+  const creatorBlockers = validateCreatorIdentity(creator, input);
+  if (creatorBlockers.length) return blockedOutput({ ...baseValidation("BLOCK", creatorBlockers), contract_checks: ["creator_identity_resolution"] });
+  const nicheKnowledge = resolveNiche(input.niche);
+  if (nicheKnowledge.blocker) return blockedOutput({ ...baseValidation("BLOCK", [nicheKnowledge.blocker]), contract_checks: ["niche_resolution"] });
+  const creativeKnowledge = resolveCreativeKnowledge(input);
+  const campaign = campaignIntelligence(input, product);
+  const concept = creativeConcept(input, campaign);
+  concept.decision_hierarchy = creativeKnowledge.rules.decision_hierarchy;
+  concept.behavior_pattern = creativeKnowledge.behavior.sequence;
+  const scenes = buildSceneStates(input, product, campaign, concept);
+  for (const scene of scenes) { scene.creator_identity = creator.character_identity_lock; scene.voice_identity = speechMode(input) === "spoken" ? creator.voice_identity_lock : null; scene.niche_realism = nicheKnowledge.human_realism; scene.product_consistency = nicheKnowledge.product_consistency; }
+  const images = buildImagePrompts(scenes, input, product, campaign, concept);
+  const videos = buildVideoPrompts(scenes, input, product);
+  return buildResult(input, product, concept, scenes, images, videos, creator, nicheKnowledge);
+}
+
+function buildResult(input, product, concept, scenes, images, videos, creator, nicheKnowledge) {
+  const generationBlockers = [];
+  const spoken = speechMode(input) === "spoken";
+  const result = { creative_summary: { niche: input.niche, product: input.product.product_name, campaign_objective: input.campaign.objective, campaign_stage: input.campaign.stage, cta: input.campaign.cta, creator: input.creator, format: input.content.format, angle: input.content.angle, duration_sec: input.content.duration_sec, scene_count: input.content.scene_count, creative_concept: concept.core_idea }, scene_plan: scenes, image_prompts: images, video_prompts: videos, ...(spoken ? { spoken_script: { status: "PENDING_SCRIPT_ENGINE" } } : {}), ...(SILENT_FORMATS.has(input.content.format) ? { silent_behavior_script: { sequence: "notice → inspect → reveal" } } : {}), validation: { ...baseValidation(generationBlockers.length ? "BLOCK" : "PASS", generationBlockers), contract_checks: ["request_validation","product_intelligence","campaign_intelligence","creative_concept","scene_state_model","image_prompt_count","video_prompt_count","character_identity_lock","character_reference_status","voice_identity_lock","product_identity_lock","product_source_provenance","speech_mode"], output_counts: { scene_plan: scenes.length, image_prompts: images.length, video_prompts: videos.length }, continuity_checks: ["scene-to-scene character continuity","scene-to-scene product continuity","scene-to-scene environment continuity"] } };
+  const repairPass = validateAndRepair(result, input); result.validation.repair_actions = repairPass.repairs; result.validation.revalidation = { executed: true, initial_blockers_detected: repairPass.repairs.length > 0, remaining_blockers: repairPass.blockers.map(item => item.code) }; if (repairPass.blockers.length) { result.validation.status = "BLOCK"; result.validation.blockers.push(...repairPass.blockers); } return result;
+}
+
+export function expectedVideoPromptCount(sceneCount) {
   return Math.max(sceneCount - 1, 0);
 }
