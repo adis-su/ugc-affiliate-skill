@@ -47,6 +47,11 @@ function assertSceneContracts(result) {
   }
 }
 
+function assertIntelligenceContracts(result) {
+  assert.ok(result.scene_plan.every((scene) => scene.creator_identity?.source));
+  assert.ok(result.scene_plan.every((scene) => scene.continuity_lock?.product));
+}
+
 function assertPromptContracts(result) {
   for (const prompt of result.image_prompts) {
     assert.ok(prompt.scene_id);
@@ -84,6 +89,7 @@ for (const fixture of fixtures) {
 
     if (fixture.expected.status === "PASS") {
       assertSceneContracts(result);
+      assertIntelligenceContracts(result);
       assertPromptContracts(result);
     }
 
