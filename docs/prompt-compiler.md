@@ -213,3 +213,29 @@ The compiler succeeds when:
 - the final prompt package is directly usable in an image/video generation workflow
 
 The final measure is not prompt length. It is whether the prompt makes the intended visual or motion state difficult for the generation model to misunderstand.
+
+
+## Multi-Reference Compilation
+
+Each scene may use multiple image references. Do not treat them as interchangeable or equally authoritative.
+
+Reference roles should be mapped explicitly:
+
+- creator → identity and body proportions
+- product → exact product identity and construction
+- environment → spatial context and geometry
+- pose → body and hand position
+- composition → framing and subject placement
+- lighting/style → visual treatment when required
+
+The compiler should state the role of important references when needed by the generation model, then fuse them into one coherent visual state.
+
+Reference priority follows the Reference Image System. Critical creator/product references must not be overridden by lower-priority pose, composition, or style references.
+
+For every scene, preserve the distinction between:
+
+- reference images: source constraints
+- generated Frame A: actual starting visual state
+- generated Frame B: actual ending visual state
+
+More references are not automatically better. Add a reference only when it controls a meaningful visual constraint.
