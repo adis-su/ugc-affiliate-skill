@@ -1,5 +1,7 @@
 const CHARACTER_FIELDS = [
-  "age_appearance", "face", "hair", "skin", "body", "style", "reference"
+  "age_appearance", "gender", "height", "appearance", "ethnicity_style", "hijab",
+  "face", "eyes", "eyebrows", "nose", "lips", "skin", "facial_expression",
+  "hair", "body", "style", "reference"
 ];
 
 const VOICE_FIELDS = [
