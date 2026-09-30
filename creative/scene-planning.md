@@ -407,16 +407,38 @@ Do not force five scenes into content that only contains three meaningful states
 
 ## Duration Adaptation
 
-Approximate planning density:
+Duration is a campaign-level target. It must be resolved into generator-valid clip durations before generation.
 
-| Duration | Recommended State Density |
+Google Flow currently exposes different duration sets by active model. Veo 3.1 Lite, Fast, and Quality support 4s / 6s / 8s generation, while Gemini Omni Flash 1.1 supports 4s / 6s / 8s / 10s. The active generator/model is the source of truth for clip duration.
+
+A **scene** is a visual/narrative state. A **clip** is a generation request sent to Google Flow.
+
+Therefore:
+
+`N scenes → N Image Prompts → N−1 transitions → Flow Clip Duration Plan`
+
+The planner must find an exact partition:
+
+`SUM(Flow Clip Durations) = Target Duration`
+
+Do not invent unsupported durations or add filler scenes to make arithmetic work.
+
+Example:
+
+`18s + 5 scenes → 4 transitions → 4s + 4s + 4s + 6s`
+
+The final 6s clip carries the S04 → S05 transition. Scene 05 still has its own Image Prompt as the exact ending-state anchor. It does not require a fake 2s video generation.
+
+### Planning Density
+
+Use these as behavioral guidelines for each generated clip:
+
+| Clip Duration | Motion Density |
 |---|---|
-| 4 sec | 1–2 states |
-| 6 sec | 2–3 states |
-| 8 sec | 3–4 states |
-| 10 sec | 4–5 states |
-
-These are planning defaults, not hard mathematical limits.
+| 4 sec | one clear physical transition |
+| 6 sec | one primary movement + one supporting beat |
+| 8 sec | one primary interaction + restrained secondary adjustment |
+| 10 sec | one coherent behavioral sequence with causal micro-transitions |
 
 When duration is short:
 
@@ -427,6 +449,21 @@ When duration is short:
 - keep transitions physically simple.
 
 Never make human movement unnaturally fast merely to fit the plan.
+
+### Scene Count Feasibility
+
+Scene count must be checked against the generator clip plan, not only against a fixed duration table.
+
+For `N` scenes, the default transition count is `N−1`. A requested combination is feasible only when the target duration can be exactly partitioned into `N−1` supported generator durations.
+
+If it cannot:
+
+1. preserve the user's creative intent,
+2. reduce or merge scene boundaries when safe,
+3. simplify the state plan,
+4. otherwise block with a clear duration/scene feasibility error.
+
+Do not silently fabricate a 2s, 3s, 5s, 7s, or 9s generation.
 
 ## Scene Dependency
 
@@ -722,7 +759,8 @@ Throughout execution:
 - environment continuity is preserved,
 - camera continuity is preserved when relevant,
 - campaign-required evidence is visible in at least one scene,
-- scene count and duration remain feasible,
+- scene count and duration remain feasible for the active generator,
+- target duration is exactly partitioned into supported clip durations,
 - Image Prompt and Video Prompt derive from the same scene states,
 - no hidden reasoning is required to understand a scene state.
 
