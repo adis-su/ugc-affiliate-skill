@@ -5,9 +5,10 @@
   "description": "Contract-first runtime for the UGC Affiliate Skill.",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/contract-tests.mjs tests/generation-adapter-tests.mjs tests/real-image-provider-tests.mjs",
+    "test": "node --test tests/contract-tests.mjs tests/generation-adapter-tests.mjs tests/real-image-provider-tests.mjs tests/real-video-provider-tests.mjs",
     "test:contract": "node --test tests/contract-tests.mjs",
     "test:generation": "node --test tests/generation-adapter-tests.mjs",
-    "test:image-provider": "node --test tests/real-image-provider-tests.mjs"
+    "test:image-provider": "node --test tests/real-image-provider-tests.mjs",
+    "test:video-provider": "node --test tests/real-video-provider-tests.mjs"
   }
 }
