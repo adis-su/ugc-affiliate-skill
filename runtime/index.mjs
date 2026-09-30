@@ -37,7 +37,7 @@ function speechMode(input) {
   return isSpeechRequested(input) ? "spoken" : "silent_or_optional";
 }
 
-export function validateRequest(input) {
+function validateCreatorIdentity(creator, input) {\n  const blockers = [];\n  const speech = speechMode(input) === "spoken";\n  const hasCharacterReference = creator.character_reference_status === "available";\n  const hasVoiceReference = creator.voice_reference_status === "available";\n  if (!hasCharacterReference) {\n    blockers.push(blocker("CREATOR_IDENTITY_INSUFFICIENT", "creator", "Character identity reference is required for visual generation.", "creator_identity.character.reference", "Provide an approved Character Reference for the creator."));\n  }\n  if (speech && !hasVoiceReference) {\n    blockers.push(blocker("VOICE_IDENTITY_INSUFFICIENT", "creator", "Voice identity reference is required when spoken content is generated.", "creator_identity.voice.voice_reference", "Provide an approved Voice Reference for spoken content."));\n  }\n  return blockers;\n}\n\nexport function validateRequest(input) {
   const blockers = [];
   if (!input || typeof input !== "object") {
     return [blocker("INVALID_INPUT", "normalize", "Request must be an object.")];
@@ -342,7 +342,7 @@ export async function runAsync(input, options = {}) {
     });
   }
 
-  const creator = retrieveCreatorIntelligence(creatorBase, input);
+  const creator = retrieveCreatorIntelligence(creatorBase, input);\n  const creatorBlockers = validateCreatorIdentity(creator, input);\n  if (creatorBlockers.length) return blockedOutput({ ...baseValidation("BLOCK", creatorBlockers), contract_checks: ["creator_identity_resolution"] });\n  const creatorBlockers = validateCreatorIdentity(creator, input);\n  if (creatorBlockers.length) return blockedOutput({ ...baseValidation("BLOCK", creatorBlockers), contract_checks: ["creator_identity_resolution"] });
 
   const nicheKnowledge = resolveNiche(input.niche);
   if (nicheKnowledge.blocker) {
