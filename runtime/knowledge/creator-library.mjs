@@ -67,13 +67,26 @@ export const CREATOR_LIBRARY = {
       reference: null
     },
     voice_identity: {
-      voice_characteristics: null,
-      tone: null,
-      pitch: null,
-      speaking_style: null,
-      speech_pace: null,
-      accent: null,
-      energy: null,
+      voice_characteristics: "warm, soft, lightly textured, natural",
+      tone: "subtle, approachable, context-driven",
+      pitch: "medium, natural variation",
+      speaking_style: "native Indonesian conversational",
+      speech_pace: "conversational with natural variation",
+      accent: "native Indonesian conversational",
+      energy: "natural, restrained, non-theatrical",
+      language: "id-ID",
+      prosody: "meaning-led, subtle, non-theatrical",
+      breathing: "natural micro-breaths at plausible phrase boundaries",
+      pausing: "natural micro-pauses and occasional context-appropriate hesitation",
+      disfluency: "minimal and natural when contextually appropriate",
+      realism_constraints: [
+        "avoid robotic timing",
+        "avoid perfectly uniform pacing",
+        "avoid exaggerated enthusiasm",
+        "avoid synthetic-sounding pauses",
+        "avoid over-pronunciation",
+        "preserve consistent speaker identity"
+      ],
       voice_reference: null
     }
   }
