@@ -23,7 +23,6 @@ export const FORMAT_ANGLES = {
 };
 
 export const PLATFORMS = ["TikTok", "Instagram Reels", "Facebook Reels", "Shopee Video"];
-export const SCENE_LIMITS = { 4: [1, 2], 6: [2, 3], 8: [3, 4], 10: [4, 5] };
 
 export const SILENT_FORMATS = new Set([
   "Silent Mirror Selfie", "Outfit Showcase", "Try-On", "POV", "Lifestyle", "Before / After",
