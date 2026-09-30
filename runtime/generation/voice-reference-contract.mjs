@@ -38,8 +38,8 @@ export function attachVoiceReference(request = {}, voiceIdentity, references = [
     status: "READY",
     request: {
       ...request,
-      references: [resolved.reference, ...withoutVoice]
+      references: resolved.reference ? [resolved.reference, ...withoutVoice] : withoutVoice
     },
-    voice_reference: resolved.reference
+    voice_reference: resolved.reference ?? null
   };
 }
