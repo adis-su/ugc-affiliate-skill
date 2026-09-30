@@ -5,7 +5,7 @@
   "description": "Contract-first runtime for the UGC Affiliate Skill.",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/contract-tests.mjs tests/generation-adapter-tests.mjs tests/real-image-provider-tests.mjs tests/real-video-provider-tests.mjs tests/asset-validation-tests.mjs tests/regeneration-policy-tests.mjs tests/voice-identity-contract-tests.mjs tests/voice-reference-contract-tests.mjs tests/real-voice-provider-tests.mjs",
+    "test": "node --test tests/contract-tests.mjs tests/generation-adapter-tests.mjs tests/real-image-provider-tests.mjs tests/real-video-provider-tests.mjs tests/asset-validation-tests.mjs tests/regeneration-policy-tests.mjs tests/voice-identity-contract-tests.mjs tests/voice-reference-contract-tests.mjs tests/real-voice-provider-tests.mjs tests/voice-validation-tests.mjs",
     "test:contract": "node --test tests/contract-tests.mjs",
     "test:generation": "node --test tests/generation-adapter-tests.mjs",
     "test:image-provider": "node --test tests/real-image-provider-tests.mjs",
@@ -14,6 +14,7 @@
     "test:regeneration": "node --test tests/regeneration-policy-tests.mjs",
     "test:voice": "node --test tests/voice-identity-contract-tests.mjs",
     "test:voice-reference": "node --test tests/voice-reference-contract-tests.mjs",
-    "test:voice-provider": "node --test tests/real-voice-provider-tests.mjs"
+    "test:voice-provider": "node --test tests/real-voice-provider-tests.mjs",
+    "test:voice-validation": "node --test tests/voice-validation-tests.mjs"
   }
 }
