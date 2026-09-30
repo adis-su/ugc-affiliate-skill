@@ -283,3 +283,40 @@ test("Rositasari character library preserves the hijab identity lock", () => {
   assert.equal(creator.character_identity.age_appearance, "25");
   assert.equal(creator.character_identity.ethnicity_style, "Southeast Asian visual appearance");
 });
+
+
+test("AFFILIX activation starts at the Product URL gate", async () => {
+  const { createAffilixSession, activateAffilixSession, AFFILIX_STAGES, AFFILIX_CONFIG_DEFAULTS } = await import("../runtime/index.mjs");
+  const activated = activateAffilixSession(createAffilixSession());
+  assert.equal(activated.active, true);
+  assert.equal(activated.stage, AFFILIX_STAGES.WAITING_PRODUCT_URL);
+  assert.deepEqual(activated.campaign, AFFILIX_CONFIG_DEFAULTS);
+});
+
+test("AFFILIX campaign configuration preserves defaults when only one field changes", async () => {
+  const { createAffilixSession, activateAffilixSession, applyAffilixCampaignConfig, AFFILIX_STAGES } = await import("../runtime/index.mjs");
+  let session = activateAffilixSession(createAffilixSession());
+  session = applyAffilixCampaignConfig(session, { objective: "Conversion" });
+  assert.equal(session.stage, AFFILIX_STAGES.CONFIGURATION_VALIDATION);
+  assert.equal(session.campaign.objective, "Affiliate Conversion");
+  assert.equal(session.campaign.format, "Product Demo");
+  assert.equal(session.campaign.angle, "How I Use It");
+  assert.equal(session.campaign.platform, "TikTok");
+  assert.equal(session.campaign.cta, "Check the Product");
+  assert.equal(session.campaign.creator, "Rositasari");
+  assert.equal(session.campaign.speech, "Spoken");
+});
+
+test("AFFILIX rejects a silent-format and spoken-mode conflict", async () => {
+  const { createAffilixSession, activateAffilixSession, applyAffilixCampaignConfig, validateAffilixCampaignConfig } = await import("../runtime/index.mjs");
+  let session = activateAffilixSession(createAffilixSession());
+  session = applyAffilixCampaignConfig(session, {
+    objective: "Conversion",
+    format: "Product Demo",
+    angle: "How I Use It",
+    speech: "Spoken"
+  });
+  const checked = validateAffilixCampaignConfig(session);
+  assert.equal(checked.status, "BLOCK");
+  assert.ok(checked.blockers.some((item) => item.code === "SPEECH_MODE_CONFLICT"));
+});
