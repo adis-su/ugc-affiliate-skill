@@ -3,27 +3,49 @@ import assert from "node:assert/strict";
 import { ImageGenerationAdapter } from "../runtime/generation/image-adapter.mjs";
 import { VideoGenerationAdapter } from "../runtime/generation/video-adapter.mjs";
 import { validateGeneratedAsset } from "../runtime/generation/asset-validation.mjs";
+import { validateRequiredCharacterReference } from "../runtime/generation/reference-contract.mjs";
 
-test("image adapter preserves scene and prompt identity", async () => {
+const characterReference = {
+  type: "character",
+  uri: "approved://rositasari/character-v1",
+  role: "character_identity",
+  required: true
+};
+
+test("image adapter preserves scene, prompt, and character reference identity", async () => {
   const adapter = new ImageGenerationAdapter();
+  const scene = { scene_id: "scene_01", creator_identity: { reference: characterReference } };
   const asset = await adapter.generateImage({
     request_id: "test-request",
-    scene: { scene_id: "scene_01" },
+    scene,
     image_prompt: { prompt: "validated image prompt" },
-    references: ["fixture://rositasari-character-v1"]
+    references: []
   });
 
   assert.equal(asset.status, "READY");
   assert.equal(asset.scene_id, "scene_01");
   assert.equal(asset.prompt, "validated image prompt");
-  assert.deepEqual(asset.references, ["fixture://rositasari-character-v1"]);
+  assert.deepEqual(asset.references[0], characterReference);
 });
 
-test("video adapter preserves consecutive scene mapping", async () => {
+test("image adapter blocks when character reference is missing", async () => {
+  const adapter = new ImageGenerationAdapter();
+  const asset = await adapter.generateImage({
+    request_id: "test-request",
+    scene: { scene_id: "scene_01", creator_identity: { reference: null } },
+    image_prompt: { prompt: "validated image prompt" }
+  });
+
+  assert.equal(asset.status, "BLOCK");
+  assert.equal(asset.error.code, "GENERATION_CHARACTER_REFERENCE_MISSING");
+});
+
+test("video adapter preserves consecutive scene mapping and character reference", async () => {
   const adapter = new VideoGenerationAdapter();
+  const fromScene = { scene_id: "scene_01", creator_identity: { reference: characterReference } };
   const asset = await adapter.generateVideo({
     request_id: "test-request",
-    from_scene: { scene_id: "scene_01" },
+    from_scene: fromScene,
     to_scene: { scene_id: "scene_02" },
     video_prompt: { prompt: "validated video prompt" }
   });
@@ -31,6 +53,29 @@ test("video adapter preserves consecutive scene mapping", async () => {
   assert.equal(asset.status, "READY");
   assert.equal(asset.from_scene_id, "scene_01");
   assert.equal(asset.to_scene_id, "scene_02");
+  assert.deepEqual(asset.references[0], characterReference);
+});
+
+test("video adapter blocks when character reference is missing", async () => {
+  const adapter = new VideoGenerationAdapter();
+  const asset = await adapter.generateVideo({
+    request_id: "test-request",
+    from_scene: { scene_id: "scene_01", creator_identity: { reference: null } },
+    to_scene: { scene_id: "scene_02" },
+    video_prompt: { prompt: "validated video prompt" }
+  });
+
+  assert.equal(asset.status, "BLOCK");
+  assert.equal(asset.error.code, "GENERATION_CHARACTER_REFERENCE_MISSING");
+});
+
+test("reference contract validates character references", () => {
+  const result = validateRequiredCharacterReference(
+    { creator_identity: { reference: characterReference } },
+    []
+  );
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.reference, characterReference);
 });
 
 test("generated asset validation blocks incorrect scene mapping", () => {
