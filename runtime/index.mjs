@@ -104,9 +104,7 @@ export function validateRequest(input) {
 
 export function resolveProduct(input) {
   const intelligence = retrieveProductIntelligence(input);
-  if (intelligence.conflict_notes.some((conflict) => conflict.field === "color" &&
-      conflict.values.explicit !== undefined &&
-      conflict.values.retrieved !== undefined)) {
+  if (intelligence.conflict_notes.some((conflict) => conflict.values.explicit !== undefined)) {
     return {
       blocker: blocker(
         "PRODUCT_CONFLICT",
