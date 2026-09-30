@@ -84,7 +84,9 @@ Reference availability is handled by the skill at the relevant generation stage.
 
 ## Guided User Input Flow
 
-Collect user input progressively in this order:
+The canonical Project activation entry is the exact user command `/Affilix`. After activation, ask only for the Product URL. Once Product Intelligence is resolved, present all seven campaign settings together using the defaults defined by `AFFILIX.md`.
+
+Collect the seven settings progressively across subsequent user turns when the user changes or fills them:
 
 1. Product / Product URL
 2. Campaign Objective
@@ -106,15 +108,17 @@ After each answer:
 
 The user input describes intent and constraints. The skill derives execution details such as scene mechanics, camera behavior, lighting, gestures, continuity, and prompt wording.
 
-Minimum required decisions:
+Required guided decisions:
 - Product / Product URL
 - Campaign Objective
 - Content Format
+- Angle
 - Platform
+- CTA
 - Creator
 - Speech mode
 
-Angle should normally be collected, but may be proposed by the skill when the user has not supplied one. CTA is required when appropriate to the campaign objective or format and may otherwise be omitted.
+All seven campaign settings must be resolved before the production workflow begins. CTA is not silently omitted.
 
 When Product URL is provided, resolve Product Intelligence before continuing when retrieval is available.
 
@@ -207,7 +211,7 @@ Prompts should be concise enough to be operational but detailed enough to preser
 
 ## Project Usage
 
-When this file is attached to a ChatGPT Project, treat it as the project-level execution contract.
+When this file is attached to a ChatGPT Project, treat it as the project-level execution contract. Prefer `CHATGPT_PROJECT_INSTRUCTIONS.md` as the concise Project Instructions layer and use this document as the detailed conversational execution guide.
 
 The repository remains the implementation source of truth. Runtime modules and tests define the executable reference behavior. This document defines how the skill should be used conversationally inside the ChatGPT Project.
 
