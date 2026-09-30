@@ -183,10 +183,12 @@ test("async runtime can consume an injected retrieved product source", async () 
 
 
 test("creator reference is required for visual generation", () => {
-  const fixture = fixtures.find((item) => item.id === "positive-creator-reference-injection");
+  const fixture = fixtures.find((item) => item.id === "positive-fashion-silent-mirror");
   assert.ok(fixture);
-  const result = run(fixture.input);
-  assert.notEqual(result.validation.blockers.find((b) => b.code === "CREATOR_IDENTITY_INSUFFICIENT"), undefined);
+  const input = { ...fixture.input, creator_identity: undefined };
+  const result = run(input);
+  assert.equal(result.validation.status, "BLOCK");
+  assert.ok(result.validation.blockers.some((b) => b.code === "CREATOR_IDENTITY_INSUFFICIENT"));
 });
 
 
