@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { run, expectedVideoPromptCount } from "../runtime/index.mjs";
+import { resolveProductWithSource } from "../runtime/intelligence/product-retrieval.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixturePath = path.join(here, "fixtures", "contract-fixtures.json");
@@ -140,4 +141,25 @@ test("blocked requests do not enter generation", () => {
   assert.equal(result.scene_plan.length, 0);
   assert.equal(result.image_prompts.length, 0);
   assert.equal(result.video_prompts.length, 0);
+});
+
+test("product source merge preserves explicit facts and provenance", () => {
+  const input = {
+    product: {
+      product_name: "Example",
+      product_url: "https://example.com/product",
+      product_facts: { color: "red" }
+    }
+  };
+  const result = resolveProductWithSource(input, {
+    status: "RESOLVED",
+    source_url: input.product.product_url,
+    facts: { brand: "Example Brand", color: "blue", finish: "glossy" }
+  });
+
+  assert.equal(result.record.facts.color, "red");
+  assert.equal(result.record.facts.brand, "Example Brand");
+  assert.equal(result.record.facts.finish, "glossy");
+  assert.equal(result.record.source_status, "retrieved_product_url");
+  assert.ok(result.conflict_notes.some((item) => item.field === "color"));
 });
