@@ -54,7 +54,299 @@ Input
 
 ## Input
 
-### Niche
+### Guided User Input Flow
+
+The user input experience is sequential, not a single large form. The skill should collect and preserve context step by step.
+
+The default order is:
+
+1. **Product / Product URL**
+2. **Campaign Objective**
+3. **Content Format**
+4. **Angle**
+5. **Platform**
+6. **CTA**
+7. **Creator**
+8. **Speech**
+
+The first step establishes Product Intelligence. Each later question should use the already-resolved context to make the next choice more relevant.
+
+Do not ask the user to provide execution-level production details that the skill can safely derive. Camera, lighting, composition, gestures, scene mechanics, continuity, and other generation details belong to the skill unless the user explicitly constrains them.
+
+#### Step 1 — Product / Product URL
+
+Collect at least one reliable product identifier:
+- Product name, or
+- Product URL
+
+When a Product URL is supplied, resolve Product Intelligence before moving to the next step when retrieval is available.
+
+If the product cannot be identified sufficiently to support the requested content, request the minimum missing product information instead of inventing attributes.
+
+#### Step 2 — Campaign Objective
+
+Collect the intended campaign objective, such as:
+- Awareness
+- Consideration
+- Conversion
+
+The objective determines the creative job of the content and informs later format, angle, behavior, and CTA choices.
+
+#### Step 3 — Content Format
+
+Collect the desired content format.
+
+Examples:
+- Product Demo
+- Honest Review
+- Problem → Solution
+- Tutorial
+- Unboxing
+- Mirror Selfie
+- Silent Mirror Selfie
+
+The available formats should be constrained by the relevant niche/content rules when known.
+
+#### Step 4 — Angle
+
+Collect the desired content angle.
+
+Examples:
+- First Impression
+- How I Use It
+- Problem → Solution
+- Daily Routine
+- Feature Demonstration
+
+Angle should define what the viewer should notice. It must be demonstrated through visible behavior, not merely stated in copy.
+
+If the user does not provide an angle, the skill may propose contextually appropriate options based on Product Intelligence, Campaign Objective, and Content Format.
+
+#### Step 5 — Platform
+
+Collect the target platform, for example:
+- TikTok
+- Instagram Reels
+- Facebook Reels
+- Shopee Video
+
+Platform should influence output conventions, pacing, framing, and CTA behavior without overriding the user's core intent.
+
+#### Step 6 — CTA
+
+Collect the desired CTA when applicable.
+
+CTA is required when the campaign objective or format materially depends on a conversion action. It may be omitted when no CTA is appropriate.
+
+If omitted, the skill may derive a suitable visual or verbal CTA behavior from the campaign objective, but must not invent unsupported product claims.
+
+#### Step 7 — Creator
+
+Collect the creator identity.
+
+Current supported creator:
+- Rositasari
+
+Resolve the creator from the Creator Library. Do not infer creator identity from the name alone.
+
+Creator Identity and Character Reference govern visual continuity. Voice Identity and Voice Reference govern spoken continuity.
+
+#### Step 8 — Speech
+
+Determine whether the content is:
+- Spoken
+- Silent
+
+For silent content, do not generate dialogue, voice-over, or lip-sync.
+
+For spoken content, Voice Identity and an approved Voice Reference are required for production voice generation. If the approved Voice Reference is missing, return a structured blocker rather than fabricating one.
+
+### Input State
+
+Internally preserve the guided flow as normalized state:
+
+```js
+{
+  product: {
+    name: null,
+    url: null,
+    intelligence: null
+  },
+  campaign: {
+    objective: null,
+    stage: null,
+    cta: null
+  },
+  content: {
+    format: null,
+    angle: null,
+    platform: null,
+    speech: null,
+    duration: null,
+    scene_count: null
+  },
+  creator: {
+    name: null
+  },
+  references: {
+    character: null,
+    product: null,
+    environment: null,
+    voice: null
+  }
+}
+```
+
+Duration, scene count, references, campaign stage, and other execution details are optional user constraints. The skill should derive them when safe and when the user has not specified them.
+
+### Input Handling Rules
+
+- Treat explicit user input as the highest-priority source of intent.
+- Preserve answers from earlier steps throughout the session.
+- Ask only for the next missing decision required by the flow.
+- Do not restart the entire input form when one field changes.
+- If a later answer invalidates an earlier assumption, update the dependent state and continue from the affected step.
+- Offer concise choices when the skill can infer a useful set of options.
+- Allow custom user input when none of the suggested choices fit.
+- Never invent product, creator, character, voice, or reference facts to complete a missing field.
+- Separate user intent from execution details. The user describes what they want; the skill determines how to execute it.
+
+## Niche
+
+- Fashion
+- Beauty
+- Home
+
+## Product
+
+- Product Name
+- Product URL
+
+## Campaign
+
+- Objective
+- Stage
+- CTA
+
+## Creator
+
+- Rositasari
+
+## Content
+
+- Format
+- Angle
+- Duration
+- Scene Count
+
+## Platform
+
+- TikTok
+- Instagram Reels
+- Facebook Reels
+- Shopee Video
+
+## Processing Architecture
+
+### 01. Understanding
+- Input Validation
+- Guided Input State
+- Product Retrieval
+- Product Intelligence
+- Creator Identity Retrieval
+- Campaign Understanding
+- Content Understanding
+
+### 02. Creative Logic
+- Niche Logic
+- Format Logic
+- Angle Logic
+- Format × Angle Matrix
+- Creative Concept
+- Scene Planning
+
+### 03. Content Behavior
+- Script Engine
+- Behavior Engine
+- Human Micro-Behavior
+- Product Interaction
+- Scene Behavior
+
+Script and behavior are format-dependent. Silent formats such as Silent Mirror Selfie use behavioral scripting rather than spoken dialogue.
+
+### 04. Prompt Assembly
+Convert resolved scene states and continuity locks into generation-ready prompts.
+
+- Image Prompt Assembly
+- Video Prompt Assembly
+- State Anchoring
+- Prompt Compression
+- Constraint Handling
+
+### 05. Image Prompt Engine
+Build each image prompt from:
+- Character
+- Product
+- Pose & Behavior
+- Environment
+- Camera
+- Composition
+- Lighting
+- UGC Visual Language
+
+### 06. Video Prompt Engine
+Build each frame-to-frame video prompt from:
+- Starting Frame
+- Ending Frame
+- Human Movement
+- Facial Movement
+- Product Movement
+- Material Physics
+- Camera Movement
+- Environment Movement
+- Frame Continuity
+
+### 07. Human Realism Engine
+Apply cross-cutting realism constraints:
+- Human Anatomy
+- Natural Pose
+- Micro Movement
+- Facial Expression
+- Imperfection
+- Smartphone Camera Behavior
+- Natural Lighting
+- UGC Authenticity
+
+### 08. Consistency Engine
+Maintain:
+- Character Identity Lock
+- Character Reference
+- Voice Identity Lock when voice is used
+- Voice Reference when voice is used
+- Product Consistency
+- Clothing / Appearance Consistency
+- Environment Consistency
+- Scene-to-Scene Consistency
+
+## Output
+
+### Image Prompts
+Generate one prompt per planned scene.
+
+### Frame-to-Frame Video Prompts
+Generate one transition prompt for each consecutive scene pair:
+- Scene 01 → 02
+- Scene 02 → 03
+- Scene 03 → 04
+- etc.
+
+## Quality Philosophy
+
+Quality control is embedded into the engines rather than implemented as a separate QC layer.
+
+Do not optimize for generic photorealism alone. Optimize for believable, ordinary, human-made UGC.
+
+## Niche
 - Fashion
 - Beauty
 - Home
