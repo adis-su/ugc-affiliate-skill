@@ -1,0 +1,27 @@
+version: "1.0"
+required_sections:
+  - request_summary
+  - product_intelligence
+  - concept
+  - script_or_behavior
+  - storyboard
+  - image_prompts
+  - video_prompts
+  - continuity_notes
+  - qc
+
+scene_contract:
+  required:
+    - scene_id
+    - image_prompt
+    - video_prompt
+    - continuity_anchor
+
+status:
+  allowed: [pass, pass_with_warnings, revise, block]
+  package_allowed: [pass, pass_with_warnings]
+
+principles:
+  - "The prompt is the final expression of upstream decisions."
+  - "QC status is part of the final package."
+  - "Warnings must remain visible; they are not silently discarded."
