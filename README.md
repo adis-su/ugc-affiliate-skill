@@ -66,7 +66,8 @@ CREATIVE LOGIC
   ├─ Niche Logic
   ├─ Format × Angle
   ├─ Creative Concept
-  └─ Scene Planning
+  ├─ Scene Planning
+  └─ Generator Clip Duration Planning
   ↓
 CONTENT BEHAVIOR
   ├─ Script / Silent Behavior
@@ -96,10 +97,10 @@ OUTPUT
 - `niches/home.md` — Home-specific rules
 - `campaigns/campaign-intelligence.md` — Campaign intent and viewer evidence
 - `creative/creative-logic.md` — Creative concept resolution
-- `creative/scene-planning.md` — Scene State Model and transitions
+- `creative/scene-planning.md` — Scene State Model, transitions, and generator-aware duration planning
 - `behavior/content-behavior.md` — Human behavior and product interaction
 - `prompts/image-prompt-engine.md` — Still-image generation engine
-- `prompts/video-prompt-engine.md` — Frame-to-frame motion engine
+- `prompts/video-prompt-engine.md` — Frame-to-frame motion engine and Google Flow clip-duration contract
 - `runtime/end-to-end-integration.md` — Runtime contract across all layers
 - `runtime/runtime-interface.md` — Canonical runtime interfaces and executable contracts
 - `runtime/index.mjs` — Executable contract-first runtime
@@ -135,7 +136,9 @@ Generation Output
 Structural invariants are deterministic:
 
 - N scenes → N Image Prompts
-- N scenes → N−1 Video Prompts
+- N scenes → N−1 Scene Transition Prompts
+- Flow clip durations exactly partition the requested total duration
+- Scene count and generated clip count are separate
 - one creator identity source of truth
 - one product identity source of truth
 - every meaningful state change has a cause
