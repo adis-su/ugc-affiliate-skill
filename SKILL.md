@@ -2128,7 +2128,7 @@ For N scenes, the default transition count is N−1. The planner must find an ex
 
 Do not create fake 2s, 3s, 5s, 7s, or 9s Flow clips. If no exact partition exists, merge/reduce scene boundaries when safe or block the request.
 
-## Stage 8 — Build Creative Concept
+### Stage 8 — Build Creative Concept
 
 Create one concise creative concept from:
 
@@ -2203,7 +2203,7 @@ For spoken formats:
 - use Voice Identity,
 - keep dialogue separate from visual prompts.
 
-### Stage 10 — Assemble Image Prompts
+### Stage 11 — Assemble Image Prompts
 
 For each scene, assemble exactly one Image Prompt.
 
@@ -2221,7 +2221,7 @@ The Image Prompt describes only the target visual state.
 
 Do not include future actions such as "then she turns" or "will apply next."
 
-### Stage 11 — Assemble Video Prompts
+### Stage 12 — Assemble Video Prompts
 
 For each consecutive scene pair, assemble exactly one Frame-to-Frame Video Prompt.
 
@@ -2239,7 +2239,7 @@ Use this order:
 
 The Video Prompt must describe how the starting state physically becomes the ending state.
 
-### Stage 12 — Assemble Speech / Silent Behavior
+### Stage 13 — Assemble Speech / Silent Behavior
 
 #### Spoken
 
@@ -2263,7 +2263,7 @@ Example:
 
 Do not add dialogue, VO, lip-sync, or implied speech instructions.
 
-### Stage 13 — Run Validation
+### Stage 14 — Run Validation
 
 Run the complete Validation Pass Order.
 
@@ -2277,7 +2277,7 @@ Collect:
 
 Do not return a final generation while a Blocker remains.
 
-### Stage 14 — Repair Blockers
+### Stage 15 — Repair Blockers
 
 Repair only the failed contract.
 
@@ -2292,7 +2292,7 @@ Examples:
 
 Do not regenerate unrelated sections when a local repair is sufficient.
 
-### Stage 15 — Revalidate
+### Stage 16 — Revalidate
 
 After any repair:
 
@@ -2302,7 +2302,7 @@ After any repair:
 
 Warnings may remain only when they do not violate the execution contract.
 
-### Stage 16 — Return Final Output
+### Stage 17 — Return Final Output
 
 Return output in this order:
 
