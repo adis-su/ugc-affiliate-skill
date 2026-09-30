@@ -2365,3 +2365,294 @@ Before creative generation, the runtime should internally produce:
 - validation warnings.
 
 Only a request without Blockers may proceed to creative planning.
+
+
+## Product Intelligence & Retrieval Specification
+
+Product Intelligence is the source-of-truth layer for product-related generation. Its purpose is to understand what the product is, what can be safely shown, what claims are supported, and which attributes remain unknown.
+
+The runtime must never enrich a product by inventing missing facts.
+
+### Product Source Priority
+
+Use product information in this priority order:
+
+1. Explicit user-provided product facts.
+2. Retrieved product facts from the supplied Product URL.
+3. Directly observable visual attributes from the retrieved product source.
+4. Creative inference that does not introduce factual claims.
+5. Unknown.
+
+When sources conflict:
+
+- preserve the conflict,
+- prefer explicit user facts for the user's intended generation context,
+- do not silently overwrite one source with another,
+- flag material conflicts for validation.
+
+### Product Retrieval Trigger
+
+Run Product Retrieval when the product object contains a Product URL, or when the runtime has an approved product data source.
+
+Do not attempt retrieval when no source exists.
+
+If retrieval fails:
+
+- continue only with supplied facts,
+- mark unavailable attributes as unknown,
+- do not infer missing product details from the product name alone.
+
+### Product Intelligence Record
+
+Build an internal Product Intelligence record containing:
+
+| Field | Meaning |
+|---|---|
+| Product Name | Canonical product name |
+| Source URL | Retrieval source when available |
+| Brand | Explicit or retrieved brand |
+| Category | Product category |
+| Variant | Relevant variant, size, or version |
+| Color | Supported visible or stated color |
+| Material | Supported material |
+| Shape / Cut | Relevant physical form |
+| Size / Dimensions | Supported measurements or relative scale |
+| Texture | Supported physical or cosmetic texture |
+| Finish | Supported visual or cosmetic finish |
+| Packaging | Supported packaging appearance |
+| Functional Parts | Relevant components |
+| Usage State | Closed / Open / Applied / Worn / Placed / In Use |
+| Product Claims | Claims explicitly supported by source |
+| Visual Reference | Product image/reference when available |
+| Unknown Attributes | Missing or unresolved attributes |
+| Source Notes | Provenance and conflict notes |
+
+Only fields supported by evidence may be populated as facts.
+
+### Fact Classification
+
+Every product detail should be classified internally as one of:
+
+#### Source Fact
+
+Explicitly provided by the user.
+
+Example:
+
+- color: neutral
+- material: cotton
+
+#### Retrieved Fact
+
+Supported by the supplied product source.
+
+Example:
+
+- packaging shape shown on the product page,
+- listed material,
+- listed dimensions.
+
+#### Visual Fact
+
+Directly observable from an available product image or reference.
+
+Example:
+
+- visible bottle shape,
+- visible cap color,
+- visible garment pattern.
+
+Visual facts must not be expanded into unsupported specifications.
+
+#### Creative Inference
+
+A generation choice that does not claim to be factual.
+
+Example:
+
+- placing a supplied garment in an ordinary bedroom,
+- choosing a natural hand position,
+- selecting a plausible camera angle.
+
+Creative inference may guide generation but must not be phrased as a product fact.
+
+#### Unknown
+
+The attribute is not sufficiently supported.
+
+Example:
+
+- exact fabric composition not supplied or retrieved,
+- exact shade name not available,
+- internal mechanism not visible.
+
+Unknown attributes must remain unspecified.
+
+### Product Claim Handling
+
+Separate product claims from observable product properties.
+
+Examples of claims requiring support:
+
+- waterproof,
+- long-lasting,
+- clinically tested,
+- hypoallergenic,
+- stain resistant,
+- guaranteed,
+- medical or performance claims.
+
+Do not convert a marketing statement into an independently verified fact.
+
+When a claim is relevant to the creative:
+
+- preserve the claim with source attribution internally,
+- use it only when appropriate to the supplied campaign context,
+- avoid strengthening or generalizing the claim.
+
+### Product Identity Lock
+
+After Product Intelligence is built, create a Product Identity Lock.
+
+The lock should contain only the product attributes necessary for scene continuity.
+
+#### Fashion
+
+Lock:
+
+- garment identity
+- color
+- pattern
+- material when supported
+- cut
+- fit
+- visible branding
+- relevant accessories
+- clothing state
+
+#### Beauty
+
+Lock:
+
+- product identity
+- packaging
+- brand when supported
+- shade / color when supported
+- texture
+- finish
+- application state
+- visible product amount when relevant
+
+#### Home
+
+Lock:
+
+- product identity
+- shape
+- size or relative scale
+- material
+- color
+- texture
+- functional parts
+- placement
+- interaction state
+
+The Product Identity Lock is carried unchanged across scenes unless a physical or intentional state transition modifies a state field.
+
+### Product State Model
+
+Track product state separately from product identity.
+
+#### Identity
+
+What the product is.
+
+#### State
+
+What condition the product is currently in.
+
+Examples:
+
+- Beauty: closed → opened → applied
+- Fashion: unworn → worn → adjusted
+- Home: off-desk → placed → in use
+
+A state change must have a physical cause.
+
+### Product Visual Consistency
+
+Across Image Prompts and Video Prompts:
+
+- preserve identity,
+- preserve relevant appearance,
+- preserve packaging or garment design,
+- preserve material behavior,
+- preserve scale,
+- preserve functional parts,
+- preserve state unless a transition changes it.
+
+Do not regenerate the product independently per scene.
+
+### Product Retrieval Output
+
+The retrieval stage should produce:
+
+1. Product Intelligence Record
+2. Product Identity Lock
+3. Product State Model
+4. Supported Claims
+5. Unknown Attributes
+6. Source / Conflict Notes
+
+These outputs become the source of truth for Creative Logic, Scene Planning, Image Prompt Assembly, Video Prompt Assembly, and Validation.
+
+### Product Retrieval Failure Modes
+
+#### No URL + No Product Facts
+
+Block generation when the product cannot be identified sufficiently to support the requested content.
+
+#### No URL + Basic Product Name
+
+Proceed only with generic visual treatment and mark unsupported attributes as unknown.
+
+#### URL Available + Retrieval Fails
+
+Proceed with user-supplied facts only when they are sufficient.
+
+#### Conflicting Sources
+
+Do not silently resolve material conflicts. Preserve the conflict and prevent unsupported claims from entering the final prompts.
+
+#### Product Variant Ambiguity
+
+If multiple variants exist and the selected variant is unclear:
+
+- use only attributes common to the available variants,
+- or block when the distinction materially affects the requested content.
+
+### Product Intelligence Anti-Patterns
+
+Do not:
+
+- infer exact material from appearance alone,
+- infer exact shade names from generic color appearance,
+- invent dimensions,
+- invent ingredients,
+- invent performance,
+- invent packaging details,
+- assume a product claim is verified merely because it appears in marketing copy,
+- change product identity between scenes,
+- use product name alone as evidence for detailed attributes.
+
+### Product Intelligence Invariants
+
+Throughout execution:
+
+- one Product Intelligence source of truth,
+- one Product Identity Lock,
+- one Product State Model,
+- no unsupported product claims,
+- no unexplained product identity changes,
+- every state change has a physical or intentional cause,
+- unknown attributes remain unknown until supported.
