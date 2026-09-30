@@ -8,6 +8,23 @@ export const SUPPORTED_CREATORS = new Set(["Rositasari"]);
 export const PLATFORMS = new Set(KNOWLEDGE_PLATFORMS);
 export const NICHES = FORMAT_ANGLES;
 
+
+function serializeCharacterIdentityLock(lock = {}) {
+  const lines = [];
+  const push = (label, value) => {
+    if (value === null || value === undefined || value === "") return;
+    if (Array.isArray(value)) { if (value.length) lines.push(label + ": " + value.join(", ")); return; }
+    if (typeof value === "object") { for (const [key, nested] of Object.entries(value)) push(label + "." + key, nested); return; }
+    lines.push(label + ": " + value);
+  };
+  push("Creator", lock.creator); push("Age", lock.age_appearance); push("Gender", lock.gender); push("Height", lock.height);
+  push("Appearance", lock.appearance); push("Visual ethnicity", lock.ethnicity_style); push("Hijab", lock.hijab);
+  push("Face", lock.face); push("Eyes", lock.eyes); push("Eyebrows", lock.eyebrows); push("Nose", lock.nose);
+  push("Lips", lock.lips); push("Skin", lock.skin); push("Facial expression", lock.facial_expression);
+  if (lock.reference) push("Character reference", lock.reference);
+  return lines.join("; ");
+}
+
 const blocker = (code, stage, message, field = null, corrective_action = null) => ({
   code, stage, severity: "BLOCKER", message, field, corrective_action
 });
@@ -305,10 +322,12 @@ function buildSceneStates(input, product, campaign, concept) {
 
 function buildImagePrompts(scenes, input, product, campaign, concept) {
   return scenes.map(scene => ({
+    character_identity_lock: serializeCharacterIdentityLock(scene.creator_identity),
     scene_id: scene.scene_id,
     continuity_anchors: [scene.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"],
     prompt: [
-      `Character Identity Lock: Rositasari; preserve all defined facial, eye, eyebrow, nose, lip, skin, age, height, appearance, and hijab attributes from the resolved Character Identity Lock`,
+      `CHARACTER IDENTITY LOCK: Rositasari; preserve this exact canonical identity in every image generation; do not redesign, substitute, age, de-age, remove hijab, or alter facial, skin, body, or other defined identity attributes`,
+      `Character Identity Reference: ${serializeCharacterIdentityLock(scene.creator_identity)}`,
       `Current creator state: ${scene.creator_state.action}; gaze and pose remain consistent with the scene state`,
       `Product Identity: ${product.record.product_name}; preserve the Product Identity Lock`,
       `Product State: ${scene.product_state.state}`,
@@ -329,6 +348,7 @@ function buildVideoPrompts(scenes, input, product, flowTimeline) {
   return scenes.slice(0, -1).map((from, index) => {
     const to = scenes[index + 1];
     return {
+      character_identity_lock: serializeCharacterIdentityLock(from.creator_identity),
       transition_id: `${from.scene_id}_to_${to.scene_id}`,
       from_scene: from.scene_id,
       to_scene: to.scene_id,
@@ -339,6 +359,8 @@ function buildVideoPrompts(scenes, input, product, flowTimeline) {
         `Clip: clip_${String(index + 1).padStart(2, "0")}`,
         `Duration: ${flowTimeline.durations[index]} seconds`,
         `Target Total Duration: ${input.content.duration_sec} seconds`,
+        `CHARACTER IDENTITY LOCK: Rositasari; preserve this exact canonical identity throughout the entire clip; do not redesign, substitute, age, de-age, remove hijab, or alter facial, skin, body, or other defined identity attributes`,
+        `Character Identity Reference: ${serializeCharacterIdentityLock(from.creator_identity)}`,
         `Starting Frame Anchor: exact visual state of ${from.scene_id}`,
         `Physical Cause: ${to.transition_cause}`,
         `Human Movement: one primary movement from ${from.behavior_cue} to ${to.behavior_cue}`,
@@ -348,7 +370,7 @@ function buildVideoPrompts(scenes, input, product, flowTimeline) {
         "Camera Movement: subtle smartphone drift or reframing only when motivated by creator movement",
         "Environment Movement: minimal and physically caused; preserve room geometry and object placement",
         `Ending Frame Anchor: exact visual state of ${to.scene_id}`,
-        "Continuity: same Rositasari Character Identity Lock, product identity, wardrobe, environment and compatible camera relationship",
+        "Continuity: same canonical Rositasari Character Identity Lock from start to end; preserve face, age, height, Southeast Asian visual appearance, hijab identity, facial features, skin characteristics, and other defined identity attributes; wardrobe may change only when explicitly required by the creative brief",
         "No teleportation, morphing, duplicated objects, unexplained state changes, or cinematic camera choreography"
       ].join("; "),
       continuity_anchors: [from.scene_id, to.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"]
