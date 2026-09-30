@@ -1,6 +1,5 @@
 const BLOCKER_CODES = new Set([
   "VOICE_IDENTITY_DRIFT",
-  "VOICE_REFERENCE_MISSING",
   "PRONUNCIATION_DRIFT",
   "PROSODY_DRIFT",
   "PACING_DRIFT",
@@ -28,13 +27,6 @@ export function validateVoiceAsset(asset, expected = {}) {
     blockers.push(blocker("VOICE_CONTINUITY_BREAK", "Voice asset came from an unexpected provider."));
   }
 
-  const actualReferences = new Set((asset?.voice_reference_ids ?? []).filter(Boolean));
-  for (const required of expected.required_voice_reference_ids ?? []) {
-    if (!actualReferences.has(required)) {
-      blockers.push(blocker("VOICE_REFERENCE_MISSING", "Generated voice asset is missing the required Voice Reference.", { reference_id: required }));
-    }
-  }
-
   for (const code of asset?.validation?.blockers ?? []) {
     if (BLOCKER_CODES.has(code)) {
       blockers.push(blocker(code, "Generated voice asset reported a realism blocker."));
@@ -42,7 +34,7 @@ export function validateVoiceAsset(asset, expected = {}) {
   }
 
   const checks = expected.checks ?? {};
-  if (checks.identity_match === false) blockers.push(blocker("VOICE_IDENTITY_DRIFT", "Speaker identity does not match the approved Voice Reference."));
+  if (checks.identity_match === false) blockers.push(blocker("VOICE_IDENTITY_DRIFT", "Speaker identity does not match the expected Voice Identity."));
   if (checks.pronunciation_match === false) blockers.push(blocker("PRONUNCIATION_DRIFT", "Pronunciation deviates from the expected language or delivery."));
   if (checks.prosody_natural === false) blockers.push(blocker("PROSODY_DRIFT", "Prosody does not match the natural conversational target."));
   if (checks.pacing_natural === false) blockers.push(blocker("PACING_DRIFT", "Speech pacing is unnaturally uniform or inconsistent."));
