@@ -491,6 +491,255 @@ These are internal templates for constructing the final prompt text.
 
 Templates are assembly guides, not text that must be copied verbatim.
 
+
+# Output Schema And Generation Template
+
+The output schema defines the user-facing structure of every completed generation. It separates planning context from final generation assets while keeping every scene traceable to the same resolved state.
+
+## Output Order
+
+Always return sections in this order:
+
+1. Creative Summary
+2. Scene Plan
+3. Image Prompts
+4. Frame-to-Frame Video Prompts
+5. Spoken Script, only when speech is used
+6. Silent Behavior Script, only when the format is silent
+
+Do not add internal reasoning, validation scores, hidden matrix calculations, or implementation notes unless explicitly requested.
+
+## 1. Creative Summary
+
+Include:
+- Niche
+- Product
+- Campaign Objective
+- Campaign Stage
+- CTA
+- Creator
+- Format
+- Angle
+- Duration
+- Scene Count
+- Creative Concept
+
+The Creative Concept should be one concise sentence describing the content idea and viewer takeaway.
+
+## 2. Scene Plan
+
+Create one entry per scene.
+
+Each scene must contain:
+
+| Field | Requirement |
+|---|---|
+| Scene | Required |
+| Purpose | Required |
+| State | Required |
+| Creator Action | Required |
+| Product Interaction | Required when product is visible or used |
+| Behavior Cue | Required |
+| Environment | Required |
+| Camera State | Required |
+| Continuity Lock | Required |
+| Transition Intent | Required except for final scene |
+
+Keep the Scene Plan structured and concise. It is a bridge to the prompts, not the final creative copy.
+
+### Scene Plan Rule
+
+Every scene must have one dominant visual purpose.
+
+If a scene contains multiple major actions, split them only when duration and scene count allow it. Otherwise simplify the action.
+
+## 3. Image Prompts
+
+Generate exactly one Image Prompt for every planned scene.
+
+Use this naming:
+- Scene 01 — Image Prompt
+- Scene 02 — Image Prompt
+- Scene 03 — Image Prompt
+- etc.
+
+Every Image Prompt must describe a single visual state and follow the Prompt Assembly Rules.
+
+### Image Prompt Requirements
+
+Each prompt must preserve, when relevant:
+- Character Identity
+- Product Identity
+- Current pose and behavior
+- Product interaction state
+- Environment
+- Camera/framing
+- Lighting
+- UGC realism
+- Continuity locks
+
+Do not include future actions in the Image Prompt.
+
+## 4. Frame-to-Frame Video Prompts
+
+Generate exactly one transition prompt for every consecutive scene pair.
+
+For N scenes, generate N−1 video prompts.
+
+Use this naming:
+- Scene 01 → 02 — Video Prompt
+- Scene 02 → 03 — Video Prompt
+- Scene 03 → 04 — Video Prompt
+- etc.
+
+Each prompt must connect the exact ending state of the previous scene to the exact starting state of the next scene.
+
+### Video Prompt Requirements
+
+Each transition must preserve:
+- Starting frame identity
+- Physical cause of movement
+- Human movement
+- Product/material physics
+- Camera behavior
+- Relevant environment movement
+- Ending frame state
+- Critical continuity locks
+
+Do not describe an unrelated new scene.
+
+## 5. Spoken Script
+
+Include this section only when the selected format uses speech.
+
+The script should:
+- Match the campaign objective and angle
+- Fit the selected duration
+- Use conversational language
+- Follow Voice Identity
+- Avoid unsupported product claims
+- Support the visible behavior rather than fighting it
+
+Do not duplicate the entire script inside every Image or Video Prompt.
+
+## 6. Silent Behavior Script
+
+Include this section only when the selected format is silent.
+
+Represent behavior as a compact sequence, for example:
+
+`notice → inspect → adjust → reveal`
+
+The behavior script must match the actual Scene Plan.
+
+Do not add dialogue, voice-over, or lip-synced speech instructions to silent content.
+
+## Output Count Rules
+
+For a scene count of N:
+- Scene Plan = N entries
+- Image Prompts = N prompts
+- Video Prompts = N−1 prompts
+- Spoken Script = 1 section if speech is used
+- Silent Behavior Script = 1 section if the format is silent
+
+Never generate extra prompts to compensate for weak scenes. Fix the scene plan instead.
+
+## Output Consistency Rules
+
+Before returning the final output, ensure:
+
+1. Every Image Prompt maps to exactly one Scene Plan entry.
+2. Every Video Prompt maps to exactly one consecutive scene pair.
+3. Scene N's Image Prompt is the starting visual anchor for Video Prompt N → N+1.
+4. Scene N+1's Image Prompt is the ending visual anchor for Video Prompt N → N+1.
+5. Unchanged character attributes remain unchanged.
+6. Unchanged product attributes remain unchanged.
+7. Unchanged wardrobe and environment remain unchanged.
+8. Any state change has a visible or physical cause.
+9. Silent formats contain no spoken dialogue.
+10. Spoken formats keep dialogue in the Spoken Script section rather than duplicating it throughout visual prompts.
+11. CTA behavior appears only when relevant to the selected CTA.
+12. Unsupported product or creator details are not invented.
+
+## Generation Template
+
+Use this internal generation sequence:
+
+`Input → Validation → Product/Creator Understanding → Format × Angle → Creative Concept → Scene State Model → Prompt Assembly → Consistency Pass → Output`
+
+For each scene:
+
+`Scene State → Image Prompt`
+
+For each transition:
+
+`Scene N State → Physical Transition → Scene N+1 State → Video Prompt`
+
+The final response should expose the structured output, not the internal generation chain.
+
+## Output Example Structure
+
+Use this shape as the default response structure:
+
+### Creative Summary
+- Niche:
+- Product:
+- Campaign Objective:
+- Campaign Stage:
+- CTA:
+- Creator:
+- Format:
+- Angle:
+- Duration:
+- Scene Count:
+- Creative Concept:
+
+### Scene Plan
+
+#### Scene 01
+- Purpose:
+- State:
+- Creator Action:
+- Product Interaction:
+- Behavior Cue:
+- Environment:
+- Camera State:
+- Continuity Lock:
+- Transition Intent:
+
+#### Scene 02
+- Purpose:
+- State:
+- Creator Action:
+- Product Interaction:
+- Behavior Cue:
+- Environment:
+- Camera State:
+- Continuity Lock:
+- Transition Intent:
+
+### Image Prompts
+
+#### Scene 01 — Image Prompt
+`[complete generation prompt]`
+
+#### Scene 02 — Image Prompt
+`[complete generation prompt]`
+
+### Frame-to-Frame Video Prompts
+
+#### Scene 01 → 02 — Video Prompt
+`[complete transition prompt]`
+
+### Spoken Script
+`[only when applicable]`
+
+### Silent Behavior Script
+`[only when applicable]`
+
+This example is a structural template. Do not copy placeholder text into generated content.
+
 # Format × Angle Matrix
 
 The Format × Angle Matrix determines whether a creative combination is natural and what behavior should be generated from it. Format controls **how the creator communicates**. Angle controls **what the viewer should notice**.
