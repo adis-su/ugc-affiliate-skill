@@ -48,7 +48,9 @@ The runtime does not infer appearance, age, body type, accent, or vocal characte
 
 ## Adapter Boundary
 
-The portable runtime expects an external retrieval layer to populate `retrieved_facts` and creator reference data. A future network adapter can fetch the Product URL, normalize the result, and pass it into the same contract without changing the creative engines.
+The portable runtime exposes `fetchProductSource(url)` as an async Product URL adapter. It fetches HTML and extracts conservative Product JSON-LD fields. It returns `UNRESOLVED` rather than inventing facts when the page cannot be fetched or does not expose usable Product data. The synchronous generation runtime can consume the adapter result through `resolveProductWithSource(input, retrievedSource)`.
+
+The creator side remains reference-driven because visual and voice identity must come from an approved creator reference, not from guessing based on a name.
 
 Pipeline:
 
