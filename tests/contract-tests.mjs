@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { run, expectedVideoPromptCount } from "../runtime/index.mjs";
+import { run, runAsync, expectedVideoPromptCount } from "../runtime/index.mjs";
 import { resolveProductWithSource, fetchProductSource } from "../runtime/intelligence/product-retrieval.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -173,4 +173,12 @@ test("product URL adapter validates invalid URLs without throwing", async () => 
 test("async runtime can consume an injected retrieved product source", async () => {
   const fixture = fixtures.find((item) => item.id === "positive-product-retrieval-provenance");
   assert.ok(fixture);
+});
+
+
+test("creator reference is required for visual generation", () => {
+  const fixture = fixtures.find((item) => item.id === "positive-creator-reference-injection");
+  assert.ok(fixture);
+  const result = run(fixture.input);
+  assert.notEqual(result.validation.blockers.find((b) => b.code === "CREATOR_IDENTITY_INSUFFICIENT"), undefined);
 });
