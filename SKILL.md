@@ -2656,3 +2656,340 @@ Throughout execution:
 - no unexplained product identity changes,
 - every state change has a physical or intentional cause,
 - unknown attributes remain unknown until supported.
+
+## Creator Intelligence & Identity Lock Specification
+
+Creator Intelligence is the source-of-truth layer for creator-related generation. Its purpose is to preserve the same human identity across scenes while separating visual identity from voice identity.
+
+The runtime must never enrich a creator by inventing personal, physical, or vocal attributes that are not present in the Creator Library or supplied reference material.
+
+### Creator Source Priority
+
+Use creator information in this priority order:
+
+1. Explicit creator identity fields in the Creator Library.
+2. Character Reference or Voice Reference supplied by the creator record.
+3. Directly observable attributes from an approved creator reference.
+4. Creative choices that do not assert identity facts.
+5. Unknown.
+
+When sources conflict:
+
+- preserve the conflict,
+- prefer the canonical Creator Library field for identity continuity,
+- do not silently overwrite identity attributes,
+- flag material conflicts for validation.
+
+The creator name itself is never evidence for appearance, voice, age, body type, ethnicity, accent, or any other identity attribute.
+
+### Creator Identity Record
+
+Build an internal Creator Identity record containing two independent but linked identity systems.
+
+#### Character Identity Record
+
+| Field | Meaning |
+|---|---|
+| Creator Name | Canonical creator identity |
+| Age Appearance | Supported apparent age range or descriptor when provided |
+| Face | Supported facial identity anchors |
+| Hair | Supported hair identity anchors |
+| Skin | Supported skin identity anchors |
+| Body | Supported body/proportion anchors |
+| Style | Supported clothing, grooming, or styling identity |
+| Reference | Character Reference when available |
+| Unknown Attributes | Missing or unresolved identity details |
+| Source Notes | Provenance and conflict notes |
+
+Only attributes supported by the creator source may be populated as identity facts.
+
+#### Voice Identity Record
+
+| Field | Meaning |
+|---|---|
+| Creator Name | Canonical creator identity |
+| Voice Characteristics | Supported vocal identity traits |
+| Tone | Supported tonal identity |
+| Pitch | Supported pitch characteristics |
+| Speaking Style | Supported speaking behavior |
+| Speech Pace | Supported pace |
+| Accent | Supported accent when provided |
+| Energy | Supported vocal energy |
+| Voice Reference | Voice Reference when available |
+| Unknown Attributes | Missing or unresolved voice details |
+| Source Notes | Provenance and conflict notes |
+
+Voice Identity is only required when spoken dialogue or voice-over is used.
+
+### Character Reference Handling
+
+The Character Reference is the visual anchor for creator continuity when available.
+
+Rules:
+
+- use the same Character Reference across scenes whenever the generation system supports reference conditioning,
+- do not regenerate the creator independently from scene to scene,
+- preserve recognizable identity anchors even when pose, framing, expression, or environment changes,
+- do not treat wardrobe or temporary styling as permanent identity unless the creator record defines it as such,
+- do not replace a missing reference with an invented portrait.
+
+If no Character Reference exists, use only the Character Identity fields that are actually defined.
+
+A missing reference reduces visual anchoring strength. It does not authorize identity invention.
+
+### Voice Reference Handling
+
+The Voice Reference is the audio anchor for spoken continuity when available.
+
+Rules:
+
+- use the same Voice Reference across spoken scenes whenever supported,
+- preserve Voice Identity characteristics across all spoken output,
+- do not create a new vocal personality for individual scenes,
+- do not infer accent, pitch, speaking style, or vocal age from the creator name,
+- if no Voice Reference exists, use only the defined Voice Identity fields.
+
+A missing Voice Reference reduces audio anchoring strength. It does not authorize voice invention.
+
+### Character Identity Lock
+
+After Creator Intelligence is built, create a Character Identity Lock.
+
+The lock contains only stable visual attributes required for continuity:
+
+- face / recognizable facial identity
+- hair identity
+- skin appearance when defined
+- body/proportion identity when defined
+- creator style when defined
+- Character Reference when available
+
+The lock must remain unchanged across scenes unless a change is explicitly supported as temporary scene state.
+
+Examples of temporary state rather than identity:
+
+- pose,
+- facial expression,
+- hand position,
+- hair position caused by movement,
+- wardrobe changes intentionally planned by the content,
+- makeup state when the concept includes application,
+- accessories added or removed as part of the scene.
+
+A temporary state change must not mutate the underlying Character Identity Lock.
+
+### Voice Identity Lock
+
+When speech is used, create a Voice Identity Lock containing:
+
+- voice characteristics,
+- tone,
+- pitch,
+- speaking style,
+- speech pace,
+- accent when defined,
+- energy,
+- Voice Reference when available.
+
+The Voice Identity Lock remains stable across all spoken scenes.
+
+Changes in emotional delivery may alter expression or energy within the defined identity, but must not create a different voice persona.
+
+### Identity vs State
+
+Creator Identity and Creator State must remain separate.
+
+#### Identity
+
+Who the creator is.
+
+Examples:
+
+- facial identity,
+- hair identity,
+- stable body/proportion attributes,
+- stable style,
+- stable voice characteristics.
+
+#### State
+
+What the creator is doing or how the creator appears in the current scene.
+
+Examples:
+
+- standing vs sitting,
+- facing mirror vs camera,
+- smiling vs neutral expression,
+- hand position,
+- posture,
+- temporary hair position,
+- clothing adjustment,
+- makeup application state.
+
+State can change. Identity must not drift.
+
+### Visual Continuity Rules
+
+Across Image Prompts and Video Prompts:
+
+- preserve the same Character Identity Lock,
+- preserve the same Character Reference when available,
+- preserve stable identity anchors,
+- preserve wardrobe and styling when they are continuity-critical,
+- preserve temporary appearance state unless a transition changes it,
+- keep facial and body proportions stable,
+- allow natural pose and expression changes,
+- do not make every scene a new interpretation of the creator.
+
+For frame-to-frame video:
+
+- the starting frame must use the exact creator identity of the prior ending state,
+- movement may change pose, expression, hair position, or hand position only when physically caused,
+- the ending frame must still resolve to the same Character Identity Lock.
+
+### Wardrobe and Appearance Continuity
+
+Wardrobe is not automatically part of permanent creator identity.
+
+Classify wardrobe and appearance elements as:
+
+1. Identity-level: stable creator style explicitly defined in the Creator Library.
+2. Campaign-level: selected outfit or appearance for the current generation.
+3. Scene-state: temporary changes caused by action, application, or adjustment.
+
+Campaign-level and scene-state attributes must be locked across scenes unless the scene plan deliberately changes them.
+
+Examples:
+
+- Fashion garment worn throughout a mirror-selfie sequence → campaign-level continuity lock.
+- Hair moved behind the ear during a transition → scene-state change with physical cause.
+- Makeup being applied in a Beauty routine → scene-state progression, not identity mutation.
+
+### Spoken Content Continuity
+
+When speech is used:
+
+- the Spoken Script must reference the same Creator Voice Identity,
+- visual prompts must not contain full dialogue,
+- spoken claims must remain supported by product evidence,
+- delivery can vary naturally by scene without changing the creator's voice identity,
+- pronunciation or wording should not imply an unsupported accent or persona.
+
+When the format is silent:
+
+- do not invoke Voice Identity as a content-generation requirement,
+- do not add speech, voice-over, or lip-sync,
+- communicate intent through visible behavior.
+
+### Missing Reference and Retrieval Failure Modes
+
+#### Creator Not Found
+
+Block generation.
+
+The runtime cannot safely invent a creator identity from a name alone.
+
+#### Character Identity Exists, Character Reference Missing
+
+Proceed with the defined Character Identity fields.
+
+Mark reference anchoring as unavailable and do not invent missing visual attributes.
+
+#### Voice Identity Exists, Voice Reference Missing
+
+Proceed with the defined Voice Identity fields when speech is used.
+
+Do not invent missing vocal characteristics.
+
+#### Character Identity Incomplete
+
+Proceed only when the remaining fields are sufficient for the requested visual generation.
+
+Otherwise block or request the minimum missing identity information.
+
+#### Voice Identity Incomplete
+
+If speech is required and the remaining fields are insufficient to maintain voice continuity, block or require the minimum missing voice information.
+
+If the format is silent, incomplete Voice Identity does not block visual generation.
+
+#### Conflicting Creator References
+
+Do not silently merge materially different references.
+
+Preserve the conflict and block when it could cause identity drift.
+
+### Creator Identity Anti-Patterns
+
+Do not:
+
+- infer facial features from the creator name,
+- invent body proportions,
+- invent skin tone or complexion details,
+- invent hair texture or style,
+- invent age appearance,
+- invent accent,
+- invent pitch,
+- invent vocal personality,
+- change the creator's identity between scenes,
+- use a different Character Reference per scene without an explicit reason,
+- use a different Voice Reference per spoken scene without an explicit reason,
+- treat a temporary pose or expression as a permanent identity change,
+- use generic photorealism language as a substitute for identity anchoring.
+
+### Creator Intelligence Output
+
+The creator retrieval stage should produce:
+
+1. Character Identity Record
+2. Character Reference status
+3. Character Identity Lock
+4. Voice Identity Record when speech is used
+5. Voice Reference status when speech is used
+6. Voice Identity Lock when speech is used
+7. Unknown Attributes
+8. Source / Conflict Notes
+
+These outputs become the source of truth for Creative Logic, Scene Planning, Image Prompt Assembly, Video Prompt Assembly, Spoken Script generation, and Validation.
+
+### Creator Consistency Validation
+
+The validator must check:
+
+| Area | Check | Severity |
+|---|---|---|
+| Character | Creator resolves from Creator Library | Blocker |
+| Character | Identity anchors remain stable | Blocker |
+| Character | Character Reference remains stable when used | Blocker |
+| Character | No unsupported identity attributes are introduced | Blocker |
+| Character | Temporary state changes have a scene cause | Blocker |
+| Voice | Voice Identity exists when speech is used | Blocker |
+| Voice | Voice Identity remains stable across spoken scenes | Blocker |
+| Voice | Voice Reference remains stable when used | Blocker |
+| Voice | No unsupported vocal attributes are introduced | Blocker |
+| Silent | Voice generation is not introduced | Pass / Blocker if violated |
+
+A validation failure should be repaired locally whenever possible.
+
+Examples:
+
+- face drift → restore Character Identity Lock,
+- reference drift → restore the canonical Character Reference,
+- invented appearance detail → remove the unsupported detail,
+- voice drift → restore Voice Identity Lock,
+- silent format contains speech → remove speech and preserve visual behavior.
+
+### Creator Identity Invariants
+
+Throughout execution:
+
+- one creator identity package per generation,
+- one Character Identity source of truth,
+- one Character Identity Lock,
+- one Voice Identity source of truth when speech is used,
+- one Voice Identity Lock when speech is used,
+- references remain stable when used,
+- temporary scene state never mutates identity,
+- unknown identity attributes remain unknown,
+- no creator identity changes without an explicit supported source or deliberate state transition,
+- creator name alone is never used as evidence for identity details.
