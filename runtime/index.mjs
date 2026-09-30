@@ -3,9 +3,7 @@ import { resolveNiche, NICHE_KNOWLEDGE } from "./knowledge/niche-knowledge.mjs";
 import { CAMPAIGN_OBJECTIVES, CAMPAIGN_STAGES, CTAS, FORMAT_ANGLES, PLATFORMS as KNOWLEDGE_PLATFORMS, SCENE_LIMITS, SILENT_FORMATS, resolveCreativeKnowledge, validateCampaignEnums } from "./knowledge/campaign-creative-behavior.mjs";
 
 export const SUPPORTED_CREATORS = new Set(["Rositasari"]);
-
 export const PLATFORMS = new Set(KNOWLEDGE_PLATFORMS);
-
 export const NICHES = FORMAT_ANGLES;
 
 const blocker = (code, stage, message, field = null, corrective_action = null) => ({
@@ -212,17 +210,19 @@ function buildImagePrompts(scenes, input, product, campaign, concept) {
   return scenes.map(scene => ({
     scene_id: scene.scene_id,
     prompt: [
-      "UGC smartphone image",
-      `${input.creator} maintaining the same Character Identity Lock`,
-      `showing ${product.record.product_name} in the defined scene state`,
-      `observable action: ${scene.behavior_cue}`,
-      `${input.niche} realism`,
-      `evidence: ${campaign.required_evidence.join(", ")}`,
-      concept.ugc_guardrail,
-      "natural anatomy and believable product interaction",
-      "preserve product identity and environment continuity",
-      `human realism: ${nicheKnowledge.human_realism.join(", ")}`,
-      "single visual state, no future action sequence"
+      `Character Identity: ${scene.creator_identity.creator}; use the locked character reference when available`,
+      `Current creator state: ${scene.creator_state.action}; gaze and pose remain consistent with the scene state`,
+      `Product Identity: ${product.record.product_name}; preserve the Product Identity Lock`,
+      `Product State: ${scene.product_state.state}`,
+      `Visible behavior: ${scene.behavior_cue}`,
+      `Environment: ordinary ${input.niche} setting with stable spatial continuity`,
+      `Camera/composition: ${scene.camera_state.framing}, smartphone-native capture, plausible perspective`,
+      `Lighting: natural or ordinary ambient lighting appropriate to the environment`,
+      `UGC realism: ${scene.niche_realism.join(", ")}`,
+      `Evidence: ${campaign.required_evidence.join(", ")}`,
+      `Continuity: same character, product, wardrobe, environment geometry and camera relationship`,
+      `Negative constraints only where relevant: no identity drift, product duplication, impossible anatomy, or unexplained state change`,
+      "single visual state; do not describe future actions"
     ].join("; ")
   }));
 }
@@ -235,22 +235,19 @@ function buildVideoPrompts(scenes, input, product) {
       from_scene: from.scene_id,
       to_scene: to.scene_id,
       prompt: [
-        `start from exact visual state of ${from.scene_id}`,
-        `physical cause: ${to.transition_cause}`,
-        `human movement: ${from.behavior_cue} → ${to.behavior_cue}`,
-        `preserve ${input.creator} Character Identity Lock`,
-        `preserve ${product.record.product_name} Product Identity Lock`,
-        "preserve environment geometry and smartphone UGC camera behavior",
-        `end on exact visual state of ${to.scene_id}`,
-        "no teleportation, identity drift, or unexplained state changes"
+        `Starting Frame Anchor: exact visual state of ${from.scene_id}`,
+        `Physical Cause: ${to.transition_cause}`,
+        `Human Movement: one primary movement from ${from.behavior_cue} to ${to.behavior_cue}`,
+        "Facial Movement: proportional reaction driven by the visible stimulus",
+        `Product Movement: preserve ${product.record.product_name} identity; movement follows physical contact and state change`,
+        `Material Physics: ${input.niche} materials respond naturally to the creator's movement`,
+        "Camera Movement: subtle smartphone drift or reframing only when motivated by creator movement",
+        "Environment Movement: minimal and physically caused; preserve room geometry and object placement",
+        `Ending Frame Anchor: exact visual state of ${to.scene_id}`,
+        "Continuity: same character identity, product identity, wardrobe, environment and compatible camera relationship",
+        "No teleportation, morphing, duplicated objects, unexplained state changes, or cinematic camera choreography"
       ].join("; "),
-      continuity_anchors: [
-        from.scene_id,
-        to.scene_id,
-        "Character Identity Lock",
-        "Product Identity Lock",
-        "Environment Continuity"
-      ]
+      continuity_anchors: [from.scene_id, to.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"]
     };
   });
 }
