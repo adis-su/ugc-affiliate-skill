@@ -191,112 +191,28 @@ Only after all seven points are resolved should AFFILIX continue to:
 
 Duration, scene count, camera behavior, lighting, gestures, transitions, continuity, and other execution details should be derived by the skill unless explicitly supplied or required by the target generator.
 
-### Guided User Input Flow
+### Direct Input Compatibility
 
-The user input experience is sequential, not a single large form. The skill should collect and preserve context step by step.
+The activation flow is the canonical interactive entry path. Direct requests that already contain multiple fields remain supported for backward compatibility.
 
-The default order is:
+When fields are supplied incrementally outside the activation flow:
+- preserve answers from earlier turns,
+- resolve only the next missing decision,
+- do not restart the entire configuration,
+- apply the same seven campaign configuration fields and validation rules used by the activation flow.
 
-1. **Product / Product URL**
-2. **Campaign Objective**
-3. **Content Format**
-4. **Angle**
-5. **Platform**
-6. **CTA**
-7. **Creator**
-8. **Speech**
+The canonical activation order is:
 
-The first step establishes Product Intelligence. Each later question should use the already-resolved context to make the next choice more relevant.
+1. Product URL
+2. Campaign Objective
+3. Format
+4. Angle
+5. Platform
+6. CTA
+7. Creator
+8. Speech
 
-Do not ask the user to provide execution-level production details that the skill can safely derive. Camera, lighting, composition, gestures, scene mechanics, continuity, and other generation details belong to the skill unless the user explicitly constrains them.
-
-#### Step 1 — Product / Product URL
-
-Collect at least one reliable product identifier:
-- Product name, or
-- Product URL
-
-When a Product URL is supplied, resolve Product Intelligence before moving to the next step when retrieval is available.
-
-If the product cannot be identified sufficiently to support the requested content, request the minimum missing product information instead of inventing attributes.
-
-#### Step 2 — Campaign Objective
-
-Collect the intended campaign objective, such as:
-- Awareness
-- Consideration
-- Conversion
-
-The objective determines the creative job of the content and informs later format, angle, behavior, and CTA choices.
-
-#### Step 3 — Content Format
-
-Collect the desired content format.
-
-Examples:
-- Product Demo
-- Honest Review
-- Problem → Solution
-- Tutorial
-- Unboxing
-- Mirror Selfie
-- Silent Mirror Selfie
-
-The available formats should be constrained by the relevant niche/content rules when known.
-
-#### Step 4 — Angle
-
-Collect the desired content angle.
-
-Examples:
-- First Impression
-- How I Use It
-- Problem → Solution
-- Daily Routine
-- Feature Demonstration
-
-Angle should define what the viewer should notice. It must be demonstrated through visible behavior, not merely stated in copy.
-
-If the user does not provide an angle, the skill may propose contextually appropriate options based on Product Intelligence, Campaign Objective, and Content Format.
-
-#### Step 5 — Platform
-
-Collect the target platform, for example:
-- TikTok
-- Instagram Reels
-- Facebook Reels
-- Shopee Video
-
-Platform should influence output conventions, pacing, framing, and CTA behavior without overriding the user's core intent.
-
-#### Step 6 — CTA
-
-Collect the desired CTA when applicable.
-
-CTA is required when the campaign objective or format materially depends on a conversion action. It may be omitted when no CTA is appropriate.
-
-If omitted, the skill may derive a suitable visual or verbal CTA behavior from the campaign objective, but must not invent unsupported product claims.
-
-#### Step 7 — Creator
-
-Collect the creator identity.
-
-Current supported creator:
-- Rositasari
-
-Resolve the creator from the Creator Library. Do not infer creator identity from the name alone.
-
-Rositasari Character Identity governs visual continuity. Rositasari Voice Identity governs spoken continuity. References may be used as optional conditioning inputs when available.
-
-#### Step 8 — Speech
-
-Determine whether the content is:
-- Spoken
-- Silent
-
-For silent content, do not generate dialogue, voice-over, or lip-sync.
-
-For spoken content, use the Rositasari Voice Identity as the source of truth for spoken delivery. A voice reference may be used when available, but it is not an approval gate.
+The seven campaign settings are presented together after Product Intelligence is resolved during an activated `/Affilix` session. The eight-step numbering refers to the Product URL step plus the seven settings, not eight independent campaign questions.
 
 ### Input State
 
