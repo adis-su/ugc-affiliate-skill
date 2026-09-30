@@ -1,10 +1,780 @@
-# Video Prompt Engine Specification\n\nThe Video Prompt Engine converts consecutive Scene States into one frame-to-frame video transition.\n\nIt is the second final-output generation engine.\n\n## Runtime Position\n\nScene N State + Behavior + Image Anchor → Physical Transition → Scene N+1 State\n\nThe engine must describe how one believable visual state changes into the next.\nIt must not reinvent either frame.\n\n## Core Principle\n\nA Video Prompt is:\n\n> A physically plausible transition from one defined visual state to another.\n\nUse:\n\nStarting Frame → Cause → Human Movement → Product / Material Response → Camera / Environment Movement → Ending Frame\n\nDo not use:\n\nStart image → vague cinematic movement → unrelated new scene\n\nThe transition must explain how the ending state is physically reached.\n\n## Inputs\n\nThe engine consumes:\n\n### Starting Scene\n- Scene ID\n- Creator State\n- Product State\n- Environment State\n- Camera State\n- Image Prompt\n\n### Ending Scene\n- Scene ID\n- Creator State\n- Product State\n- Environment State\n- Camera State\n- Image Prompt\n\n### Behavior\n- Primary Action\n- Supporting Action\n- Micro-Behavior\n- Product Interaction\n- Reaction\n- Transition Behavior\n\n### Identity Locks\n- Character Identity Lock\n- Character Reference\n- Product Identity Lock\n- Product Reference\n- Environment Continuity\n- Camera Continuity\n\n### Realism Constraints\n- Human anatomy\n- Natural movement\n- Material physics\n- Product interaction physics\n- Smartphone camera behavior\n- Natural environment movement\n\n## Video Prompt Contract\n\nEvery Frame-to-Frame Video Prompt must resolve:\n\n1. What is the exact starting state?\n2. What changes?\n3. What causes the change?\n4. How does the creator move?\n5. How does the product respond?\n6. How does clothing/material respond?\n7. How does the camera respond?\n8. How does the environment respond?\n9. What is the exact ending state?\n10. Which attributes must remain unchanged?\n\nIf no physical cause exists for a state change, the transition is invalid.\n\n## Output Count Contract\n\nFor N scenes:\n\nImage Prompts = N\nVideo Prompts = N - 1\n\nExamples:\n- 1 scene → 0 video prompts\n- 2 scenes → 1 video prompt\n- 3 scenes → 2 video prompts\n- 4 scenes → 3 video prompts\n- 5 scenes → 4 video prompts\n\nNever create a video prompt for a nonexistent transition.\n\n## Transition Assembly Hierarchy\n\nAssemble in this order:\n\n1. Starting Frame Anchor\n2. Physical Cause\n3. Human Movement\n4. Facial Movement\n5. Product Movement\n6. Material / Clothing Physics\n7. Camera Movement\n8. Environment Movement\n9. Ending Frame Anchor\n10. Continuity Constraints\n\nThis hierarchy prioritizes causality over visual spectacle.\n\n## 1. Starting Frame Anchor\n\nThe starting frame is the Image Prompt for Scene N.\n\nPreserve:\n- creator identity\n- pose\n- wardrobe\n- product identity\n- product state\n- environment\n- camera relationship\n- relevant framing\n\nDo not describe a different opening image.\n\nWhen the generation system supports image-to-video input, the starting image is the primary visual anchor.\n\n## 2. Physical Cause\n\nEvery meaningful state change requires a cause.\n\nExamples:\n\n### Fashion\nhand pulls sleeve upward → sleeve moves and settles\n\n### Beauty\napplicator touches cheek → product transfers to skin\n\n### Home\nhand pushes organizer inward → organizer slides into shelf position\n\n### Camera\ncreator shifts phone slightly → framing changes naturally\n\nBad:\n\n> The outfit suddenly changes.\n\nGood:\n\n> The creator pulls the jacket into place, causing the front panels to shift and settle into the new position.\n\nA transition should be causal, not magical.\n\n## 3. Human Movement\n\nHuman motion must be:\n- anatomically plausible\n- continuous\n- appropriately paced\n- task-driven\n- proportional to the scene duration\n\nPrioritize:\n- weight transfer\n- shoulder movement\n- elbow movement\n- wrist rotation\n- finger contact\n- head movement\n- eye direction\n- natural posture adjustment\n\nAvoid:\n- teleporting limbs\n- sudden pose jumps\n- rubber-like joints\n- accelerated gestures\n- unnecessary full-body motion\n\n### One Primary Movement\n\nEach transition should have one dominant human movement.\nSupporting movements are subordinate.\n\nExample:\n\n> She raises her right hand to adjust the collar while her shoulders make a small natural counter-shift.\n\nNot:\n\n> She adjusts the collar, turns, smiles, waves, fixes her hair, and steps backward.\n\nHuman beings are complicated enough without forcing six actions into half a second.\n\n## 4. Facial Movement\n\nFacial changes should follow the stimulus.\n\nUse:\n- eye movement\n- gaze shift\n- small eyebrow movement\n- subtle smile\n- brief neutral-to-pleased change\n- natural blink when appropriate\n\nDo not force expressions.\n\nA reaction must have a visible cause.\n\nExample:\n\nsees the finished application → eyes inspect the result → subtle satisfied expression\n\nAvoid:\n\ninstant huge smile because the prompt demanded happy\n\n## 5. Product Movement\n\nProduct movement must follow physical interaction.\n\nDescribe:\n- contact\n- grip\n- release\n- placement\n- rotation\n- opening\n- closing\n- application\n- displacement\n\nThe product must preserve:\n- identity\n- shape\n- color\n- pattern\n- packaging\n- visible branding\n- functional parts\n\nDo not allow:\n- product morphing\n- unexplained size changes\n- duplicate products\n- disappearing products\n- impossible grip\n- floating objects\n\n## 6. Material and Clothing Physics\n\nMaterials respond to movement.\n\n### Fashion\nPreserve:\n- fabric folds\n- stretch\n- drape\n- seam behavior\n- sleeve movement\n- hem movement\n- garment settling\n\nA garment should respond to the body rather than independently animating.\n\n### Beauty\nPreserve:\n- product transfer\n- wetness or texture when supported\n- blending behavior\n- skin response\n- realistic applicator contact\n\nDo not invent unsupported physical properties.\n\n### Home\nPreserve:\n- friction\n- contact\n- object weight\n- surface interaction\n- shadows\n- displacement\n- deformation only when physically plausible\n\n## 7. Camera Movement\n\nCamera movement should match ordinary UGC capture.\n\nPossible behaviors:\n- slight handheld drift\n- small phone reposition\n- natural wrist movement\n- subtle reframing\n- minor exposure adjustment\n\nUse camera movement only when motivated by creator behavior.\n\n### Mirror Selfie\n\nThe camera is attached to the creator's phone.\n\nTherefore:\n- phone movement affects framing\n- creator movement affects reflection\n- mirror geometry remains stable\n- phone and reflection remain physically related\n\nDo not use:\n- drone movement\n- orbit shots\n- impossible camera rotations\n- cinematic tracking\n- unexplained camera teleportation\n\n## 8. Environment Movement\n\nEnvironment movement should be minimal.\n\nPossible natural movement:\n- curtain shift\n- hair responding to movement\n- fabric movement\n- subtle background activity\n- shadow movement caused by the creator\n\nDo not animate static objects without cause.\n\nThe environment exists primarily to preserve spatial continuity.\n\n## 9. Ending Frame Anchor\n\nThe ending frame must resolve exactly toward Scene N+1.\n\nPreserve the target:\n- creator identity\n- pose\n- product state\n- product position\n- wardrobe\n- environment\n- camera state\n- evidence visibility\n\nThe transition should terminate in a state compatible with the next Image Prompt.\n\n### End-State Rule\n\nThe final moments of the video prompt should not introduce another action after the target state is reached.\n\nThe ending state is the destination.\n\n## Temporal Pacing\n\nMotion density must respect duration.\n\n### 4 Seconds\nUse:\n- one clear physical transition\n- minimal supporting movement\n\n### 6 Seconds\nUse:\n- one primary movement\n- one supporting reaction or camera adjustment\n\n### 8 Seconds\nUse:\n- one primary interaction\n- one secondary state adjustment\n- restrained reaction\n\n### 10 Seconds\nUse:\n- one coherent behavioral sequence\n- multiple causal micro-transitions only when necessary\n\nNever compress five major actions into a short clip.\n\n## State Delta Rule\n\nCompare Scene N and Scene N+1.\nClassify every changed attribute:\n\n### Required Change\nMust have a physical cause.\n\n### Allowed Natural Drift\nSmall incidental changes such as:\n- blink\n- hair movement\n- fabric settling\n- tiny camera drift\n\n### Forbidden Change\nAnything that changes without cause:\n- face identity\n- body proportions\n- product identity\n- garment color\n- room geometry\n- object scale\n- camera universe\n\nIf a changed attribute cannot be classified, repair the transition before generation.\n\n## Continuity Locks\n\nEvery transition inherits continuity locks.\n\n### Character\n- same face\n- same hair identity\n- same skin identity when defined\n- same body identity\n- same wardrobe unless intentionally changed\n\n### Voice\nWhen speech is used:\n- same Voice Identity\n- same vocal characteristics\n- same speech style\n- same accent/pitch when defined\n\nVoice is separate from visual movement.\n\n### Product\n- same product\n- same variant\n- same visible packaging\n- same color/pattern\n- same material appearance\n- state changes only when caused\n\n### Environment\n- same room\n- same major furniture\n- same spatial geometry\n- same relevant object placement\n\n### Camera\n- same phone relationship\n- compatible orientation\n- compatible framing\n- no unexplained camera relocation\n\n## Silent Video Handling\n\nFor silent formats:\n- no dialogue\n- no voice-over\n- no lip-sync\n- no speech-driven facial movement\n\nBehavior must carry the narrative.\n\nExample:\n\nnotice → inspect → adjust → reveal\n\nThe video prompt should express these through physical movement only.\n\n## Spoken Video Handling\n\nFor spoken formats:\n- maintain Voice Identity continuity\n- allow natural mouth movement\n- preserve gaze and conversational behavior\n- keep gestures subordinate to speech\n- do not insert the dialogue into the visual movement description unless necessary for synchronization\n\nThe spoken script remains a separate output.\n\n## CTA Transition\n\nCTA behavior should be natural.\n\nPossible transitions:\n- product remains visible\n- creator brings product slightly toward camera\n- creator settles into a final readable pose\n- gaze shifts toward product or camera\n\nAvoid:\n- abrupt commercial end cards\n- exaggerated pointing\n- unnatural product zoom\n- sudden frozen poses\n\n## Niche-Specific Motion Rules\n\n### Fashion\nPrioritize:\n- body weight transfer\n- garment movement\n- sleeve and hem behavior\n- natural mirror movement\n- fabric settling\n- believable fit changes\n\n### Beauty\nPrioritize:\n- hand-to-face contact\n- applicator movement\n- controlled product transfer\n- gaze toward mirror\n- subtle facial reaction\n- realistic skin interaction\n\n### Home\nPrioritize:\n- hand-object contact\n- object displacement\n- friction\n- placement\n- spatial consistency\n- shadows and contact points\n\n## UGC Motion Language\n\nDefault motion should feel:\n- handheld\n- human-paced\n- slightly imperfect\n- physically grounded\n- casually captured\n- non-performative\n\nDo not default to:\n- cinematic slow motion\n- speed ramps\n- dramatic push-ins\n- orbiting cameras\n- perfect choreography\n- commercial reveal timing\n\nThe goal is not cinematic realism.\n\nThe goal is:\n\n> ordinary human movement captured by a phone.\n\n## Video Prompt Anti-Patterns\n\nDo not:\n- teleport between poses\n- change identity\n- morph products\n- invent material properties\n- animate unrelated background objects\n- introduce cinematic camera movement\n- stack too many actions\n- describe impossible physics\n- create state changes without causes\n- let the ending state drift away from Scene N+1\n- duplicate the spoken script\n- add speech to silent formats\n\n## Video Prompt Validation\n\n| Area | Check | Severity |\n|---|---|---|\n| Count | N scenes produce N−1 transitions | Blocker |\n| Start | Matches Scene N | Blocker |\n| End | Matches Scene N+1 | Blocker |\n| Cause | Every meaningful state change has a cause | Blocker |\n| Human Motion | Anatomically plausible | Blocker |\n| Product Motion | Physically plausible | Blocker |\n| Material | Clothing/product material responds correctly | Blocker |\n| Camera | Movement is physically plausible | Blocker |\n| Environment | No unexplained movement | Warning |\n| Continuity | Character remains stable | Blocker |\n| Continuity | Product remains stable | Blocker |\n| Continuity | Environment remains stable | Blocker |\n| Speech | Matches silent/spoken mode | Blocker |\n| Timing | Motion density fits duration | Warning |\n| UGC | Motion feels phone-captured and human | Warning |\n| Unsupported | No unsupported physical claims | Blocker |\n\n## Transition Repair Rules\n\nRepair the smallest failed component.\n\nExamples:\n\n### Start mismatch\nRestore the Scene N Image Prompt as the opening anchor.\n\n### End mismatch\nModify the final movement so it settles into Scene N+1.\n\n### Pose jump\nAdd the missing intermediate physical movement.\n\n### Product teleport\nAdd explicit hand contact, movement, and placement.\n\n### Clothing morph\nDescribe realistic fabric movement and settling.\n\n### Camera teleport\nReplace with creator-driven phone repositioning.\n\n### Excessive motion\nRemove secondary actions and retain the primary transition.\n\n### Cinematic drift\nReduce camera movement to subtle handheld behavior.\n\n### Silent violation\nRemove speech, lip-sync, or voice-over behavior.\n\n### Identity drift\nRestore Character Identity Lock and Reference.\n\n## Transition Quality Test\n\nA valid transition should answer:\n\n> If the viewer paused the clip at any moment, would the current body, product, camera, and environment state still make physical sense?\n\nIf no, the transition fails.\n\n## Video Prompt Output\n\nFor every consecutive scene pair produce exactly:\n\n- Transition ID\n- From Scene\n- To Scene\n- Frame-to-Frame Video Prompt\n\nDo not include hidden reasoning.\n\nThe prompt must be generation-ready.\n\n## Video Prompt Invariants\n\nThroughout execution:\n- one scene pair → one Video Prompt\n- starting state is anchored\n- ending state is anchored\n- every meaningful change has a cause\n- human movement remains anatomically plausible\n- product movement remains physically plausible\n- material behavior remains believable\n- camera movement remains motivated\n- environment remains stable unless physically affected\n- Character Identity Lock remains stable\n- Product Identity Lock remains stable\n- silent formats remain silent\n- spoken formats preserve Voice Identity\n- no unsupported details are introduced\n- no cinematic behavior is introduced unless explicitly requested\n\n## Relationship to Image Prompt Engine\n\nThe two engines are complementary:\n\nImage Prompt N = Visual State N\n\nVideo Prompt N→N+1 = Physical Transition from State N to State N+1\n\nImage Prompt N+1 = Visual State N+1\n\nTherefore:\n\n> Image Prompts define where the video starts and ends. Video Prompts define how it gets there.\n\nThis relationship is mandatory for frame-to-frame continuity.\n\n## Runtime Integration\n\nUser Input\n→ Normalize\n→ Validate\n→ Product Intelligence\n→ Creator Intelligence\n→ Campaign Intelligence\n→ Format × Angle\n→ Duration / Scene Count\n→ Creative Logic\n→ Scene Planning\n→ Content Behavior\n→ Image Prompt Engine\n→ Video Prompt Engine\n→ Validation\n→ Repair\n→ Revalidate\n→ Output\n\nThe Video Prompt Engine must never bypass Scene Planning or Content Behavior.\n\nThose upstream layers define the destination and intent. The Video Prompt Engine only translates them into physically plausible motion.
+# Video Prompt Engine Specification
 
-## Final Prompt Format
+The Video Prompt Engine converts consecutive Scene States into one frame-to-frame video transition.
+
+It is the second final-output generation engine.
+
+## 1. Purpose
+
+The engine translates two resolved visual states into one physically plausible transition.
+
+`Scene N State + Behavior + Image Anchor → Physical Transition → Scene N+1 State`
+
+The engine must describe how one believable visual state changes into the next.
+
+It must not reinvent either frame or introduce new creative direction.
+
+## 2. Core Principle
+
+A Video Prompt is:
+
+> A physically plausible transition from one defined visual state to another.
+
+Use:
+
+`Starting State → Trigger → Creator Movement → Product / Material Response → Camera / Environment Response → Ending State`
+
+Do not use:
+
+`Start image → vague cinematic movement → unrelated new scene`
+
+The transition must explain how the ending state is physically reached.
+
+Causality has priority over visual spectacle.
+
+## 3. Inputs
+
+The engine consumes five input groups.
+
+### 3.1 Starting Scene
+
+- Scene ID
+- Creator State
+- Product State
+- Environment State
+- Camera State
+- Image Prompt
+
+### 3.2 Ending Scene
+
+- Scene ID
+- Creator State
+- Product State
+- Environment State
+- Camera State
+- Image Prompt
+
+### 3.3 Content Behavior
+
+- Primary Action
+- Supporting Action
+- Micro-Behavior
+- Product Interaction
+- Reaction
+- Transition Behavior
+
+### 3.4 Identity Sources
+
+- Character Identity Lock
+- Character Reference
+- Product Identity Lock
+- Product Reference
+- Environment Continuity
+- Camera Continuity
+
+### 3.5 Realism Constraints
+
+- Human anatomy
+- Natural movement
+- Material physics
+- Product interaction physics
+- Smartphone camera behavior
+- Natural environment movement
+
+## 4. Transition Model
+
+Every transition follows:
+
+`STATE A → STATE DELTA → CAUSE → BEHAVIOR → STATE B`
+
+Where:
+
+- **State A** is the exact starting state from Scene N.
+- **State Delta** is the meaningful difference between Scene N and Scene N+1.
+- **Cause** explains why the state changes.
+- **Behavior** describes the physical movement that produces the change.
+- **State B** is the exact target state from Scene N+1.
+
+### 4.1 State Delta Classification
+
+Compare Scene N and Scene N+1 and classify every changed attribute.
+
+#### Required Change
+
+A meaningful state change that must have a physical cause.
+
+#### Allowed Natural Drift
+
+Small incidental changes such as:
+
+- blink
+- hair movement
+- fabric settling
+- tiny camera drift
+
+#### Forbidden Change
+
+Anything that changes without cause:
+
+- face identity
+- body proportions
+- product identity
+- garment color
+- room geometry
+- object scale
+- camera universe
+
+If a changed attribute cannot be classified, repair the transition before generation.
+
+## 5. Video Prompt Contract
+
+Every Frame-to-Frame Video Prompt must resolve:
+
+1. What is the exact starting state?
+2. What changes?
+3. What causes the change?
+4. How does the creator move?
+5. How does the product respond?
+6. How does clothing or material respond?
+7. How does the camera respond?
+8. How does the environment respond?
+9. What is the exact ending state?
+10. Which attributes must remain unchanged?
+
+If no physical cause exists for a required state change, the transition is invalid.
+
+## 6. Transition Assembly
+
+Assemble every transition in this exact order:
+
+1. Starting State
+2. Trigger
+3. Creator Movement
+4. Product Movement
+5. Material Response
+6. Camera Movement
+7. Environment Response
+8. Speech
+9. Ending State
+10. Continuity Lock
+11. Forbidden Motion
+
+This order is the canonical semantic hierarchy for the final Video Prompt.
+
+### 6.1 Starting State
+
+The starting frame is the Image Prompt for Scene N.
+
+Preserve:
+
+- creator identity
+- pose
+- wardrobe
+- product identity
+- product state
+- environment
+- camera relationship
+- relevant framing
+
+Do not describe a different opening image.
+
+When the generation system supports image-to-video input, the starting image is the primary visual anchor.
+
+### 6.2 Trigger
+
+Every meaningful state change requires a cause.
+
+Examples:
+
+#### Fashion
+
+`hand pulls sleeve upward → sleeve moves and settles`
+
+#### Beauty
+
+`applicator touches cheek → product transfers to skin`
+
+#### Home
+
+`hand pushes organizer inward → organizer slides into shelf position`
+
+#### Camera
+
+`creator shifts phone slightly → framing changes naturally`
+
+Bad:
+
+> The outfit suddenly changes.
+
+Good:
+
+> The creator pulls the jacket into place, causing the front panels to shift and settle into the new position.
+
+A transition should be causal, not magical.
+
+### 6.3 Creator Movement
+
+Human motion must be:
+
+- anatomically plausible
+- continuous
+- appropriately paced
+- task-driven
+- proportional to the scene duration
+
+Prioritize:
+
+- weight transfer
+- shoulder movement
+- elbow movement
+- wrist rotation
+- finger contact
+- head movement
+- eye direction
+- natural posture adjustment
+
+Avoid:
+
+- teleporting limbs
+- sudden pose jumps
+- rubber-like joints
+- accelerated gestures
+- unnecessary full-body motion
+
+#### One Primary Movement
+
+Each transition should have one dominant human movement.
+
+Supporting movements are subordinate.
+
+Example:
+
+> She raises her right hand to adjust the collar while her shoulders make a small natural counter-shift.
+
+Not:
+
+> She adjusts the collar, turns, smiles, waves, fixes her hair, and steps backward.
+
+### 6.4 Facial Movement
+
+Facial changes must follow the stimulus.
+
+Use:
+
+- eye movement
+- gaze shift
+- small eyebrow movement
+- subtle smile
+- brief neutral-to-pleased change
+- natural blink when appropriate
+
+Do not force expressions.
+
+A reaction must have a visible cause.
+
+Example:
+
+`sees the finished application → eyes inspect the result → subtle satisfied expression`
+
+Avoid:
+
+`instant huge smile because the prompt demanded happy`
+
+### 6.5 Product Movement
+
+Product movement must follow physical interaction.
+
+Describe:
+
+- contact
+- grip
+- release
+- placement
+- rotation
+- opening
+- closing
+- application
+- displacement
+
+The product must preserve:
+
+- identity
+- shape
+- color
+- pattern
+- packaging
+- visible branding
+- functional parts
+
+Do not allow:
+
+- product morphing
+- unexplained size changes
+- duplicate products
+- disappearing products
+- impossible grip
+- floating objects
+
+### 6.6 Material Response
+
+Materials respond to movement.
+
+#### Fashion
+
+Preserve:
+
+- fabric folds
+- stretch
+- drape
+- seam behavior
+- sleeve movement
+- hem movement
+- garment settling
+
+A garment should respond to the body rather than independently animating.
+
+#### Beauty
+
+Preserve:
+
+- product transfer
+- wetness or texture when supported
+- blending behavior
+- skin response
+- realistic applicator contact
+
+Do not invent unsupported physical properties.
+
+#### Home
+
+Preserve:
+
+- friction
+- contact
+- object weight
+- surface interaction
+- shadows
+- displacement
+- deformation only when physically plausible
+
+### 6.7 Camera Movement
+
+Camera movement should match ordinary UGC capture.
+
+Possible behaviors:
+
+- slight handheld drift
+- small phone reposition
+- natural wrist movement
+- subtle reframing
+- minor exposure adjustment
+
+Use camera movement only when motivated by creator behavior.
+
+#### Mirror Selfie
+
+The camera is attached to the creator's phone.
+
+Therefore:
+
+- phone movement affects framing
+- creator movement affects reflection
+- mirror geometry remains stable
+- phone and reflection remain physically related
+
+Do not use:
+
+- drone movement
+- orbit shots
+- impossible camera rotations
+- cinematic tracking
+- unexplained camera teleportation
+
+### 6.8 Environment Response
+
+Environment movement should be minimal.
+
+Possible natural movement:
+
+- curtain shift
+- hair responding to movement
+- fabric movement
+- subtle background activity
+- shadow movement caused by the creator
+
+Do not animate static objects without cause.
+
+The environment exists primarily to preserve spatial continuity.
+
+### 6.9 Speech
+
+Speech is a format constraint, not a replacement for visual behavior.
+
+#### Silent Formats
+
+For silent formats:
+
+- no dialogue
+- no voice-over
+- no lip-sync
+- no speech-driven facial movement
+
+Behavior must carry the narrative.
+
+Example:
+
+`notice → inspect → adjust → reveal`
+
+The video prompt should express these through physical movement only.
+
+#### Spoken Formats
+
+For spoken formats:
+
+- maintain Voice Identity continuity
+- allow natural mouth movement
+- preserve gaze and conversational behavior
+- keep gestures subordinate to speech
+- do not insert the dialogue into the visual movement description unless necessary for synchronization
+
+The spoken script remains a separate output.
+
+### 6.10 Ending State
+
+The ending frame must resolve exactly toward Scene N+1.
+
+Preserve the target:
+
+- creator identity
+- pose
+- product state
+- product position
+- wardrobe
+- environment
+- camera state
+- evidence visibility
+
+The transition should terminate in a state compatible with the next Image Prompt.
+
+#### End-State Rule
+
+The final moments of the video prompt should not introduce another action after the target state is reached.
+
+The ending state is the destination.
+
+### 6.11 Continuity Lock
+
+Every transition inherits continuity locks.
+
+#### Character
+
+- same face
+- same hair identity
+- same skin identity when defined
+- same body identity
+- same wardrobe unless intentionally changed
+
+#### Voice
+
+When speech is used:
+
+- same Voice Identity
+- same vocal characteristics
+- same speech style
+- same accent/pitch when defined
+
+Voice is separate from visual movement.
+
+#### Product
+
+- same product
+- same variant
+- same visible packaging
+- same color/pattern
+- same material appearance
+- state changes only when caused
+
+#### Environment
+
+- same room
+- same major furniture
+- same spatial geometry
+- same relevant object placement
+
+#### Camera
+
+- same phone relationship
+- compatible orientation
+- compatible framing
+- no unexplained camera relocation
+
+### 6.12 Forbidden Motion
+
+Protect against known transition failures.
+
+Typical forbidden motion:
+
+- teleporting between poses
+- identity changes
+- product morphing
+- unsupported material behavior
+- unrelated background animation
+- cinematic camera movement
+- excessive simultaneous actions
+- impossible physics
+- unexplained state changes
+- ending-state drift
+- duplicated spoken script
+- speech in silent formats
+
+## 7. Temporal Rules
+
+Motion density must respect duration.
+
+### 4 Seconds
+
+Use:
+
+- one clear physical transition
+- minimal supporting movement
+
+### 6 Seconds
+
+Use:
+
+- one primary movement
+- one supporting reaction or camera adjustment
+
+### 8 Seconds
+
+Use:
+
+- one primary interaction
+- one secondary state adjustment
+- restrained reaction
+
+### 10 Seconds
+
+Use:
+
+- one coherent behavioral sequence
+- multiple causal micro-transitions only when necessary
+
+Never compress five major actions into a short clip.
+
+## 8. Context Rules
+
+### 8.1 CTA Transition
+
+CTA behavior should remain natural.
+
+Possible transitions:
+
+- product remains visible
+- creator brings product slightly toward camera
+- creator settles into a final readable pose
+- gaze shifts toward product or camera
+
+Avoid:
+
+- abrupt commercial end cards
+- exaggerated pointing
+- unnatural product zoom
+- sudden frozen poses
+
+### 8.2 Niche-Specific Motion
+
+#### Fashion
+
+Prioritize:
+
+- body weight transfer
+- garment movement
+- sleeve and hem behavior
+- natural mirror movement
+- fabric settling
+- believable fit changes
+
+#### Beauty
+
+Prioritize:
+
+- hand-to-face contact
+- applicator movement
+- controlled product transfer
+- gaze toward mirror
+- subtle facial reaction
+- realistic skin interaction
+
+#### Home
+
+Prioritize:
+
+- hand-object contact
+- object displacement
+- friction
+- placement
+- spatial consistency
+- shadows and contact points
+
+### 8.3 UGC Motion Language
+
+Default motion should feel:
+
+- handheld
+- human-paced
+- slightly imperfect
+- physically grounded
+- casually captured
+- non-performative
+
+Do not default to:
+
+- cinematic slow motion
+- speed ramps
+- dramatic push-ins
+- orbiting cameras
+- perfect choreography
+- commercial reveal timing
+
+The goal is not cinematic realism.
+
+The goal is:
+
+> ordinary human movement captured by a phone.
+
+## 9. Failure Prevention
+
+### 9.1 Video Prompt Anti-Patterns
+
+Do not:
+
+- teleport between poses
+- change identity
+- morph products
+- invent material properties
+- animate unrelated background objects
+- introduce cinematic camera movement
+- stack too many actions
+- describe impossible physics
+- create state changes without causes
+- let the ending state drift away from Scene N+1
+- duplicate the spoken script
+- add speech to silent formats
+
+### 9.2 Video Prompt Validation
+
+| Area | Check | Severity |
+|---|---|---|
+| Count | N scenes produce N−1 transitions | Blocker |
+| Start | Matches Scene N | Blocker |
+| End | Matches Scene N+1 | Blocker |
+| Cause | Every meaningful state change has a cause | Blocker |
+| Human Motion | Anatomically plausible | Blocker |
+| Product Motion | Physically plausible | Blocker |
+| Material | Clothing/product material responds correctly | Blocker |
+| Camera | Movement is physically plausible | Blocker |
+| Environment | No unexplained movement | Warning |
+| Continuity | Character remains stable | Blocker |
+| Continuity | Product remains stable | Blocker |
+| Continuity | Environment remains stable | Blocker |
+| Speech | Matches silent/spoken mode | Blocker |
+| Timing | Motion density fits duration | Warning |
+| UGC | Motion feels phone-captured and human | Warning |
+| Unsupported | No unsupported physical claims | Blocker |
+
+### 9.3 Transition Repair Rules
+
+Repair the smallest failed component.
+
+#### Start Mismatch
+
+Restore the Scene N Image Prompt as the opening anchor.
+
+#### End Mismatch
+
+Modify the final movement so it settles into Scene N+1.
+
+#### Pose Jump
+
+Add the missing intermediate physical movement.
+
+#### Product Teleport
+
+Add explicit hand contact, movement, and placement.
+
+#### Clothing Morph
+
+Describe realistic fabric movement and settling.
+
+#### Camera Teleport
+
+Replace with creator-driven phone repositioning.
+
+#### Excessive Motion
+
+Remove secondary actions and retain the primary transition.
+
+#### Cinematic Drift
+
+Reduce camera movement to subtle handheld behavior.
+
+#### Silent Violation
+
+Remove speech, lip-sync, or voice-over behavior.
+
+#### Identity Drift
+
+Restore Character Identity Lock and Reference.
+
+### 9.4 Transition Quality Test
+
+A valid transition should answer:
+
+> If the viewer paused the clip at any moment, would the current body, product, camera, and environment state still make physical sense?
+
+If no, the transition fails.
+
+## 10. Output Contract
+
+### 10.1 Output Count
+
+For N scenes:
+
+`Image Prompts = N`
+
+`Video Prompts = N - 1`
+
+Examples:
+
+- 1 scene → 0 video prompts
+- 2 scenes → 1 video prompt
+- 3 scenes → 2 video prompts
+- 4 scenes → 3 video prompts
+- 5 scenes → 4 video prompts
+
+Never create a video prompt for a nonexistent transition.
+
+### 10.2 Required Output Shape
+
+For every consecutive scene pair, produce exactly:
+
+```text
+Transition ID: {scene_a}_TO_{scene_b}
+From Scene: {scene_a}
+To Scene: {scene_b}
+
+Frame-to-Frame Video Prompt:
+{canonical video prompt}
+```
+
+Do not include hidden reasoning, implementation notes, or alternate prompt versions in the generation-ready output.
+
+## 11. Canonical Prompt Format
 
 The final Video Prompt must use a stable, ordered transition structure so every clip explains the physical path between two Scene States.
 
-### Canonical Structure
+### 11.1 Canonical Structure
 
 ```text
 [VIDEO PROMPT]
@@ -65,9 +835,19 @@ FORBIDDEN MOTION:
 {forbidden_motion}
 ```
 
-### Assembly Rule
+### 11.2 Assembly Rule
 
-The canonical fields are an **output format**, not a second source of truth. Populate them only from the starting Scene State, ending Scene State, Content Behavior, transition cause, Identity Sources, and Realism Constraints.
+The canonical fields are an output format, not a second source of truth.
+
+Populate them only from:
+
+- Starting Scene State
+- Ending Scene State
+- Content Behavior
+- State Delta
+- Transition Cause
+- Identity Sources
+- Realism Constraints
 
 The generation prompt may be rendered as a natural-language paragraph after assembly, but the semantic field order must remain stable:
 
@@ -75,7 +855,7 @@ The generation prompt may be rendered as a natural-language paragraph after asse
 
 Do not add fields ad hoc per transition.
 
-### Field Rules
+### 11.3 Field Rules
 
 - `TRANSITION` identifies the exact consecutive scene pair.
 - `DURATION` constrains motion density.
@@ -91,17 +871,66 @@ Do not add fields ad hoc per transition.
 - `CONTINUITY LOCK` lists attributes that remain unchanged.
 - `FORBIDDEN MOTION` protects known transition failure modes.
 
-### Required Output Shape
+## 12. Relationship to Image Prompt Engine
 
-For each consecutive scene pair, return exactly:
+The two engines are complementary.
+
+`Image Prompt N = Visual State N`
+
+`Video Prompt N→N+1 = Physical Transition from State N to State N+1`
+
+`Image Prompt N+1 = Visual State N+1`
+
+Therefore:
+
+> Image Prompts define where the video starts and ends. Video Prompts define how it gets there.
+
+This relationship is mandatory for frame-to-frame continuity.
+
+## 13. Runtime Integration
 
 ```text
-Transition ID: {scene_a}_TO_{scene_b}
-From Scene: {scene_a}
-To Scene: {scene_b}
-
-Frame-to-Frame Video Prompt:
-{canonical video prompt}
+User Input
+→ Normalize
+→ Validate
+→ Product Intelligence
+→ Creator Intelligence
+→ Campaign Intelligence
+→ Format × Angle
+→ Duration / Scene Count
+→ Creative Logic
+→ Scene Planning
+→ Content Behavior
+→ Image Prompt Engine
+→ Video Prompt Engine
+→ Validation
+→ Repair
+→ Revalidate
+→ Output
 ```
 
-No hidden reasoning, implementation notes, or alternate prompt versions belong in the generation-ready output.
+The Video Prompt Engine must never bypass Scene Planning or Content Behavior.
+
+Those upstream layers define the destination and intent.
+
+The Video Prompt Engine only translates them into physically plausible motion.
+
+## 14. Video Prompt Invariants
+
+Throughout execution:
+
+- one scene pair → one Video Prompt
+- starting state is anchored
+- ending state is anchored
+- every meaningful change has a cause
+- human movement remains anatomically plausible
+- product movement remains physically plausible
+- material behavior remains believable
+- camera movement remains motivated
+- environment remains stable unless physically affected
+- Character Identity Lock remains stable
+- Product Identity Lock remains stable
+- silent formats remain silent
+- spoken formats preserve Voice Identity
+- no unsupported details are introduced
+- no cinematic behavior is introduced unless explicitly requested
