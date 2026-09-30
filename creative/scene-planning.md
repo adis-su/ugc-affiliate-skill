@@ -6,7 +6,73 @@ It is the bridge between **creative direction** and **prompt generation**.
 
 The core rule is:
 
-`Creative Concept → Scene Plan → Scene State Model → Image / Video Prompts`
+`Creative Concept → Storyboard → Scene State Model → Image / Video Prompts`
+
+## Storyboard Contract
+
+The Storyboard is the production blueprint for the content sequence. It defines the narrative purpose, visible states, behavior, and causal transitions that must exist before prompt generation.
+
+The Storyboard is **not** an Image Prompt and is **not** a Video Prompt. It is compiled into Scene States and Transition specifications, which then become the single shared source of truth for both generation engines.
+
+Conceptually:
+
+```text
+STORYBOARD
+    ↓
+SCENE / SHOT SPECIFICATION
+    ↓
+SCENE STATE
+    ↓
+CONTENT BEHAVIOR
+    ↓
+STATE TRANSITION
+    ↓
+IMAGE PROMPT / VIDEO PROMPT
+```
+
+### Storyboard Responsibilities
+
+For every scene, the storyboard must establish:
+
+- narrative purpose;
+- current creator state;
+- current product state;
+- environment state;
+- camera state;
+- dominant behavior/action;
+- required visual evidence;
+- State In;
+- State Out;
+- transition intent;
+- transition cause;
+- continuity locks;
+- speech or silent behavior state when applicable.
+
+### State In / State Out Rule
+
+Each scene is treated as a state transition unit:
+
+```text
+STATE IN
+   ↓
+BEHAVIOR / ACTION
+   ↓
+STATE CHANGE
+   ↓
+STATE OUT
+```
+
+For Scene N+1:
+
+`Scene N State Out = Scene N+1 State In`
+
+Any intentional difference between those states must be represented by a causal transition. Unchanged state is inherited rather than re-invented.
+
+### No Duplicate Reference-State Layer
+
+Scene State is the canonical visual truth for the storyboard pipeline. A separate competing “Reference State” model must not be introduced when it duplicates Scene State.
+
+A reference image is an output/conditioning artifact derived from Scene State, not a second source of truth.
 
 Image Prompts and Video Prompts must never be designed independently from the scene model.
 
@@ -115,6 +181,37 @@ Each scene should also define:
 - Speech state when applicable
 
 The transition metadata explains how the current state becomes the next state.
+
+## State In / State Out Representation
+
+The structured Scene State should expose the state boundaries explicitly, even when the underlying state groups remain unchanged:
+
+```text
+Scene
+├── scene_id
+├── purpose
+├── state_in
+│   ├── creator_state
+│   ├── product_state
+│   ├── environment_state
+│   ├── camera_state
+│   └── speech_state
+├── behavior_cue
+├── state_change
+│   ├── changed_attributes[]
+│   ├── transition_intent
+│   └── transition_cause
+├── state_out
+│   ├── creator_state
+│   ├── product_state
+│   ├── environment_state
+│   ├── camera_state
+│   └── speech_state
+├── required_evidence[]
+└── continuity_lock
+```
+
+`state_in` and `state_out` are boundary views over the same canonical state model. They must not become independent sources of truth.
 
 ## Scene Contract
 
@@ -559,9 +656,9 @@ Do not:
 
 ## Scene Planning Output
 
-The Scene Planning stage should produce:
+The Scene Planning stage should produce a storyboard-backed production plan:
 
-1. Scene Sequence
+1. Storyboard / Scene Sequence
 2. Scene State Model for every scene
 3. Required Evidence Mapping
 4. Transition Map
@@ -642,7 +739,7 @@ Scene Planning runs after Creative Logic and before Content Behavior:
 → Format × Angle
 → Duration / Scene Count
 → Creative Logic
-→ Scene Planning
+→ Storyboard / Scene Planning
 → Content Behavior
 → Prompt Assembly
 → Validation
