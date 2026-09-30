@@ -1,37 +1,12 @@
 import { resolveCreator } from "./knowledge/creator-library.mjs";
 import { resolveNiche, NICHE_KNOWLEDGE } from "./knowledge/niche-knowledge.mjs";
+import { CAMPAIGN_OBJECTIVES, CAMPAIGN_STAGES, CTAS, FORMAT_ANGLES, PLATFORMS as KNOWLEDGE_PLATFORMS, SCENE_LIMITS, SILENT_FORMATS, resolveCreativeKnowledge, validateCampaignEnums } from "./knowledge/campaign-creative-behavior.mjs";
 
 export const SUPPORTED_CREATORS = new Set(["Rositasari"]);
 
-export const PLATFORMS = new Set([
-  "TikTok",
-  "Instagram Reels",
-  "Facebook Reels",
-  "Shopee Video"
-]);
+export const PLATFORMS = new Set(KNOWLEDGE_PLATFORMS);
 
-export const NICHES = {
-  Fashion: {
-    formats: ["Silent Mirror Selfie", "Outfit Showcase", "Try-On", "GRWM", "Talking Head", "POV", "Lifestyle", "Before / After"],
-    angles: ["Outfit Inspiration", "Styling", "Fit Check", "Occasion-Based", "Trend", "Wardrobe Essential"]
-  },
-  Beauty: {
-    formats: ["GRWM", "Tutorial", "Product Application", "Before / After", "Talking Head", "Close-Up Demo", "Routine", "First Impression", "POV"],
-    angles: ["Shade / Color", "Texture", "Finish", "Skin Concern", "Makeup Look", "Routine", "Transformation"]
-  },
-  Home: {
-    formats: ["Product Showcase", "Room Makeover", "Before / After", "Lifestyle", "POV", "Problem → Solution", "Unboxing", "Product Demo", "Routine"],
-    angles: ["Space Improvement", "Organization", "Convenience", "Aesthetic Upgrade", "Problem Solving", "Functionality", "Before / After"]
-  }
-};
-
-const SILENT_FORMATS = new Set([
-  "Silent Mirror Selfie", "Outfit Showcase", "Try-On", "POV", "Lifestyle", "Before / After",
-  "Product Showcase", "Room Makeover", "Problem → Solution", "Unboxing", "Product Demo",
-  "Routine", "GRWM", "Tutorial", "Product Application", "Close-Up Demo", "First Impression"
-]);
-
-const SCENE_LIMITS = { 4: [1, 2], 6: [2, 3], 8: [3, 4], 10: [4, 5] };
+export const NICHES = FORMAT_ANGLES;
 
 const blocker = (code, stage, message, field = null, corrective_action = null) => ({
   code, stage, severity: "BLOCKER", message, field, corrective_action
@@ -90,6 +65,7 @@ export function validateRequest(input) {
   }
 
   if (input.niche && !NICHES[input.niche]) blockers.push(blocker("INVALID_ENUM", "validate", `Unsupported niche: ${input.niche}`, "niche"));
+  blockers.push(...validateCampaignEnums(input));
   if (input.creator && !SUPPORTED_CREATORS.has(input.creator)) {
     blockers.push(blocker("CREATOR_NOT_FOUND", "creator", `Creator is not available: ${input.creator}`, "creator"));
   }
@@ -225,7 +201,9 @@ function buildSceneStates(input, product, campaign, concept) {
       transition_intent: final ? null : purposes[i + 1],
       transition_cause: final ? null : "creator action causes the next visible state",
       campaign_role: campaign.product_role,
-      concept_anchor: concept.core_idea
+      concept_anchor: concept.core_idea,
+      behavior_sequence: resolveCreativeKnowledge(input).behavior.sequence,
+      behavior_rules: resolveCreativeKnowledge(input).behavior.rules ?? resolveCreativeKnowledge(input).rules.ugc_guardrails
     };
   });
 }
@@ -334,8 +312,11 @@ export function run(input) {
     });
   }
 
+  const creativeKnowledge = resolveCreativeKnowledge(input);
   const campaign = campaignIntelligence(input, product);
   const concept = creativeConcept(input, campaign);
+  concept.decision_hierarchy = creativeKnowledge.rules.decision_hierarchy;
+  concept.behavior_pattern = creativeKnowledge.behavior.sequence;
   const scenes = buildSceneStates(input, product, campaign, concept);
   for (const scene of scenes) {
     scene.creator_identity = creator.character_identity_lock;
