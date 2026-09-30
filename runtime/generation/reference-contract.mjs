@@ -1,5 +1,4 @@
 const ALLOWED_REFERENCE_TYPES = new Set(["character", "product", "environment", "voice"]);
-const REQUIRED_VISUAL_REFERENCE_TYPE = "character";
 
 export function createReference({ type, id = null, uri = null, role = null, required = false, source = "runtime" } = {}) {
   return { type, id, uri, role, required, source };
@@ -30,29 +29,16 @@ function resolveReference(sceneReference, type, role, required = false, source =
 }
 
 export function resolveCharacterReference(scene, references = []) {
-  const sceneReference = resolveReference(scene?.creator_identity?.reference, REQUIRED_VISUAL_REFERENCE_TYPE, "character_identity", true);
+  const sceneReference = resolveReference(scene?.creator_identity?.reference, "character", "character_identity", false);
   if (sceneReference) return sceneReference;
-  return references.find((reference) => reference?.type === REQUIRED_VISUAL_REFERENCE_TYPE && (reference.id || reference.uri)) ?? null;
+  return references.find((reference) => reference?.type === "character" && (reference.id || reference.uri)) ?? null;
 }
 
-export function validateRequiredCharacterReference(scene, references = []) {
+export function validateCharacterReference(scene, references = []) {
   const reference = resolveCharacterReference(scene, references);
-  if (!reference) {
-    return {
-      valid: false,
-      error: {
-        code: "GENERATION_CHARACTER_REFERENCE_MISSING",
-        stage: "reference",
-        severity: "BLOCKER",
-        message: "Visual generation requires an approved Character Reference.",
-        field: "references.character"
-      }
-    };
-  }
-  const validation = validateReference(reference, { requiredType: REQUIRED_VISUAL_REFERENCE_TYPE });
-  if (!validation.valid) {
-    return { valid: false, error: { code: validation.code, stage: "reference", severity: "BLOCKER", message: validation.message, field: "references.character" } };
-  }
+  if (!reference) return { valid: true, reference: null };
+  const validation = validateReference(reference, { requiredType: "character" });
+  if (!validation.valid) return { valid: false, error: { code: validation.code, stage: "reference", severity: "BLOCKER", message: validation.message, field: "references.character" } };
   return { valid: true, reference };
 }
 
@@ -68,3 +54,5 @@ export function validateProductReference(scene, references = []) {
     ? { valid: true, reference }
     : { valid: false, reference: null };
 }
+
+export const validateRequiredCharacterReference = validateCharacterReference;
