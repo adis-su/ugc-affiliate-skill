@@ -6,20 +6,86 @@ Rositasari is a creator identity package with two independent but connected iden
 
 The Character Identity is the source of truth for visual generation and character continuity.
 
-- Age Appearance
-- Face
-- Hair
-- Skin
-- Body
-- Style
-- Reference
+### Core Profile
+
+- Name: Rositasari
+- Age: 25
+- Gender: Female
+- Height: 165 cm
+- Appearance: Young adult
+- Ethnicity Style: Southeast Asian visual appearance
+- Hijab: Yes, Rositasari wears hijab. Hijab is part of her stable visual identity and must be preserved across scenes unless an explicit user instruction changes the styling.
+
+### Face
+
+- Shape: Oval-rounded
+- Forehead: Moderately wide and smooth
+- Cheeks: Soft and naturally rounded
+- Jawline: Soft and rounded
+- Chin: Short-to-medium and rounded
+
+### Eyes
+
+- Size: Medium
+- Shape: Almond-round
+- Iris Color: Very dark brown
+- Gaze: Natural and direct
+- Eyelids: Natural
+- Eyelashes: Subtle
+- Eye Spacing: Balanced
+
+### Eyebrows
+
+- Color: Very dark brown
+- Thickness: Medium
+- Shape: Natural soft arch
+- Density: Moderately full
+- Tail: Slightly tapered
+
+### Nose
+
+- Size: Medium
+- Bridge: Relatively straight
+- Width: Narrow-to-medium
+- Tip: Rounded
+- Nostrils: Small-to-medium
+- Appearance: Natural
+
+### Lips
+
+- Size: Medium
+- Upper Lip: Medium-thin
+- Lower Lip: Slightly fuller
+- Cupid Bow: Soft and defined
+- Color: Natural muted pink
+- Corners: Neutral
+
+### Skin
+
+- Tone: Light-medium
+- Undertone: Warm-neutral
+- Texture: Natural
+- Pores: Subtle
+- Facial Marks: Subtle natural marks
+- Finish: Natural skin
+- Makeup: Minimal
+
+### Facial Expression
+
+- Default: Calm neutral
+- Personality: Approachable
+- Gaze: Natural
+- Smile: Subtle when required
 
 ### Character Identity Rules
 
 - Preserve the same identity across scenes.
+- Preserve the same hijab-wearing identity across scenes.
 - Do not independently redesign the creator for each scene.
 - Use the Character Reference as the visual anchor when supported by the generation system.
-- Preserve recognizable facial, hair, skin, body, and style attributes.
+- Preserve recognizable facial, hair/hijab, skin, body, and style attributes.
+- Do not infer or invent additional identity attributes that are not defined here.
+- Clothing and hijab styling may change only when explicitly required by the creative brief; the underlying character identity remains stable.
 
 ## Voice Identity
 
