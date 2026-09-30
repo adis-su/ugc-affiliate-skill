@@ -143,6 +143,7 @@ function isSpeechRequested(input) {
 
 function expectedSpeechMode(format, input) {
   if (isSpeechRequested(input)) return "spoken";
+  if (format === "Talking Head") return "spoken";
   if (SILENT_FORMATS.has(format)) return "silent";
   return "silent_or_optional";
 }
