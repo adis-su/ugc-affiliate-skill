@@ -1269,3 +1269,388 @@ Starting State + Physical Action + Ending State
 to build the Frame-to-Frame Video Prompt.
 
 Do not generate the Image Prompt and Video Prompt independently. Both must derive from the same scene state model.
+
+
+## Validation Rules & Test Matrix
+
+The skill must validate generated content against the same contracts used to plan and assemble it. Validation is a required execution stage, not a cosmetic review step.
+
+### Validation Principles
+
+1. Validate structure before style.
+2. Validate factual support before creative polish.
+3. Validate continuity across scenes, not only individual prompts.
+4. Validate format and angle compatibility.
+5. Validate physical causality for state changes.
+6. Validate output counts deterministically.
+7. Reject unsupported details instead of silently inventing them.
+8. A prompt that looks good but violates the contract is invalid.
+
+### Input Validation Tests
+
+| Test | Rule | Result |
+|---|---|---|
+| Niche | Must be Fashion, Beauty, or Home | Pass / Fail |
+| Product | Product name is required | Pass / Fail |
+| Product URL | Retrieve when provided; do not invent product facts when absent | Pass / Fail |
+| Campaign Objective | Must be one of the supported objectives or explicitly custom | Pass / Fail |
+| Campaign Stage | Awareness, Consideration, or Conversion | Pass / Fail |
+| CTA | Must match the supplied CTA option or custom CTA | Pass / Fail |
+| Creator | Must resolve to a creator in Creator Library | Pass / Fail |
+| Format | Must be supported by the selected niche | Pass / Fail |
+| Angle | Must be supported by the selected niche | Pass / Fail |
+| Duration | Must be supported or explicitly custom | Pass / Fail |
+| Scene Count | Must be supported or explicitly custom | Pass / Fail |
+| Platform | Must be one or more supported platforms | Pass / Fail |
+
+### Format × Angle Validation
+
+Before generation, check the selected Format × Angle pair against the niche matrix.
+
+- Supported pair → continue.
+- Unsupported pair with an obvious adjacent interpretation → normalize only when the intended meaning remains unambiguous.
+- Unsupported pair with unclear intent → flag the combination instead of inventing a creative interpretation.
+
+The validator must never treat every combination as valid merely because both values exist independently.
+
+### Duration × Scene Count Validation
+
+Use the approximate planning ranges as defaults:
+
+| Duration | Typical Scene Count |
+|---|---:|
+| 4 sec | 1–2 |
+| 6 sec | 2–3 |
+| 8 sec | 3–4 |
+| 10 sec | 4–5 |
+
+Rules:
+
+- A value inside the typical range → valid.
+- A value slightly outside the range → valid only when the scene plan remains physically and temporally plausible.
+- A value that requires impossible pacing or excessive scene changes → invalid.
+- Custom duration or scene count must still satisfy temporal plausibility.
+
+### Output Count Tests
+
+For N scenes:
+
+- Image Prompts = N
+- Video Prompts = N - 1
+- Scene Plan entries = N
+- Each Image Prompt maps to exactly one scene.
+- Each Video Prompt maps to exactly one consecutive scene pair.
+- Spoken Script exists only when speech is used.
+- Silent Behavior Script exists only for silent formats.
+
+### Scene Contract Tests
+
+Every scene must contain:
+
+- Purpose
+- State
+- Creator Action
+- Product Interaction
+- Behavior Cue
+- Environment
+- Camera State
+- Continuity Lock
+- Transition Intent
+
+Every scene must describe a single visual state.
+
+Reject a scene when it:
+
+- contains multiple future actions as if they already happened,
+- changes identity without cause,
+- introduces unsupported product attributes,
+- breaks environment continuity,
+- requires an impossible physical state.
+
+### Image Prompt Tests
+
+Every Image Prompt must:
+
+- identify the same creator identity package,
+- preserve locked character attributes,
+- preserve locked product attributes,
+- represent exactly one scene state,
+- include only visible or inferable visual information,
+- preserve relevant environment and wardrobe continuity,
+- express the selected UGC visual language,
+- avoid cinematic or commercial polish unless explicitly requested.
+
+Reject when:
+
+- a future action is embedded as a current state,
+- product identity changes,
+- creator identity changes,
+- visual details contradict the scene state,
+- unsupported product facts are introduced.
+
+### Video Prompt Tests
+
+Every Video Prompt must:
+
+- start from the exact preceding Image Prompt state,
+- describe a physical transition,
+- explain the movement causing the state change,
+- preserve character identity,
+- preserve product identity,
+- preserve relevant wardrobe and environment state,
+- preserve material and interaction physics,
+- end at the exact next Image Prompt state.
+
+Reject when:
+
+- the ending state cannot result from the described movement,
+- an object teleports, floats, duplicates, or changes size without cause,
+- the camera transition contradicts the stated camera state,
+- the creator changes identity,
+- the product changes identity,
+- a scene transition relies on unexplained magic or hard discontinuity.
+
+### Human Realism Tests
+
+#### Fashion
+
+Check:
+
+- anatomy
+- pose
+- garment fit
+- fabric folds
+- garment movement
+- mirror reflection
+- smartphone framing
+- natural movement
+
+#### Beauty
+
+Check:
+
+- skin texture
+- facial anatomy
+- hand anatomy
+- application path
+- product texture
+- makeup state
+- reflection
+- lighting on skin
+
+#### Home
+
+Check:
+
+- object scale
+- room geometry
+- object placement
+- shadows
+- material behavior
+- interaction physics
+- lighting continuity
+
+### Consistency Tests
+
+Track the following state across scenes:
+
+#### Character
+
+- identity
+- face
+- hair
+- skin
+- body
+- style
+- wardrobe
+
+#### Voice
+
+When speech is used:
+
+- voice characteristics
+- tone
+- pitch
+- speaking style
+- speech pace
+- accent
+- energy
+
+#### Product
+
+- identity
+- visible design
+- color
+- material
+- shape
+- size
+- relevant state
+- functional parts
+
+#### Environment
+
+- room or location
+- geometry
+- major objects
+- lighting
+- camera orientation
+- relevant object placement
+
+A change is valid only when it is explicitly caused by a scene action, interaction, or intentional camera/environment transition.
+
+### Silent vs Spoken Validation
+
+#### Silent Format
+
+Must:
+
+- contain no dialogue,
+- contain no voice-over,
+- contain no lip-sync instruction,
+- use visible behavior as the communication mechanism,
+- include a Silent Behavior Script.
+
+#### Spoken Format
+
+Must:
+
+- use the Creator's Voice Identity,
+- keep dialogue separate from visual prompts,
+- fit the selected duration,
+- avoid unsupported product claims,
+- keep spoken claims consistent with visible evidence.
+
+### CTA Validation
+
+CTA behavior must match the selected CTA.
+
+- None → no CTA behavior.
+- Soft CTA → subtle end-state emphasis is allowed.
+- Check the Product / View Product → product visibility or attention may be emphasized.
+- Shop Now → direct shopping-oriented behavior may be used.
+- Learn More → informational framing may be used.
+- Custom CTA → use only the supplied instruction.
+
+CTA must not override the selected format's natural behavior or turn ordinary UGC into an unsolicited advertisement.
+
+### Unsupported Detail Validation
+
+The validator must distinguish:
+
+- supplied product facts,
+- retrieved product facts,
+- creator identity facts,
+- creative inference,
+- unsupported invention.
+
+Only the first four may enter the generation. Unsupported invention must be removed or explicitly marked as unavailable.
+
+Examples of invalid invention:
+
+- naming an unprovided product shade,
+- claiming a material not supplied or retrieved,
+- inventing a creator's physical features,
+- inventing product performance,
+- adding logos or packaging details not supported by the source.
+
+### Severity Levels
+
+#### Blocker
+
+Generation must stop.
+
+Examples:
+
+- missing required input,
+- unresolved creator,
+- invalid format,
+- impossible scene count,
+- contradictory product identity,
+- broken scene continuity,
+- unsupported factual claim presented as fact.
+
+#### Warning
+
+Generation may continue, but the issue must be corrected or explicitly acknowledged.
+
+Examples:
+
+- scene count outside the typical range but still plausible,
+- CTA weakly aligned with the scene,
+- minor camera continuity drift,
+- optional visual detail missing.
+
+#### Pass
+
+The output satisfies the relevant contract without unresolved contradictions.
+
+### Validation Matrix
+
+| Area | Check | Severity |
+|---|---|---|
+| Input | Required fields present | Blocker |
+| Input | Supported niche | Blocker |
+| Input | Creator resolves | Blocker |
+| Input | Format supported by niche | Blocker |
+| Input | Angle supported by niche | Blocker |
+| Planning | Duration / scene count plausible | Warning / Blocker |
+| Planning | Scene state is single-state | Blocker |
+| Image | One prompt per scene | Blocker |
+| Image | Character consistency | Blocker |
+| Image | Product consistency | Blocker |
+| Image | UGC realism | Warning / Blocker |
+| Video | One prompt per transition | Blocker |
+| Video | Physical causality | Blocker |
+| Video | Start/end state continuity | Blocker |
+| Video | Material / interaction physics | Blocker |
+| Speech | Voice Identity applied | Blocker when speech is used |
+| Speech | Dialogue separated from visual prompts | Blocker |
+| Silent | No speech or lip-sync | Blocker |
+| CTA | CTA behavior matches input | Warning |
+| Facts | No unsupported product claims | Blocker |
+| Output | Exact count contract satisfied | Blocker |
+
+### Validation Pass Order
+
+Run validation in this order:
+
+1. Input Validation
+2. Format × Angle Validation
+3. Duration × Scene Count Validation
+4. Scene Contract Validation
+5. Image Prompt Validation
+6. Video Prompt Validation
+7. Human Realism Validation
+8. Character / Voice / Product / Environment Consistency Validation
+9. CTA Validation
+10. Unsupported Detail Validation
+11. Output Count Validation
+12. Final Pass / Warning Report
+
+Do not polish a generation that still contains a blocker.
+
+### Validation Report
+
+The validator should return:
+
+- Status: Pass / Warning / Blocked
+- Blockers
+- Warnings
+- Corrective Actions
+- Contract Checks
+- Output Counts
+- Continuity Checks
+
+A concise report is preferred over a long narrative. Validation exists to catch failure modes, not to write another essay about them.
+
+### Fixture Coverage
+
+The current example fixtures provide minimum regression coverage:
+
+| Fixture | Niche | Format | Key Tests |
+|---|---|---|---|
+| examples/fashion-silent-mirror-selfie.md | Fashion | Silent Mirror Selfie | silent behavior, mirror continuity, garment consistency |
+| examples/beauty-product-application.md | Beauty | Product Application | spoken script separation, application physics, shade consistency |
+| examples/home-problem-solution.md | Home | Problem → Solution | object placement, physical causality, room continuity |
+
+Every future change to the execution contract should be checked against all fixtures to prevent regressions.
