@@ -457,6 +457,7 @@ export async function runAsync(input, options = {}) {
   const scenes = buildSceneStates(input, product, campaign, concept);
   for (const scene of scenes) {
     scene.creator_identity = creator.character_identity_lock;
+    scene.product_identity = product.identity_lock;
     scene.voice_identity = speechMode(input) === "spoken" ? creator.voice_identity_lock : null;
     scene.niche_realism = nicheKnowledge.human_realism;
     scene.product_consistency = nicheKnowledge.product_consistency;
