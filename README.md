@@ -23,6 +23,33 @@ A reusable AI skill for generating human-looking affiliate UGC across Fashion, B
 
 Generate UGC that feels like ordinary human-made smartphone content rather than polished advertising or cinematic AI content.
 
+## Use Directly in ChatGPT
+
+You can use this repository as the specification and knowledge base directly in ChatGPT without installing the Node.js runtime.
+
+Start with the dedicated guide:
+
+- `CHATGPT.md` — manual ChatGPT execution guide, loading order, input template, output contract, and validation rules.
+
+Quick setup prompt:
+
+```text
+Use this repository as the specification and knowledge base for UGC Affiliate Skill:
+
+https://github.com/adis-su/ugc-affiliate-skill
+
+Read SKILL.md first, then load only the supporting files required for this request.
+
+Do not merely summarize the repository. Execute the skill according to its pipeline, constraints, validation rules, identity rules, product intelligence rules, scene planning rules, image prompt engine, video prompt engine, and output contract.
+
+Treat the repository as the source of truth.
+Do not invent unsupported product or creator details.
+
+I will provide the generation input next.
+```
+
+See `CHATGPT.md` for the complete workflow.
+
 ## End-to-End Architecture
 
 ```
@@ -60,6 +87,8 @@ OUTPUT
 
 ## Specification Map
 
+- `SKILL.md` — canonical skill specification and execution contract
+- `CHATGPT.md` — direct ChatGPT execution layer
 - `creators/rositasari.md` — Character and Voice Identity
 - `niches/fashion.md` — Fashion-specific rules
 - `niches/beauty.md` — Beauty-specific rules
@@ -72,7 +101,7 @@ OUTPUT
 - `prompts/video-prompt-engine.md` — Frame-to-frame motion engine
 - `runtime/end-to-end-integration.md` — Runtime contract across all layers
 - `runtime/runtime-interface.md` — Canonical runtime interfaces and executable contracts
-- `runtime/index.mjs` — Executable contract-first runtime skeleton
+- `runtime/index.mjs` — Executable contract-first runtime
 - `tests/integration-audit.md` — Integration audit and contract test matrix
 - `tests/fixtures/contract-fixtures.json` — Machine-readable positive/negative fixtures
 - `tests/contract-harness.md` — Contract test harness specification
@@ -114,7 +143,7 @@ Structural invariants are deterministic:
 
 ## Executable Runtime
 
-The repository now includes a dependency-free Node.js runtime skeleton.
+The repository includes a dependency-free Node.js runtime skeleton.
 
 Run:
 
@@ -122,20 +151,7 @@ Run:
 npm test
 ```
 
-The current runtime intentionally implements the contract boundary first:
-
-- request validation,
-- creator resolution,
-- product conflict detection,
-- format × angle validation,
-- duration × scene-count validation,
-- speech-mode validation,
-- deterministic scene-state construction,
-- image/video output count contracts,
-- continuity/identity fault fixtures,
-- final validation status.
-
-Creative wording and advanced product retrieval remain implementation layers above this skeleton.
+The runtime implements the contract boundary, validation, deterministic scene-state construction, prompt contract checks, retrieval boundaries, and regression fixtures.
 
 ## Core Runtime Rule
 
