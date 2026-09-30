@@ -255,6 +255,7 @@ function buildSceneStates(input, product, campaign, concept) {
 function buildImagePrompts(scenes, input, product, campaign, concept) {
   return scenes.map(scene => ({
     scene_id: scene.scene_id,
+    continuity_anchors: [scene.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"],
     prompt: [
       `Character Identity: ${scene.creator_identity.creator}; use the locked character reference when available`,
       `Current creator state: ${scene.creator_state.action}; gaze and pose remain consistent with the scene state`,
@@ -298,8 +299,25 @@ function buildVideoPrompts(scenes, input, product) {
   });
 }
 
+function validatePromptSemantics(result, input) {
+  const blockers = [];
+  for (const image of result.image_prompts) {
+    const required = ["Character Identity:", "Product Identity:", "Product State:", "Visible behavior:", "Camera/composition:", "UGC realism:"];
+    for (const token of required) if (!image.prompt.includes(token)) blockers.push(blocker("IMAGE_PROMPT_INVALID", "validation", `Image prompt ${image.scene_id} is missing ${token}`, image.scene_id));
+    if (/then|after that|future action/i.test(image.prompt)) blockers.push(blocker("IMAGE_PROMPT_INVALID", "validation", `Image prompt ${image.scene_id} contains future-action language.`, image.scene_id));
+    if (!/single visual state/i.test(image.prompt)) blockers.push(blocker("IMAGE_PROMPT_INVALID", "validation", `Image prompt ${image.scene_id} does not anchor a single visual state.`, image.scene_id));
+  }
+  for (const video of result.video_prompts) {
+    const required = ["Starting Frame Anchor:", "Physical Cause:", "Human Movement:", "Product Movement:", "Material Physics:", "Camera Movement:", "Ending Frame Anchor:"];
+    for (const token of required) if (!video.prompt.includes(token)) blockers.push(blocker("VIDEO_PROMPT_INVALID", "validation", `Video transition ${video.transition_id} is missing ${token}`, video.transition_id));
+    if (video.continuity_anchors.length !== 5) blockers.push(blocker("VIDEO_PROMPT_INVALID", "validation", `Video transition ${video.transition_id} has invalid continuity anchors.`, video.transition_id));
+  }
+  return blockers;
+}
+
 function validateGeneratedOutput(result, input) {
   const blockers = [];
+  blockers.push(...validatePromptSemantics(result, input));
   const expectedImages = result.scene_plan.length;
   const expectedVideos = Math.max(expectedImages - 1, 0);
 
