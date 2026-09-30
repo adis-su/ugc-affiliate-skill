@@ -113,3 +113,24 @@ Character Identity → Image Prompts and visual Video Prompts.
 Voice Identity → Script and voice-related prompts when the selected content format uses speech or voice-over.
 
 Both identities belong to the same Creator: Rositasari.
+
+
+## Voice Identity Lock
+
+Voice identity is not fully specified yet. The target is natural Indonesian conversational delivery, not a generic synthetic narrator.
+
+- Language: Indonesian (`id-ID`)
+- Accent: native Indonesian conversational delivery
+- Pitch: medium, natural variation
+- Timbre: warm, soft, lightly textured, natural
+- Tempo: conversational with natural variation
+- Prosody: meaning-led, subtle, non-theatrical
+- Articulation: clear but not over-enunciated
+- Breathing: natural micro-breaths at plausible phrase boundaries
+- Pausing: natural micro-pauses and occasional context-appropriate hesitation
+- Emotion: subtle and context-driven
+- Disfluency: minimal and natural when contextually appropriate
+- Realism constraints: avoid robotic timing, uniform pacing, exaggerated enthusiasm, synthetic pauses, and over-pronunciation
+- Voice Reference: not supplied yet; do not fabricate one
+
+A production Voice Identity Lock must use an approved voice reference before spoken generation is treated as identity-consistent.
