@@ -879,3 +879,25 @@ Video Prompt Input
 The engine's job is not to make the prompt sound impressive.
 
 Its job is to make the intended visual state difficult to misunderstand.
+
+
+## Multi-Reference Scene Inputs
+
+A scene may contain several reference images. The engine must classify each reference before compiling the final prompt.
+
+Use the reference role hierarchy:
+
+1. creator identity
+2. product identity
+3. environment/spatial context
+4. pose/interaction
+5. composition
+6. lighting/style
+
+The prompt should explain the role of critical references rather than merely listing them. Example:
+
+> Use the creator reference for identity and body proportions, the product reference for exact garment design, the bedroom reference for spatial layout and mirror geometry, and the pose reference for body position and phone placement.
+
+When references conflict, protect explicit user choices and critical creator/product identity first. Do not invent a compromise between contradictory product attributes. Route unresolved critical conflicts to QC.
+
+Reference images are constraints. The final image prompt remains responsible for producing one coherent visual state.
