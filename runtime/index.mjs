@@ -378,6 +378,18 @@ function validateGeneratedOutput(result, input) {
   const expectedImages = result.scene_plan.length;
   const expectedVideos = Math.max(expectedImages - 1, 0);
 
+  if (!result.flow_timeline || result.flow_timeline.status !== "PASS") {
+    blockers.push(blocker("INVALID_FLOW_TIMELINE", "validation", "Flow clip duration plan is missing or invalid."));
+  } else {
+    const clipSum = result.flow_timeline.durations.reduce((sum, value) => sum + value, 0);
+    if (clipSum !== input.content.duration_sec) {
+      blockers.push(blocker("FLOW_DURATION_MISMATCH", "validation", "Flow clip durations do not equal the requested total duration.", "content.duration_sec"));
+    }
+    if (result.flow_timeline.durations.length !== expectedVideos && expectedImages > 1) {
+      blockers.push(blocker("FLOW_CLIP_COUNT_MISMATCH", "validation", "Flow clip count does not match the number of scene transitions."));
+    }
+  }
+
   if (result.image_prompts.length !== expectedImages) {
     blockers.push(blocker("OUTPUT_COUNT_MISMATCH", "validation", "Image prompt count does not match scene count."));
   }
@@ -572,7 +584,8 @@ export async function runAsync(input, options = {}) {
       output_counts: {
         scene_plan: scenes.length,
         image_prompts: images.length,
-        video_prompts: videos.length
+        video_prompts: videos.length,
+        flow_clips: flowTimeline.durations.length
       },
       continuity_checks: [
         "scene-to-scene character continuity",
