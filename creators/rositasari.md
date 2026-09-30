@@ -133,4 +133,4 @@ Voice identity is not fully specified yet. The target is natural Indonesian conv
 - Realism constraints: avoid robotic timing, uniform pacing, exaggerated enthusiasm, synthetic pauses, and over-pronunciation
 - Voice Reference: not supplied yet; do not fabricate one
 
-A production Voice Identity Lock must use an approved voice reference before spoken generation is treated as identity-consistent.
+The Rositasari Voice Identity Lock is sufficient to define spoken delivery. A voice reference may be used as an optional conditioning input when available.
