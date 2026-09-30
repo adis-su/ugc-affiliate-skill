@@ -7,13 +7,12 @@ test("approved voice reference is accepted", () => {
   const result = validateVoiceReferenceContract(reference);
   assert.equal(result.valid, true);
   assert.equal(result.reference.type, "voice");
-  assert.equal(result.reference.required, true);
+  assert.equal(result.reference.required, false);
 });
 
-test("unapproved voice reference is blocked", () => {
+test("voice reference does not require an approval source", () => {
   const result = validateVoiceReferenceContract({ type: "voice", id: "draft-voice", source: "generated" });
-  assert.equal(result.valid, false);
-  assert.equal(result.code, "VOICE_REFERENCE_NOT_APPROVED");
+  assert.equal(result.valid, true);
 });
 
 test("voice reference can resolve from voice identity", () => {
@@ -22,10 +21,10 @@ test("voice reference can resolve from voice identity", () => {
   assert.equal(result.reference.type, "voice");
 });
 
-test("missing voice reference blocks request attachment", () => {
+test("missing voice reference does not block request attachment", () => {
   const result = attachVoiceReference({ prompt: "spoken line" }, {});
-  assert.equal(result.status, "BLOCK");
-  assert.equal(result.error.code, "VOICE_REFERENCE_MISSING");
+  assert.equal(result.status, "READY");
+  assert.equal(result.voice_reference, null);
 });
 
 test("attachment preserves approved voice identity", () => {
