@@ -78,13 +78,11 @@ function buildSilentBehaviorScript(input, scenes) {
 function validateCreatorIdentity(creator, input) {
   const blockers = [];
   const speech = speechMode(input) === "spoken";
-  const hasCharacterReference = creator.character_reference_status === "available";
-  const hasVoiceReference = creator.voice_reference_status === "available";
-  if (!hasCharacterReference) {
-    blockers.push(blocker("CREATOR_IDENTITY_INSUFFICIENT", "creator", "Character identity reference is required for visual generation.", "creator_identity.character.reference", "Provide an approved Character Reference for the creator."));
+  if (!creator.character_identity_lock) {
+    blockers.push(blocker("CREATOR_IDENTITY_INSUFFICIENT", "creator", "Character Identity is required for visual generation.", "creator_identity.character"));
   }
-  if (speech && !hasVoiceReference) {
-    blockers.push(blocker("VOICE_IDENTITY_INSUFFICIENT", "creator", "Voice identity reference is required when spoken content is generated.", "creator_identity.voice.voice_reference", "Provide an approved Voice Reference for spoken content."));
+  if (speech && !creator.voice_identity_lock) {
+    blockers.push(blocker("VOICE_IDENTITY_INSUFFICIENT", "creator", "Voice Identity is required when spoken content is generated.", "creator_identity.voice"));
   }
   return blockers;
 }
@@ -257,7 +255,7 @@ function buildImagePrompts(scenes, input, product, campaign, concept) {
     scene_id: scene.scene_id,
     continuity_anchors: [scene.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"],
     prompt: [
-      `Character Identity: ${scene.creator_identity.creator}; use the locked character reference when available; preserve the defined facial structure, skin profile, age appearance, body profile, and hijab-wearing identity`,
+      `Character Identity: ${scene.creator_identity.creator}; use Rositasari Character Identity as the source of truth; preserve the defined facial structure, skin profile, age appearance, body profile, and hijab-wearing identity`,
       `Current creator state: ${scene.creator_state.action}; gaze and pose remain consistent with the scene state`,
       `Product Identity: ${product.record.product_name}; preserve the Product Identity Lock`,
       `Product State: ${scene.product_state.state}`,
