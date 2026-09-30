@@ -477,3 +477,33 @@ Remaining release risks are runtime-environment concerns rather than missing con
 - creative wording quality still requires model-level generation evaluation beyond structural contract tests.
 
 These are release-readiness checks, not reasons to weaken the core invariants.
+
+
+## Test Fixture — Google Flow / 18 Seconds / 5 Scenes
+
+### Input
+
+- Target Duration: 18 sec
+- Scene Count: 5
+- Generator: Google Flow
+
+### Expected Contract
+
+- 5 Image Prompts
+- 4 Scene Transition Prompts
+- 4 Google Flow generation clips
+- Clip durations: 4s + 4s + 4s + 6s
+- Total generated duration: 18 sec
+- Scene count remains 5 while generated clip count remains 4
+- The final 6s clip carries the Scene 04 → Scene 05 transition
+- Scene 05 Image Prompt is the exact ending-state anchor
+- No 2s clip is generated
+
+### Negative Fixture
+
+A request for 18 sec with 6 scenes must block under the default transition-per-scene contract because 5 transitions cannot be partitioned exactly into supported 4s / 6s / 8s / 10s clips.
+
+Expected error:
+
+- `INVALID_FLOW_TIMELINE`
+
