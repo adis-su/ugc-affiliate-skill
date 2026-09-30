@@ -5,13 +5,14 @@
   "description": "Contract-first runtime for the UGC Affiliate Skill.",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/contract-tests.mjs tests/generation-adapter-tests.mjs tests/real-image-provider-tests.mjs tests/real-video-provider-tests.mjs tests/asset-validation-tests.mjs tests/regeneration-policy-tests.mjs tests/voice-identity-contract-tests.mjs",
+    "test": "node --test tests/contract-tests.mjs tests/generation-adapter-tests.mjs tests/real-image-provider-tests.mjs tests/real-video-provider-tests.mjs tests/asset-validation-tests.mjs tests/regeneration-policy-tests.mjs tests/voice-identity-contract-tests.mjs tests/voice-reference-contract-tests.mjs",
     "test:contract": "node --test tests/contract-tests.mjs",
     "test:generation": "node --test tests/generation-adapter-tests.mjs",
     "test:image-provider": "node --test tests/real-image-provider-tests.mjs",
     "test:video-provider": "node --test tests/real-video-provider-tests.mjs",
     "test:asset-validation": "node --test tests/asset-validation-tests.mjs",
     "test:regeneration": "node --test tests/regeneration-policy-tests.mjs",
-    "test:voice": "node --test tests/voice-identity-contract-tests.mjs"
+    "test:voice": "node --test tests/voice-identity-contract-tests.mjs",
+    "test:voice-reference": "node --test tests/voice-reference-contract-tests.mjs"
   }
 }
