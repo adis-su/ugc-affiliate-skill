@@ -1,4 +1,6 @@
 import { resolveCreator } from "./knowledge/creator-library.mjs";
+import { retrieveProductIntelligence } from "./intelligence/product-retrieval.mjs";
+import { retrieveCreatorIntelligence } from "./intelligence/creator-retrieval.mjs";
 import { resolveNiche, NICHE_KNOWLEDGE } from "./knowledge/niche-knowledge.mjs";
 import { CAMPAIGN_OBJECTIVES, CAMPAIGN_STAGES, CTAS, FORMAT_ANGLES, PLATFORMS as KNOWLEDGE_PLATFORMS, SCENE_LIMITS, SILENT_FORMATS, resolveCreativeKnowledge, validateCampaignEnums } from "./knowledge/campaign-creative-behavior.mjs";
 
@@ -101,27 +103,21 @@ export function validateRequest(input) {
 }
 
 export function resolveProduct(input) {
-  const facts = input.product?.product_facts ?? {};
-  const source = input.fixture_setup?.mock_product_source;
-  if (source && facts.color && source.color && facts.color !== source.color) {
-    return { blocker: blocker(
-      "PRODUCT_CONFLICT", "product",
-      "User product facts conflict with the supplied product source.",
-      "product.product_facts",
-      "Preserve the conflict and block unsupported product generation."
-    ) };
+  const intelligence = retrieveProductIntelligence(input);
+  if (intelligence.conflict_notes.some((conflict) => conflict.field === "color" &&
+      conflict.values.explicit !== undefined &&
+      conflict.values.retrieved !== undefined)) {
+    return {
+      blocker: blocker(
+        "PRODUCT_CONFLICT",
+        "product",
+        "Explicit product facts conflict with retrieved product facts.",
+        "product.product_facts",
+        "Preserve the conflict and resolve the product source before generation."
+      )
+    };
   }
-
-  return {
-    record: {
-      product_name: input.product.product_name,
-      source_url: input.product.product_url ?? null,
-      facts,
-      unknown_attributes: Object.keys(facts).length ? [] : ["detailed_product_attributes"]
-    },
-    identity_lock: { product_name: input.product.product_name, supplied_facts: facts },
-    state_model: { initial: "identified", final: "identified" }
-  };
+  return intelligence;
 }
 
 function campaignIntelligence(input, product) {
@@ -339,13 +335,15 @@ export function run(input) {
     });
   }
 
-  const creator = resolveCreator(input.creator);
-  if (creator.blocker) {
+  const creatorBase = resolveCreator(input.creator);
+  if (creatorBase.blocker) {
     return blockedOutput({
-      ...baseValidation("BLOCK", [creator.blocker]),
+      ...baseValidation("BLOCK", [creatorBase.blocker]),
       contract_checks: ["creator_resolution"]
     });
   }
+
+  const creator = retrieveCreatorIntelligence(creatorBase, input);
 
   const nicheKnowledge = resolveNiche(input.niche);
   if (nicheKnowledge.blocker) {
@@ -413,7 +411,7 @@ export function run(input) {
       contract_checks: [
         "request_validation", "product_intelligence", "campaign_intelligence",
         "creative_concept", "scene_state_model", "image_prompt_count", "video_prompt_count",
-        "character_identity_lock", "product_identity_lock", "speech_mode"
+        "character_identity_lock", "character_reference_status", "voice_identity_lock", "product_identity_lock", "product_source_provenance", "speech_mode"
       ],
       output_counts: {
         scene_plan: scenes.length,
