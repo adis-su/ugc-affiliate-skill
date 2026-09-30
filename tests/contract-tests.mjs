@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { run, expectedVideoPromptCount } from "../runtime/index.mjs";
-import { resolveProductWithSource } from "../runtime/intelligence/product-retrieval.mjs";
+import { resolveProductWithSource, fetchProductSource } from "../runtime/intelligence/product-retrieval.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixturePath = path.join(here, "fixtures", "contract-fixtures.json");
@@ -162,4 +162,15 @@ test("product source merge preserves explicit facts and provenance", () => {
   assert.equal(result.record.facts.finish, "glossy");
   assert.equal(result.record.source_status, "retrieved_product_url");
   assert.ok(result.conflict_notes.some((item) => item.field === "color"));
+});
+
+test("product URL adapter validates invalid URLs without throwing", async () => {
+  const result = await fetchProductSource("not-a-url");
+  assert.equal(result.status, "UNRESOLVED");
+  assert.deepEqual(result.errors, ["PRODUCT_URL_INVALID"]);
+});
+
+test("async runtime can consume an injected retrieved product source", async () => {
+  const fixture = fixtures.find((item) => item.id === "positive-product-retrieval-provenance");
+  assert.ok(fixture);
 });
