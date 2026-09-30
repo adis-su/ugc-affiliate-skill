@@ -74,6 +74,10 @@ export function validateVoiceIdentityLock(lock) {
     return { valid: false, code: "VOICE_LANGUAGE_MISSING", message: "Voice Identity Lock requires a language." };
   }
 
+  if (!lock.timbre || !lock.tempo || !lock.prosody || !lock.articulation || !lock.breathing || !lock.pausing || !lock.realism_constraints?.length) {
+    return { valid: false, code: "VOICE_REALISM_PROFILE_INCOMPLETE", message: "Voice Identity Lock requires a complete realism profile." };
+  }
+
   return { valid: true };
 }
 
