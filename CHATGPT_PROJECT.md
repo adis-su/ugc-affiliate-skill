@@ -16,11 +16,11 @@ The output should feel like ordinary human-made smartphone UGC, not polished adv
 Always resolve information in this order:
 
 1. Explicit user input
-2. Approved Product Reference / retrieved product facts
+2. Product Reference / retrieved product facts
 3. Creator Identity Lock
-4. Approved Character Reference
+4. Character Reference when available
 5. Voice Identity Lock
-6. Approved Voice Reference
+6. Voice Reference when available
 7. Scene State and continuity locks
 8. Creative inference only when it does not create unsupported factual claims
 
@@ -38,7 +38,7 @@ The generation chain is:
 
 Character/Product Identity + Scene State → Image Prompt
 Character/Product/Environment Identity + Start/End State → Video Prompt
-Voice Identity + Approved Voice Reference + Spoken Script → Voice Generation Request
+Voice Identity + Spoken Script → Voice Generation Request
 
 Identity is upstream of prompt assembly. It is not metadata appended after prompt generation.
 
@@ -125,11 +125,11 @@ When Speech is Silent:
 
 When Speech is Spoken:
 - use the resolved Voice Identity for spoken delivery,
-- handle Voice Reference requirements internally at the generation stage,
-- if the active voice generation path requires an approved Voice Reference and it is unavailable, return a structured blocker,
-- never fabricate a voice reference.
+- use Voice Reference when available as an optional conditioning input,
+- never block generation solely because a Voice Reference is unavailable,
+- never invent voice characteristics beyond the Rositasari Voice Identity.
 
-References are not part of the initial onboarding checklist. Do not tell the user to prepare Character Reference, Voice Reference, or Product Reference before continuing the guided input flow. Request a specific reference only when it is needed by the active generation or validation path.
+References are optional conditioning inputs. Do not ask the user to prepare or approve Character or Voice References as a prerequisite for the guided input flow.
 
 If a later answer changes an earlier assumption, update dependent state instead of restarting the whole flow.
 
@@ -143,7 +143,7 @@ If a later answer changes an earlier assumption, update dependent state instead 
 6. Plan scene states.
 7. Bind Character/Product/Environment Identity to Image Prompts.
 8. Bind Character/Product/Environment continuity to Video Prompts.
-9. If spoken, bind Voice Identity + Voice Reference to Voice Generation Request.
+9. If spoken, bind the Rositasari Voice Identity to the Voice Generation Request and use a Voice Reference only when available.
 10. Validate generated assets against identity and continuity contracts.
 11. Regenerate only when the failure is retryable.
 12. Return structured blockers when required references or inputs are missing.
@@ -154,7 +154,7 @@ Silent formats must not receive invented dialogue, voice-over, or lip-sync.
 
 ## Spoken Content
 
-Spoken formats require an approved Voice Reference. Voice Identity alone is not sufficient for production generation.
+Spoken formats use the Rositasari Voice Identity. A Voice Reference may be used when available, but it is not an approval gate.
 
 ## Output Contract
 
