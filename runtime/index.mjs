@@ -685,3 +685,133 @@ function buildResult(input, product, concept, scenes, images, videos, creator, n
 export function expectedVideoPromptCount(sceneCount) {
   return Math.max(sceneCount - 1, 0);
 }
+
+
+export const AFFILIX_STAGES = Object.freeze({
+  IDLE: "IDLE",
+  WAITING_PRODUCT_URL: "WAITING_PRODUCT_URL",
+  PRODUCT_RESOLUTION: "PRODUCT_RESOLUTION",
+  CAMPAIGN_CONFIGURATION: "CAMPAIGN_CONFIGURATION",
+  CONFIGURATION_VALIDATION: "CONFIGURATION_VALIDATION",
+  PRODUCTION: "PRODUCTION",
+  FINAL_OUTPUT: "FINAL_OUTPUT"
+});
+
+export const AFFILIX_CONFIG_DEFAULTS = Object.freeze({
+  objective: null,
+  format: "Product Demo",
+  angle: "How I Use It",
+  platform: "TikTok",
+  cta: "Check the Product",
+  creator: "Rositasari",
+  speech: "Spoken"
+});
+
+const AFFILIX_OBJECTIVE_ALIASES = Object.freeze({
+  Awareness: "Product Awareness",
+  Consideration: "Product Consideration",
+  Conversion: "Affiliate Conversion"
+});
+
+const AFFILIX_CTA_ALIASES = Object.freeze({
+  "Check Product": "Check the Product",
+  "See Details": "View Product",
+  "No CTA": "None"
+});
+
+function normalizeAffilixValue(field, value) {
+  if (value === undefined || value === null || value === "") return value;
+  if (field === "objective") return AFFILIX_OBJECTIVE_ALIASES[value] ?? value;
+  if (field === "cta") return AFFILIX_CTA_ALIASES[value] ?? value;
+  return value;
+}
+
+export function createAffilixSession() {
+  return {
+    active: false,
+    stage: AFFILIX_STAGES.IDLE,
+    product: { url: null, status: "UNRESOLVED", intelligence: null },
+    campaign: { ...AFFILIX_CONFIG_DEFAULTS },
+    blockers: [],
+    warnings: []
+  };
+}
+
+export function activateAffilixSession(session = createAffilixSession()) {
+  return {
+    ...session,
+    active: true,
+    stage: AFFILIX_STAGES.WAITING_PRODUCT_URL,
+    blockers: [],
+    warnings: []
+  };
+}
+
+export function applyAffilixCampaignConfig(session, changes = {}) {
+  const campaign = { ...session.campaign };
+  for (const [field, value] of Object.entries(changes)) {
+    if (Object.prototype.hasOwnProperty.call(campaign, field) && value !== undefined) {
+      campaign[field] = normalizeAffilixValue(field, value);
+    }
+  }
+  return { ...session, campaign, stage: AFFILIX_STAGES.CONFIGURATION_VALIDATION };
+}
+
+export function validateAffilixCampaignConfig(session) {
+  const campaign = session.campaign;
+  const blockers = [];
+  if (!campaign.objective) blockers.push(blocker("MISSING_REQUIRED_FIELD", "campaign", "Campaign Objective is required.", "campaign.objective"));
+  if (!campaign.format) blockers.push(blocker("MISSING_REQUIRED_FIELD", "campaign", "Format is required.", "campaign.format"));
+  if (!campaign.angle) blockers.push(blocker("MISSING_REQUIRED_FIELD", "campaign", "Angle is required.", "campaign.angle"));
+  if (!campaign.platform) blockers.push(blocker("MISSING_REQUIRED_FIELD", "campaign", "Platform is required.", "campaign.platform"));
+  if (!campaign.cta) blockers.push(blocker("MISSING_REQUIRED_FIELD", "campaign", "CTA is required.", "campaign.cta"));
+  if (!campaign.creator) blockers.push(blocker("MISSING_REQUIRED_FIELD", "campaign", "Creator is required.", "campaign.creator"));
+  if (!campaign.speech) blockers.push(blocker("MISSING_REQUIRED_FIELD", "campaign", "Speech is required.", "campaign.speech"));
+  if (campaign.creator && !SUPPORTED_CREATORS.has(campaign.creator)) blockers.push(blocker("CREATOR_NOT_FOUND", "campaign", "Creator is not available in the Creator Library.", "campaign.creator"));
+  if (campaign.platform && !PLATFORMS.has(campaign.platform)) blockers.push(blocker("INVALID_ENUM", "campaign", "Unsupported platform: " + campaign.platform, "campaign.platform"));
+  if (campaign.objective && !CAMPAIGN_OBJECTIVES.includes(campaign.objective)) blockers.push(blocker("INVALID_ENUM", "campaign", "Unsupported campaign objective: " + campaign.objective, "campaign.objective"));
+  if (campaign.cta && !CTAS.includes(campaign.cta)) blockers.push(blocker("INVALID_ENUM", "campaign", "Unsupported CTA: " + campaign.cta, "campaign.cta"));
+  if (campaign.speech === "Silent" && campaign.format === "Talking Head") blockers.push(blocker("SPEECH_MODE_CONFLICT", "campaign", "Talking Head requires spoken delivery.", "campaign.speech"));
+  if (campaign.speech === "Spoken" && SILENT_FORMATS.has(campaign.format)) blockers.push(blocker("SPEECH_MODE_CONFLICT", "campaign", "The selected format is silent and cannot use spoken delivery.", "campaign.speech"));
+  return { status: blockers.length ? "BLOCK" : "PASS", blockers };
+}
+
+export async function resolveAffilixProductUrl(session, productUrl, options = {}) {
+  const next = {
+    ...session,
+    active: true,
+    stage: AFFILIX_STAGES.PRODUCT_RESOLUTION,
+    product: { url: productUrl ?? null, status: "UNRESOLVED", intelligence: null },
+    blockers: [],
+    warnings: []
+  };
+  const source = await fetchProductSource(productUrl, options);
+  if (source.status !== "RESOLVED") {
+    return {
+      ...next,
+      stage: AFFILIX_STAGES.WAITING_PRODUCT_URL,
+      product: { ...next.product, status: source.status },
+      blockers: [blocker("PRODUCT_INSUFFICIENT", "product", "Product URL could not be resolved sufficiently.", "product.url", "Provide an accessible product URL or reliable product facts.")]
+    };
+  }
+  const input = { product: { product_name: null, product_url: productUrl, retrieved_facts: source.facts } };
+  const intelligence = resolveProductWithSource(input, source);
+  return {
+    ...next,
+    stage: AFFILIX_STAGES.CAMPAIGN_CONFIGURATION,
+    product: { url: productUrl, status: "RESOLVED", intelligence },
+    campaign: { ...AFFILIX_CONFIG_DEFAULTS },
+    blockers: [],
+    warnings: []
+  };
+}
+
+export function finalizeAffilixConfiguration(session) {
+  const checked = validateAffilixCampaignConfig(session);
+  return {
+    ...session,
+    stage: checked.status === "PASS" ? AFFILIX_STAGES.PRODUCTION : AFFILIX_STAGES.CAMPAIGN_CONFIGURATION,
+    blockers: checked.blockers,
+    warnings: []
+  };
+}
