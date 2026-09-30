@@ -1,0 +1,19 @@
+version: "1.0"
+routes:
+  input: schemas/input.schema.yaml
+  strategy: schemas/strategy.schema.yaml
+  format: schemas/format.schema.yaml
+  concept: schemas/concept.schema.yaml
+  script_behavior: schemas/script-behavior.schema.yaml
+  storyboard: schemas/storyboard.schema.yaml
+  image_prompt: schemas/prompt-output.schema.yaml
+  video_prompt: schemas/prompt-output.schema.yaml
+  human_realism: schemas/realism.schema.yaml
+  product_consistency: schemas/product-consistency.schema.yaml
+  orchestrator: schemas/runtime.schema.yaml
+
+principles:
+  - "Fix the earliest responsible stage rather than patching downstream output."
+  - "Prefer scene-level regeneration when only one scene is invalid."
+  - "Re-run downstream validators after a correction."
+  - "Do not silently weaken a constraint to make validation pass."
