@@ -1,10 +1,10 @@
-import { validateRequiredCharacterReference, validateProductReference } from "./reference-contract.mjs";
+import { validateCharacterReference, validateProductReference } from "./reference-contract.mjs";
 import { resolveVoiceReference } from "./voice-reference-contract.mjs";
 
 export function validateGenerationIdentityContract({ scene, references = [], speech_required = false } = {}) {
   const blockers = [];
 
-  const character = validateRequiredCharacterReference(scene, references);
+  const character = validateCharacterReference(scene, references);
   if (!character.valid) blockers.push(character.error);
 
   const product = validateProductReference(scene, references);
