@@ -465,10 +465,15 @@ Negative fixtures cover:
 - product teleportation,
 - cinematic drift.
 
-### Remaining Implementation Risk
+### Current Implementation Risk
 
-The repository currently defines contract tests as specifications and fixtures rather than executable automated tests.
+The contract matrix is now backed by executable Node tests in `tests/contract-tests.mjs`.
 
-This is intentional at this stage.
+Remaining release risks are runtime-environment concerns rather than missing contract coverage:
 
-The next implementation step is to convert the contract matrix into machine-checkable tests once the runtime execution interface is finalized.
+- the test suite still needs to be executed in a Node environment before declaring a green release;
+- live Product URL retrieval remains network-dependent;
+- creator references remain intentionally external/request-scoped placeholders until approved Rositasari references are supplied;
+- creative wording quality still requires model-level generation evaluation beyond structural contract tests.
+
+These are release-readiness checks, not reasons to weaken the core invariants.
