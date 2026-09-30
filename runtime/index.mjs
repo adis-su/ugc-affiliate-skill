@@ -255,7 +255,7 @@ function buildImagePrompts(scenes, input, product, campaign, concept) {
     scene_id: scene.scene_id,
     continuity_anchors: [scene.scene_id, "Character Identity Lock", "Product Identity Lock", "Environment Continuity"],
     prompt: [
-      `Character Identity: ${scene.creator_identity.creator}; use Rositasari Character Identity as the source of truth; preserve the defined facial structure, skin profile, age appearance, body profile, and hijab-wearing identity`,
+      `Character Identity Lock: ${JSON.stringify(scene.creator_identity)}; Rositasari Character Identity is the source of truth; preserve all defined facial, eye, eyebrow, nose, lip, skin, age, height, appearance, and hijab attributes`,
       `Current creator state: ${scene.creator_state.action}; gaze and pose remain consistent with the scene state`,
       `Product Identity: ${product.record.product_name}; preserve the Product Identity Lock`,
       `Product State: ${scene.product_state.state}`,
