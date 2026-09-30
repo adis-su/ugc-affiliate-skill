@@ -342,3 +342,34 @@ test("AFFILIX input router advances activation and preserves campaign state", as
   assert.equal(session.campaign.cta, "Check the Product");
   assert.equal(isAffilixConfigurationReady(session), true);
 });
+
+
+test("AFFILIX async router resolves product and validates campaign configuration", async () => {
+  const { createAffilixSession, processAffilixInput, AFFILIX_STAGES } = await import("../runtime/index.mjs");
+  let session = await processAffilixInput(null, { command: "/Affilix" });
+  assert.equal(session.stage, AFFILIX_STAGES.WAITING_PRODUCT_URL);
+
+  session = await processAffilixInput(session, { product_url: "https://example.com/product" }, {
+    fetch: async () => ({ ok: true, url: "https://example.com/product", text: async () => "<html><title>Example Product</title></html>" })
+  });
+  assert.equal(session.stage, AFFILIX_STAGES.WAITING_PRODUCT_URL);
+  assert.equal(session.product.status, "UNRESOLVED");
+  assert.equal(session.blockers[0]?.code, "PRODUCT_INSUFFICIENT");
+
+  session = { ...createAffilixSession(), active: true, stage: AFFILIX_STAGES.CAMPAIGN_CONFIGURATION, product: {
+    url: "https://example.com/product",
+    status: "RESOLVED",
+    intelligence: { record: { product_name: "Example Product" } }
+  }};
+  session = await processAffilixInput(session, { campaign: {
+    objective: "Conversion",
+    format: "Product Demo",
+    angle: "How I Use It",
+    platform: "TikTok",
+    cta: "Check Product",
+    creator: "Rositasari",
+    speech: "Spoken"
+  }});
+  assert.equal(session.stage, AFFILIX_STAGES.PRODUCTION);
+  assert.deepEqual(session.blockers, []);
+});
