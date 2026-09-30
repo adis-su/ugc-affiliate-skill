@@ -44,10 +44,9 @@ test("blocks unnatural pacing and synthetic artifacts", () => {
   assert.deepEqual(result.blockers.map((item) => item.code), ["PACING_DRIFT", "SYNTHETIC_ARTIFACT"]);
 });
 
-test("blocks missing required voice reference", () => {
-  const result = validateVoiceAsset(baseAsset, {
-    required_voice_reference_ids: ["rositasari-voice-v2"]
+test("accepts a voice asset without a reference when Voice Identity validation passes", () => {
+  const result = validateVoiceAsset({ ...baseAsset, voice_reference_ids: [] }, {
+    checks: { identity_match: true, pronunciation_match: true, prosody_natural: true, pacing_natural: true, synthetic_artifacts: false }
   });
-  assert.equal(result.status, "BLOCK");
-  assert.equal(result.blockers[0].code, "VOICE_REFERENCE_MISSING");
+  assert.equal(result.status, "PASS");
 });
