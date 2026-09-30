@@ -391,7 +391,9 @@ const NON_REPAIRABLE = new Set([
 ]);
 
 function validateAndRepair(result, input) {
-  const initialBlockers = validateGeneratedOutput(result, input);
+  const generatedBlockers = validateGeneratedOutput(result, input);
+  const existingBlockers = Array.isArray(result.validation?.blockers) ? result.validation.blockers : [];
+  const initialBlockers = [...existingBlockers, ...generatedBlockers];
   if (!initialBlockers.length) {
     return { result, repairs: [], blockers: [], initialBlockers: [] };
   }
