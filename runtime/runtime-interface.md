@@ -81,6 +81,8 @@ ResolvedRequest
 ├── product_source_status
 ├── resolved_duration_sec
 ├── resolved_scene_count
+├── resolved_generator
+├── flow_timeline
 ├── platform[]
 ├── blockers[]
 └── warnings[]
