@@ -149,7 +149,7 @@ test("sync and async runtimes preserve the same structural contract", async () =
   assert.ok(fixture);
   const sync = run(fixture.input);
   const asyncResult = await runAsync(fixture.input, {
-    retrieved_product_source: null
+    retrieved_product_source: { status: "UNRESOLVED", source_url: null, facts: {} }
   });
   assert.equal(asyncResult.validation.status, sync.validation.status);
   assert.deepEqual(asyncResult.validation.output_counts, sync.validation.output_counts);
