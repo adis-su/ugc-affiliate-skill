@@ -46,6 +46,7 @@ Input
 → Understanding
 → Creative Logic
 → Content Behavior
+→ Prompt Assembly
 → Image / Video Prompt Generation
 → Human Realism
 → Consistency
@@ -109,7 +110,16 @@ Input
 
 Script and behavior are format-dependent. Silent formats such as Silent Mirror Selfie use behavioral scripting rather than spoken dialogue.
 
-### 04. Image Prompt Engine
+### 04. Prompt Assembly
+Convert resolved scene states and continuity locks into generation-ready prompts.
+
+- Image Prompt Assembly
+- Video Prompt Assembly
+- State Anchoring
+- Prompt Compression
+- Constraint Handling
+
+### 05. Image Prompt Engine
 Build each image prompt from:
 - Character
 - Product
@@ -120,7 +130,7 @@ Build each image prompt from:
 - Lighting
 - UGC Visual Language
 
-### 05. Video Prompt Engine
+### 06. Video Prompt Engine
 Build each frame-to-frame video prompt from:
 - Starting Frame
 - Ending Frame
@@ -132,7 +142,7 @@ Build each frame-to-frame video prompt from:
 - Environment Movement
 - Frame Continuity
 
-### 06. Human Realism Engine
+### 07. Human Realism Engine
 Apply cross-cutting realism constraints:
 - Human Anatomy
 - Natural Pose
@@ -143,7 +153,7 @@ Apply cross-cutting realism constraints:
 - Natural Lighting
 - UGC Authenticity
 
-### 07. Consistency Engine
+### 08. Consistency Engine
 Maintain:
 - Character Identity Lock
 - Character Reference
@@ -205,31 +215,281 @@ Spoken formats use a short conversational script aligned with Voice Identity. Si
 
 Human micro-behaviors should be restrained and contextual: natural blinking, weight shifts, small posture adjustments, glances, grip changes, clothing adjustments, or subtle reactions. Do not add random motion merely to make content look realistic.
 
-## Image Prompt Contract
+## Prompt Assembly Rules
 
-Generate one complete Image Prompt per scene. Each prompt must resolve Character, Product, Pose & Behavior, Environment, Camera, Composition, Lighting, and UGC Visual Language. Prioritize visible evidence over generic adjectives. Preserve product, creator, wardrobe, and environment continuity. Avoid cinematic or commercial polish unless explicitly requested.
+Prompt assembly is the translation layer between structured reasoning and the final generation prompt. It should preserve the resolved scene state without turning internal planning notes into bloated prompt prose.
 
-## Video Prompt Contract
+### Assembly Principles
 
-Generate one Frame-to-Frame Video Prompt for every consecutive scene pair. Each transition must specify Starting Frame, Ending Frame, Human Movement, Facial Movement, Product Movement, Material Physics, Camera Movement, Environment Movement, and Frame Continuity. Describe a believable transition, not a newly invented scene. No teleportation, identity changes, unexplained wardrobe changes, impossible hand movement, sudden cinematic camera moves, or broken room geometry.
+1. **State before style**
+   - Establish what must be visibly true before describing aesthetic qualities.
+   - Character, product, environment, and physical state take priority over mood words.
 
-## Cross-Cutting Realism
+2. **Facts before interpretation**
+   - Use verified product and creator attributes as anchors.
+   - Creative interpretation may shape pose, framing, lighting, and behavior, but must not create unsupported product facts or identity details.
 
-Human Realism and Consistency apply throughout generation. Check anatomy, pose, micro-movement, facial expression, plausible imperfection, smartphone camera behavior, lighting, character identity, voice identity when used, product identity, appearance, environment, and scene continuity. The goal is ordinary human-made UGC, not generic photorealism or polished advertising.
+3. **One prompt, one visual state**
+   - An Image Prompt describes one moment that can exist as a still image.
+   - Do not put time-based sequences such as “walks over, picks it up, then turns” into an Image Prompt.
+   - Time-based change belongs in the Video Prompt.
 
-## Output Contract
+4. **Transition, not reinvention**
+   - A Video Prompt describes how the starting state physically becomes the ending state.
+   - Do not use a transition prompt to invent a new scene, prop, wardrobe, identity, or environment.
 
-Return, in order:
+5. **Specificity over adjective stacking**
+   - Prefer observable details over generic words such as “ultra realistic,” “masterpiece,” “stunning,” or “perfect.”
+   - Realism should come from anatomy, materials, camera behavior, lighting, and physical continuity.
 
-1. Creative Summary: niche, format, angle, concept, duration, scene count.
-2. Scene Plan: objective, action, product interaction, behavior, environment for each scene.
-3. Image Prompts: one complete prompt per scene.
-4. Frame-to-Frame Video Prompts: one transition prompt per consecutive scene pair.
-5. Spoken Script: only for formats using speech.
-6. Silent Behavior Script: for silent formats.
+6. **Minimum sufficient constraints**
+   - Include a negative constraint only when it prevents a likely failure.
+   - Avoid giant negative-prompt lists that repeat the positive description.
 
-Do not expose internal validation or reasoning unless explicitly requested.
+7. **Continuity is explicit**
+   - Reuse the same identity, product, wardrobe, environment, and relevant camera anchors across scenes.
+   - A scene may change only the states that the behavior actually changes.
 
+8. **No hidden reasoning in the final prompt**
+   - Do not expose internal validation, scoring, matrix logic, or planning labels.
+   - Translate them into natural visual instructions.
+
+### Image Prompt Assembly Order
+
+Assemble Image Prompts in this order:
+
+1. **Character Identity**
+   - Character profile and reference anchor
+   - Stable appearance attributes
+   - Current pose and orientation
+   - Current facial expression
+   - Current hand and hair state when relevant
+
+2. **Product Identity**
+   - Exact product identity
+   - Verified visible attributes
+   - Current location and interaction state
+   - Relevant branding or text only when reliably known
+
+3. **Action and Visible Behavior**
+   - One dominant action
+   - Product interaction
+   - Natural micro-behavior supporting the action
+
+4. **Environment**
+   - Location/context
+   - Relevant furniture or objects
+   - Stable geometry
+   - Background state
+
+5. **Camera and Composition**
+   - Smartphone-style capture
+   - Orientation and framing
+   - Approximate distance/perspective
+   - Natural handheld or supported behavior
+   - Intentional but imperfect composition
+
+6. **Lighting**
+   - Plausible source and direction
+   - Natural exposure
+   - Realistic light response on skin, product, clothing, and environment
+
+7. **UGC Realism and Continuity**
+   - Natural anatomy and proportions
+   - Believable materials and reflections
+   - Plausible imperfections
+   - Scene continuity locks
+
+The final prompt should read as one coherent visual description, not as a pasted checklist.
+
+### Image Prompt Mandatory vs Optional
+
+**Mandatory when relevant:**
+- Character identity
+- Product identity
+- Current scene state
+- Dominant action or pose
+- Environment
+- Camera/framing
+- Product and character continuity
+
+**Optional when relevant:**
+- Facial expression
+- Hair state
+- Accessories
+- Fine lighting detail
+- Background props
+- Visible text
+- Specific imperfection
+
+Do not force optional details into every scene. Repetition without purpose is how prompts become soup.
+
+### Video Prompt Assembly Order
+
+Assemble Frame-to-Frame Video Prompts in this order:
+
+1. **Starting Frame Anchor**
+   - Identify the exact starting visual state.
+   - Preserve character, product, wardrobe, environment, and camera anchors.
+
+2. **Physical Transition**
+   - Describe the simplest believable action that connects the two states.
+   - Use explicit body mechanics when necessary: reach, grip, turn, step, adjust, place, release.
+
+3. **Human Movement**
+   - Natural body motion
+   - Weight transfer
+   - Hand movement
+   - Posture change
+   - Restrained micro-movement
+
+4. **Facial Movement**
+   - Only when relevant to the transition.
+   - Keep expression changes gradual and plausible.
+
+5. **Product and Material Physics**
+   - Product moves because the creator moves it or because a believable physical force acts on it.
+   - Clothing follows body movement.
+   - Flexible materials bend, fold, or settle naturally.
+   - Rigid objects maintain shape.
+   - Open/closed or worn/unworn states change through visible interaction.
+
+6. **Camera Movement**
+   - Describe only movement supported by the scene.
+   - Prefer subtle handheld drift, small reframing, or natural phone repositioning.
+   - Do not introduce cinematic tracking, orbiting, or dramatic zooms unless explicitly requested.
+
+7. **Environment Movement**
+   - Include only relevant motion such as hair reacting to movement, fabric shifting, or a nearby object moving because it was touched.
+
+8. **Ending Frame Anchor**
+   - End at the exact target state required by the next Image Prompt.
+   - Preserve all unchanged identity and environment attributes.
+
+9. **Continuity Constraints**
+   - Explicitly protect high-risk attributes when needed: face, hair, wardrobe, product shape/color, object placement, room geometry, or camera orientation.
+
+The video prompt should describe a continuous physical event, not two disconnected descriptions with “then” inserted between them.
+
+### Prompt Translation Rules
+
+Convert structured fields into natural generation language:
+
+| Internal State | Prompt Translation |
+|---|---|
+| Creator State | Describe the creator's visible pose, orientation, expression, and appearance |
+| Product State | Describe where the product is and how it is being held, worn, placed, opened, or used |
+| Environment State | Describe only the environmental elements that affect the frame |
+| Camera State | Describe phone capture, framing, distance, perspective, and stability |
+| Behavior Cue | Convert the cue into a visible subtle action |
+| Continuity Lock | State the attribute that must remain unchanged |
+| Transition Intent | Convert intent into a physical action with a believable cause |
+
+Do not expose field names such as “Creator State” or “Continuity Lock” in the final generation prompt unless the target generation system explicitly benefits from structured labels.
+
+### Prompt Compression Rules
+
+Compress prompts by removing:
+- Repeated adjectives
+- Duplicate identity descriptions
+- Generic realism claims
+- Irrelevant background details
+- Internal planning terminology
+- Constraints already guaranteed by the scene state
+
+Do not compress away:
+- Product-defining attributes
+- Character identity anchors
+- Current interaction state
+- Required camera/framing information
+- Critical continuity constraints
+- Physical actions needed to explain a state change
+
+### Cross-Prompt State Anchoring
+
+For Scene N and Scene N+1:
+
+**Image Prompt N**
+→ defines Starting State
+
+**Video Prompt N → N+1**
+→ defines Physical Transition
+
+**Image Prompt N+1**
+→ defines Ending State
+
+The three outputs must agree on all unchanged attributes.
+
+At minimum, preserve:
+- Character identity
+- Product identity
+- Wardrobe / appearance
+- Environment geometry
+- Product location/state
+- Camera orientation when continuity requires it
+
+If an attribute changes, the Video Prompt must explain the physical cause.
+
+### Silent Format Rule
+
+For silent formats:
+- Never insert spoken dialogue into Image Prompts or Video Prompts.
+- Communicate intention through gaze, hands, posture, product interaction, and expression.
+- Do not simulate lip movement unless it is naturally incidental.
+- CTA behavior must be visual when a CTA is selected, such as a product reveal, pointing gesture, or product-focused final frame.
+
+### Spoken Format Rule
+
+For spoken formats:
+- Visual prompts describe what the creator does while speaking.
+- Spoken copy belongs in the Spoken Script output.
+- Do not overload the Video Prompt with full dialogue.
+- Voice Identity controls vocal continuity, not visual body behavior.
+
+### Unsupported Detail Rule
+
+Never invent:
+- Product claims
+- Materials not established by product evidence
+- Exact measurements without support
+- Logos or text not known to exist
+- Creator facial, body, hair, skin, or voice details not present in the creator identity source
+- New props that materially affect the concept without a scene reason
+
+If a detail is necessary but unknown, use a neutral description rather than fabricating one.
+
+### Default Anti-Pattern List
+
+Avoid these by default:
+
+- “Ultra realistic” as the main realism mechanism
+- “Perfect skin,” “perfect body,” or “perfect pose”
+- Studio-commercial lighting
+- Fashion-editorial posing without a request
+- Cinematic camera moves without a request
+- Random props
+- Random hand gestures
+- Instant product or wardrobe changes
+- Impossible reflections
+- Floating or fused objects
+- Unexplained environment changes
+- Multiple major actions in one short scene
+- Huge negative prompts
+- New creator identity details generated per scene
+
+## Output Assembly Templates
+
+These are internal templates for constructing the final prompt text.
+
+### Image Prompt Template
+
+**Character identity + current product state + one dominant action + environment + smartphone camera/composition + plausible lighting + UGC realism + critical continuity constraints**
+
+### Frame-to-Frame Video Prompt Template
+
+**Starting frame + physical transition + human movement + product/material physics + camera movement + relevant environment movement + exact ending frame + critical continuity constraints**
+
+Templates are assembly guides, not text that must be copied verbatim.
 
 # Format × Angle Matrix
 
@@ -391,7 +651,7 @@ Do not treat the matrix as a rigid script. It is a behavior-generation guide.
 | Before / After | Before / After | Direct state comparison | Transformation |
 | Lifestyle | Space Improvement | Use product naturally at home | Context |
 | Lifestyle | Organization | Everyday organizing | Order |
-| Lifestyle | Convenience | Routine task | Practical benefit |
+| Lifestyle | Convenience | Routine task | Practical use |
 | Lifestyle | Aesthetic Upgrade | Natural placement | Visual context |
 | Lifestyle | Problem Solving | Solve a routine annoyance | Solution |
 | Lifestyle | Functionality | Use product normally | Feature |
