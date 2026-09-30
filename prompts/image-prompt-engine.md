@@ -650,3 +650,113 @@ Throughout execution:
 → Output`
 
 The Image Prompt Engine is responsible for producing the stable visual anchors that the Video Prompt Engine will later use as starting and ending states.
+
+
+## Final Prompt Format
+
+The final Image Prompt must use a stable, ordered structure so every scene is readable, comparable, and machine-processable.
+
+### Canonical Structure
+
+```text
+[IMAGE PROMPT]
+
+SCENE:
+{scene_id}
+
+PURPOSE:
+{scene_purpose}
+
+SUBJECT:
+{creator_identity}
+
+CREATOR STATE:
+- Pose: {pose}
+- Body position: {body_position}
+- Facial expression: {expression}
+- Gaze: {gaze}
+- Hands: {hand_position}
+
+PRODUCT:
+{product_identity}
+
+PRODUCT STATE:
+- Position: {product_position}
+- Orientation: {product_orientation}
+- Interaction: {product_interaction}
+- Visible details: {required_product_details}
+
+ENVIRONMENT:
+- Location: {location}
+- Background: {background}
+- Important objects: {important_objects}
+
+CAMERA:
+- Shot: {shot_type}
+- Angle: {camera_angle}
+- Framing: {framing}
+- Camera position: {camera_position}
+- Lens perspective: {lens_perspective}
+
+LIGHTING:
+- Source: {light_source}
+- Direction: {light_direction}
+- Quality: {light_quality}
+- Exposure: {exposure}
+
+UGC REALISM:
+- Capture style: {capture_style}
+- Natural imperfections: {imperfections}
+- Image quality: {quality}
+- Commercial polish: {commercial_polish}
+
+CONTINUITY:
+- Creator: {creator_lock}
+- Product: {product_lock}
+- Environment: {environment_lock}
+- Camera: {camera_lock}
+
+REQUIRED EVIDENCE:
+{required_evidence}
+
+FORBIDDEN CHANGES:
+{forbidden_changes}
+```
+
+### Assembly Rule
+
+The canonical fields are an **output format**, not a second source of truth. Populate them only from resolved Scene State, Content Behavior, Identity Sources, Product Intelligence, and Realism Constraints.
+
+The generation prompt may be rendered as a natural-language paragraph after assembly, but the semantic field order must remain stable:
+
+`Subject → Creator State → Product → Product State → Environment → Camera → Lighting → UGC Realism → Continuity → Evidence → Forbidden Changes`
+
+Do not add fields ad hoc per scene.
+
+### Field Rules
+
+- `SCENE` identifies the source scene.
+- `PURPOSE` states the single dominant scene purpose.
+- `SUBJECT` anchors creator identity.
+- `CREATOR STATE` describes only the visible current state.
+- `PRODUCT` and `PRODUCT STATE` are separate so identity cannot be confused with temporary state.
+- `ENVIRONMENT` describes only relevant spatial context.
+- `CAMERA` describes the capture relationship, not hypothetical camera motion.
+- `LIGHTING` describes the plausible light state.
+- `UGC REALISM` protects ordinary human-made capture language.
+- `CONTINUITY` carries high-risk locks only.
+- `REQUIRED EVIDENCE` maps campaign requirements to visible composition.
+- `FORBIDDEN CHANGES` protects known failure modes.
+
+### Required Output Shape
+
+For each scene, return exactly:
+
+```text
+Scene ID: {scene_id}
+
+Image Prompt:
+{canonical image prompt}
+```
+
+No hidden reasoning, implementation notes, or alternate prompt versions belong in the generation-ready output.
