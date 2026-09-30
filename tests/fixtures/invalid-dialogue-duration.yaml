@@ -1,0 +1,17 @@
+name: invalid-dialogue-duration
+format: Talking Head
+duration: 4
+script:
+  mode: dialogue
+  beats:
+    - beat_id: 1
+      start: 0
+      end: 4
+      purpose: hook
+      dialogue: "This shirt is honestly one of my favorite everyday pieces because the fabric feels comfortable, the fit is flattering, and I can style it in so many different ways."
+      behavior: speaks directly to camera
+      product_state: worn
+expected:
+  validation_status: revise
+  issue_codes:
+    - DIALOGUE_DURATION_FEASIBLE
