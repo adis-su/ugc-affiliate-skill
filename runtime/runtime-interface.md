@@ -678,3 +678,23 @@ The runtime interface is considered ready for executable implementation when:
 After this interface is implemented, the next layer is an executable test harness.
 
 The test harness should first implement the contract tests in `tests/integration-audit.md`, then expand into regression fixtures as the runtime gains executable generation components.
+
+
+## Creator Reference Adapter
+
+Creator identity is resolved at runtime through the Creator Library plus request-scoped references.
+
+Flow:
+
+```
+Creator Library → request creator reference → Creator Intelligence → identity validation → Character / Voice Identity Lock
+```
+
+Rules:
+
+- Visual generation requires an approved Character Reference.
+- Spoken generation requires an approved Voice Reference.
+- Silent formats do not require Voice Identity.
+- Creator name alone never satisfies identity requirements.
+- Missing references block generation with `CREATOR_IDENTITY_INSUFFICIENT` or `VOICE_IDENTITY_INSUFFICIENT`.
+- Supplied identity fields may fill unknown library fields, but they do not silently invent missing references.
