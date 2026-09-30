@@ -43,7 +43,9 @@ export function retrieveCreatorIntelligence(resolvedCreator, input) {
     character_identity_lock: {
       ...resolvedCreator.character_identity_lock,
       reference: characterReference,
-      source: suppliedCharacter.reference ? "creator_input_reference" : resolvedCreator.character_identity_lock.source
+      source: "Creator Library",
+      lock_policy: "canonical",
+      conditioning_reference: characterReference
     },
     voice_identity: voice,
     voice_reference_status: voiceReference ? "available" : "unavailable",
