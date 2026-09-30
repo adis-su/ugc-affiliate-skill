@@ -1,0 +1,10 @@
+name: invalid-mirror-geometry
+format: Silent Mirror Selfie
+scene:
+  creator: reflected in mirror
+  phone: visible in reflection
+  reflection: phone appears behind the creator while hands remain in front
+expected:
+  validation_status: block
+  issue_codes:
+    - MIRROR_GEOMETRY_VALID
