@@ -70,6 +70,30 @@ version: "1.0"\nseverity:\n  blocking: "Output must stop."\n  major: "Output mus
     condition: "Every Frame A to Frame B transition can occur through continuous physical motion."
     route: storyboard
 
+  - code: REFERENCE_IMAGES_HAVE_ROLES
+    stage: reference_images
+    severity: major
+    condition: "Every scene reference image has an explicit type, role, priority, scope, and purpose."
+    route: reference_images
+
+  - code: REFERENCE_CRITICAL_IDENTITY_STABLE
+    stage: reference_images
+    severity: blocking
+    condition: "Critical creator and product references are present and are not contradicted by lower-priority references."
+    route: reference_images
+
+  - code: REFERENCE_CONFLICTS_RESOLVED
+    stage: reference_images
+    severity: major
+    condition: "Conflicting references are resolved by priority or surfaced to QC rather than silently merged."
+    route: reference_images
+
+  - code: FRAME_REFERENCE_MAPPING_VALID
+    stage: reference_images
+    severity: major
+    condition: "Frame-specific references are compatible with the scene reference set and do not replace critical identity or product anchors."
+    route: reference_images
+
   - code: IMAGE_PROMPT_HAS_IDENTITY_LOCK
     stage: image_prompt
     severity: major
