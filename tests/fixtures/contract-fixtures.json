@@ -29,7 +29,12 @@
         },
         "platform": [
           "TikTok"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "expected": {
         "status": "PASS",
@@ -67,7 +72,12 @@
         },
         "platform": [
           "Instagram Reels"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "expected": {
         "status": "PASS",
@@ -103,7 +113,12 @@
         },
         "platform": [
           "Facebook Reels"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "expected": {
         "status": "PASS",
@@ -142,7 +157,15 @@
         "platform": [
           "TikTok",
           "Instagram Reels"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          },
+          "voice": {
+            "voice_reference": "fixture://rositasari-voice-v1"
+          }
+        }
       },
       "expected": {
         "status": "PASS",
@@ -209,7 +232,12 @@
         },
         "platform": [
           "TikTok"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "expected": {
         "status": "BLOCK",
@@ -243,7 +271,12 @@
         },
         "platform": [
           "TikTok"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "expected": {
         "status": "BLOCK",
@@ -278,7 +311,12 @@
         },
         "platform": [
           "TikTok"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "expected": {
         "status": "BLOCK",
@@ -316,7 +354,12 @@
         },
         "platform": [
           "Instagram Reels"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "fixture_setup": {
         "mock_product_source": {
@@ -355,7 +398,12 @@
         },
         "platform": [
           "TikTok"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "fixture_setup": {
         "mock_generation_fault": "scene_03_character_identity_drift"
@@ -392,7 +440,12 @@
         },
         "platform": [
           "Shopee Video"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "fixture_setup": {
         "mock_generation_fault": "scene_02_product_teleportation"
@@ -431,7 +484,15 @@
         },
         "platform": [
           "TikTok"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          },
+          "voice": {
+            "voice_reference": "fixture://rositasari-voice-v1"
+          }
+        }
       },
       "fixture_setup": {
         "mock_generation_fault": "invented_clinical_claim"
@@ -479,7 +540,12 @@
         },
         "platform": [
           "Instagram Reels"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "expected": {
         "status": "PASS",
@@ -565,7 +631,12 @@
         },
         "platform": [
           "Instagram Reels"
-        ]
+        ],
+        "creator_identity": {
+          "character": {
+            "reference": "fixture://rositasari-character-v1"
+          }
+        }
       },
       "expected": {
         "status": "BLOCK",
