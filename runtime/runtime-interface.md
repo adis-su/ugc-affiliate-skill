@@ -698,3 +698,16 @@ Rules:
 - Creator name alone never satisfies identity requirements.
 - Missing references block generation with `CREATOR_IDENTITY_INSUFFICIENT` or `VOICE_IDENTITY_INSUFFICIENT`.
 - Supplied identity fields may fill unknown library fields, but they do not silently invent missing references.
+
+
+## Script Engine
+
+Spoken output is generated only when speech mode is active. The Script Engine:
+
+- uses Campaign Intelligence and required evidence as content constraints;
+- binds output to the Creator Voice Identity Lock;
+- targets approximately 2.2 words per second;
+- exposes word count and duration-fit metadata;
+- keeps spoken text out of image and video visual prompts.
+
+Silent formats use a separate Silent Behavior Script. It contains observable behavior cues and explicitly disables speech and lip-sync.
