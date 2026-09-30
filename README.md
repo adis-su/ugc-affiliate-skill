@@ -30,6 +30,7 @@ You can use this repository as the specification and knowledge base directly in 
 Start with the dedicated guide:
 
 - `CHATGPT.md` — manual ChatGPT execution guide, loading order, input template, output contract, and validation rules.
+- `CHATGPT_PROJECT_INSTRUCTIONS.md` — concise canonical instructions to attach as the ChatGPT Project instruction/knowledge layer.
 
 Quick setup prompt:
 
