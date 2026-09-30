@@ -22,13 +22,13 @@ export const ROSITASARI_VOICE_IDENTITY = createVoiceIdentityLock({
     "avoid synthetic-sounding pauses",
     "avoid over-pronunciation",
     "preserve consistent speaker identity",
-    "do not fabricate an unapproved voice reference"
+    "do not invent a different Rositasari voice identity"
   ],
   reference: null
 });
 
 export const ROSITASARI_VOICE_PROFILE_STATUS = {
-  reference_status: "MISSING",
-  generation_status: "BLOCKED_UNTIL_APPROVED_REFERENCE",
+  reference_status: "OPTIONAL",
+  generation_status: "READY_FROM_IDENTITY",
   profile_version: "v1"
 };
