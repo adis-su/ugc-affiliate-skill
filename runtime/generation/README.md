@@ -71,13 +71,15 @@ generateVideo({
 }) → GenerationAsset
 ```
 
-Adapters must not invent missing references. If a required reference is unavailable, return a structured blocker.
+Adapters must not invent missing references. Attach Character, Product, or Voice References only when they are supplied and valid for the request. References are optional conditioning inputs unless the resolved product contract explicitly marks a product reference as required.
 
-### Character Reference Contract
+### Identity Reference Contract
 
-Visual generation requires a `character` reference. The reference may be supplied as an approved `id` or `uri` and is attached to every image generation request and every video transition request. The runtime remains provider-neutral; provider adapters translate the reference into provider-specific attachment syntax.
+Character Identity is the source of truth for visual generation. A Character Reference may be supplied as an `id` or `uri` and attached to image/video requests when available.
 
-For Rositasari, the repository currently defines the Character Identity but does not fabricate an actual reference asset. A real approved reference must be supplied before generation can proceed.
+Voice Identity is the source of truth for spoken generation. A Voice Reference may be supplied and attached to voice requests when available.
+
+For Rositasari, the repository defines Character Identity and Voice Identity without fabricating actual reference assets. Missing Character or Voice References do not block generation when the corresponding Identity Lock is sufficient.
 
 ## Asset Contract
 
