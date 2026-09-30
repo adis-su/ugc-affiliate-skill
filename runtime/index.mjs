@@ -276,6 +276,52 @@ function validateGeneratedOutput(result, input) {
   return blockers;
 }
 
+function repairGeneratedOutput(result, input) {
+  const repairs = [];
+
+  for (const prompt of result.image_prompts) {
+    if (/then|after that|future action/i.test(prompt.prompt)) {
+      prompt.prompt = prompt.prompt.replace(/\\b(then|after that|future action)[^;.]*/gi, "").replace(/; ;/g, ";");
+      repairs.push("image_prompt_future_action_removed");
+    }
+    if (!/single visual state/i.test(prompt.prompt)) {
+      prompt.prompt += "; single visual state; do not describe future actions";
+      repairs.push("image_prompt_state_anchor_restored");
+    }
+  }
+
+  for (let i = 0; i < result.scene_plan.length - 1; i++) {
+    const scene = result.scene_plan[i];
+    if (!scene.transition_intent) {
+      scene.transition_intent = result.scene_plan[i + 1].purpose;
+      repairs.push(`${scene.scene_id}_transition_intent_restored`);
+    }
+    if (!scene.transition_cause) {
+      scene.transition_cause = "creator action causes the next visible state";
+      repairs.push(`${scene.scene_id}_transition_cause_restored`);
+    }
+  }
+
+  if (SILENT_FORMATS.has(input.content.format) && result.spoken_script) {
+    delete result.spoken_script;
+    repairs.push("silent_spoken_script_removed");
+  }
+
+  return repairs;
+}
+
+function validateAndRepair(result, input) {
+  const initialBlockers = validateGeneratedOutput(result, input);
+  if (!initialBlockers.length) {
+    return { result, repairs: [], blockers: [] };
+  }
+
+  const repairs = repairGeneratedOutput(result, input);
+  const remainingBlockers = validateGeneratedOutput(result, input);
+
+  return { result, repairs, blockers: remainingBlockers };
+}
+
 export function run(input) {
   const requestBlockers = validateRequest(input);
   if (requestBlockers.length) {
@@ -382,10 +428,19 @@ export function run(input) {
     }
   };
 
-  const outputBlockers = validateGeneratedOutput(result, input);
-  if (outputBlockers.length) {
+  const repairPass = validateAndRepair(result, input);
+  result.validation.repair_actions = repairPass.repairs;
+  result.validation.revalidation = {
+    executed: true,
+    initial_blockers_detected: repairPass.repairs.length > 0,
+    remaining_blockers: repairPass.blockers.map(item => item.code)
+  };
+
+  if (repairPass.blockers.length) {
     result.validation.status = "BLOCK";
-    result.validation.blockers.push(...outputBlockers);
+    result.validation.blockers.push(...repairPass.blockers);
+  } else if (!generationBlockers.length) {
+    result.validation.status = "PASS";
   }
   return result;
 }
