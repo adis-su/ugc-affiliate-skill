@@ -111,11 +111,13 @@ export function resolveCreator(name) {
     character_identity: creator.character_identity,
     voice_identity: creator.voice_identity,
     character_identity_lock: {
+      ...creator.character_identity,
       source: "Creator Library",
       creator: name,
       reference: creator.character_identity.reference
     },
     voice_identity_lock: {
+      ...creator.voice_identity,
       source: "Creator Library",
       creator: name,
       reference: creator.voice_identity.voice_reference
