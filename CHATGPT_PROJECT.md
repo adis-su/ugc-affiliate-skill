@@ -80,7 +80,7 @@ Voice Identity:
 - subtle, approachable emotion
 - avoid robotic timing, uniform pacing, exaggerated enthusiasm, synthetic pauses, and over-pronunciation
 
-Reference availability is handled by the skill at the relevant generation stage. Never fabricate an approved reference.
+Reference availability is handled by the skill at the relevant generation stage. References are optional conditioning inputs and are never approval gates.
 
 ## Guided User Input Flow
 
@@ -146,7 +146,7 @@ If a later answer changes an earlier assumption, update dependent state instead 
 9. If spoken, bind the Rositasari Voice Identity to the Voice Generation Request and use a Voice Reference only when available.
 10. Validate generated assets against identity and continuity contracts.
 11. Regenerate only when the failure is retryable.
-12. Return structured blockers when required references or inputs are missing.
+12. Return structured blockers when required inputs are missing; never treat optional Character or Voice References as required blockers.
 
 ## Silent Content
 
