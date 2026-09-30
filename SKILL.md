@@ -347,6 +347,9 @@ Generate one transition prompt for each consecutive scene pair:
 - Scene 03 → 04
 - etc.
 
+### Generator Clip Plan
+When Google Flow is the target, distinguish Scene from Clip. Resolve the requested total duration into supported Flow clip durations. Never invent unsupported durations.
+
 ## Quality Philosophy
 
 Quality control is embedded into the engines rather than implemented as a separate QC layer.
@@ -2117,7 +2120,15 @@ If both duration and scene count are custom:
 
 The runtime should prefer fewer meaningful scenes over many shallow scenes.
 
-### Stage 7 — Build Creative Concept
+### Stage 7 — Resolve Generator Clip Duration Plan
+
+Before creative generation, resolve the target runtime against the active Google Flow model. Current documented generation durations are 4s / 6s / 8s for Veo 3.1 Lite, Fast, and Quality, and 4s / 6s / 8s / 10s for Gemini Omni Flash 1.1.
+
+For N scenes, the default transition count is N−1. The planner must find an exact partition of the target duration across supported clip durations. Example: 18s with 5 scenes becomes 4 transitions with clip durations 4s + 4s + 4s + 6s.
+
+Do not create fake 2s, 3s, 5s, 7s, or 9s Flow clips. If no exact partition exists, merge/reduce scene boundaries when safe or block the request.
+
+## Stage 8 — Build Creative Concept
 
 Create one concise creative concept from:
 
@@ -2143,7 +2154,7 @@ A valid concept answers:
 
 Do not turn the concept into a long script.
 
-### Stage 8 — Build Scene State Model
+### Stage 9 — Build Scene State Model
 
 Create the complete scene state model before writing prompts.
 
@@ -2162,7 +2173,7 @@ Scene N+1 must be reachable from Scene N.
 
 Every meaningful state change must have a cause.
 
-### Stage 9 — Build Content Behavior
+### Stage 10 — Build Content Behavior
 
 Translate the scene state model into observable human behavior.
 
