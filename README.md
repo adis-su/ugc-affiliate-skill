@@ -72,7 +72,11 @@ OUTPUT
 - `prompts/video-prompt-engine.md` — Frame-to-frame motion engine
 - `runtime/end-to-end-integration.md` — Runtime contract across all layers
 - `runtime/runtime-interface.md` — Canonical runtime interfaces and executable contracts
+- `runtime/index.mjs` — Executable contract-first runtime skeleton
 - `tests/integration-audit.md` — Integration audit and contract test matrix
+- `tests/fixtures/contract-fixtures.json` — Machine-readable positive/negative fixtures
+- `tests/contract-harness.md` — Contract test harness specification
+- `tests/contract-tests.mjs` — Executable Node contract tests
 
 ## Runtime Contract
 
@@ -107,6 +111,31 @@ Structural invariants are deterministic:
 - every meaningful state change has a cause
 - silent formats contain no speech
 - final output contains no unresolved blocker
+
+## Executable Runtime
+
+The repository now includes a dependency-free Node.js runtime skeleton.
+
+Run:
+
+```bash
+npm test
+```
+
+The current runtime intentionally implements the contract boundary first:
+
+- request validation,
+- creator resolution,
+- product conflict detection,
+- format × angle validation,
+- duration × scene-count validation,
+- speech-mode validation,
+- deterministic scene-state construction,
+- image/video output count contracts,
+- continuity/identity fault fixtures,
+- final validation status.
+
+Creative wording and advanced product retrieval remain implementation layers above this skeleton.
 
 ## Core Runtime Rule
 
