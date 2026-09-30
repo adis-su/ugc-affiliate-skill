@@ -1,0 +1,18 @@
+"$schema": "https://json-schema.org/draft/2020-12/schema"
+title: Content Strategy
+type: object
+additionalProperties: false
+required: [objective, stage, cta, format, angle, duration, scene_count, platforms]
+properties:
+  objective: {type: string}
+  stage: {type: string}
+  cta: {type: string}
+  format: {type: string}
+  angle: {type: string}
+  duration: {type: number, exclusiveMinimum: 0}
+  scene_count: {type: integer, minimum: 1}
+  platforms: {type: array, minItems: 1, items: {type: string}}
+  primary_message: {type: string}
+  product_information_priority: {type: array, items: {type: string}}
+  audience_action: {type: string}
+  constraints: {type: array, items: {type: string}}
