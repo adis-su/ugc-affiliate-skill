@@ -487,6 +487,8 @@ Validate niche, product, campaign, creator, format, angle, duration, scene count
 
 When Product URL is available, retrieve it when possible and use it as the source of truth. Extract only supportable facts: product type, brand, color, pattern, material, shape, size, functional features, packaging, visible branding, intended use, and relevant selling points. Separate observed facts from assumptions. If the product cannot be reliably understood, avoid inventing attributes.
 
+Product reference handling is an internal generation concern. Do not present Character Reference, Voice Reference, or Product Reference as a mandatory preparation checklist during the guided user-input flow. Ask for or request a specific reference only when the active generation path actually requires it.
+
 ## Creator Retrieval
 
 Retrieve the selected creator file from creators/. Character Identity is the visual source of truth. Voice Identity is the spoken/audio source of truth. Missing identity details must not be invented.
