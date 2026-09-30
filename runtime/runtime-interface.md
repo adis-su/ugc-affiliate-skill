@@ -55,7 +55,7 @@ Currently supported:
 
 - Rositasari
 
-The runtime must resolve the creator from the Creator Library.
+The runtime must resolve the creator from the Creator Library, then merge any explicit creator reference data without inventing missing identity attributes.
 
 ### Platform Values
 
@@ -129,6 +129,7 @@ A stage may transform information but must not silently redefine another stage's
 - Product Name
 - Product URL when supplied
 - User Product Facts when supplied
+- Retrieved Product Facts when supplied by an external retrieval adapter
 
 ### Output
 
@@ -159,6 +160,7 @@ ProductIntelligence
 - Creator Library record
 - Character Reference when available
 - Voice Reference when available
+- Explicit creator identity overrides when supplied
 
 ### Output
 
