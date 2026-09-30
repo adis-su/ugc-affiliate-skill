@@ -14,9 +14,21 @@ properties:
         items:
           type: object
           additionalProperties: false
-          required: [scene_id, prompt, continuity_anchors, negative_constraints]
+          required: [scene_id, reference_images, prompt, continuity_anchors, negative_constraints]
           properties:
             scene_id: {type: integer, minimum: 1}
+            reference_images:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [id, type, role, priority, purpose]
+                properties:
+                  id: {type: string, minLength: 1}
+                  type: {type: string}
+                  role: {type: string}
+                  priority: {type: string}
+                  purpose: {type: string}
             prompt: {type: string, minLength: 1}
             continuity_anchors: {type: array, items: {type: string}}
             negative_constraints: {type: array, items: {type: string}}
@@ -25,9 +37,21 @@ properties:
         items:
           type: object
           additionalProperties: false
-          required: [scene_id, frame_a, frame_b, prompt, continuity_anchors, negative_constraints]
+          required: [scene_id, reference_images, frame_a, frame_b, prompt, continuity_anchors, negative_constraints]
           properties:
             scene_id: {type: integer, minimum: 1}
+            reference_images:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [id, type, role, priority, purpose]
+                properties:
+                  id: {type: string, minLength: 1}
+                  type: {type: string}
+                  role: {type: string}
+                  priority: {type: string}
+                  purpose: {type: string}
             frame_a: {type: string, minLength: 1}
             frame_b: {type: string, minLength: 1}
             prompt: {type: string, minLength: 1}
