@@ -1,0 +1,19 @@
+name: invalid-continuity
+scenes:
+  - scene_id: 1
+    product:
+      color: cream
+      silhouette: oversized
+    creator:
+      hairstyle: shoulder-length dark hair
+  - scene_id: 2
+    product:
+      color: black
+      silhouette: slim
+    creator:
+      hairstyle: short blonde hair
+expected:
+  status: block
+  issue_codes:
+    - PRODUCT_IDENTITY_STABLE
+    - CREATOR_CONTINUITY_STABLE
