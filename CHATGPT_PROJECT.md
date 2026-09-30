@@ -124,10 +124,12 @@ When Speech is Silent:
 - do not create lip-sync.
 
 When Speech is Spoken:
-- require Voice Identity,
-- require an approved Voice Reference for production voice generation,
-- return a structured blocker if the approved Voice Reference is missing,
+- use the resolved Voice Identity for spoken delivery,
+- handle Voice Reference requirements internally at the generation stage,
+- if the active voice generation path requires an approved Voice Reference and it is unavailable, return a structured blocker,
 - never fabricate a voice reference.
+
+References are not part of the initial onboarding checklist. Do not tell the user to prepare Character Reference, Voice Reference, or Product Reference before continuing the guided input flow. Request a specific reference only when it is needed by the active generation or validation path.
 
 If a later answer changes an earlier assumption, update dependent state instead of restarting the whole flow.
 
