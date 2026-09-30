@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { ImageGenerationAdapter } from "../runtime/generation/image-adapter.mjs";
 import { VideoGenerationAdapter } from "../runtime/generation/video-adapter.mjs";
 import { validateGeneratedAsset } from "../runtime/generation/asset-validation.mjs";
-import { validateRequiredCharacterReference } from "../runtime/generation/reference-contract.mjs";
+import { validateCharacterReference } from "../runtime/generation/reference-contract.mjs";
 
 const productReference = {
   type: "product",
@@ -36,7 +36,7 @@ test("image adapter preserves scene, prompt, and character reference identity", 
   assert.equal(asset.references.some((reference) => reference.type === "product"), false);
 });
 
-test("image adapter blocks when character reference is missing", async () => {
+test("image adapter uses Character Identity when character reference is missing", async () => {
   const adapter = new ImageGenerationAdapter();
   const asset = await adapter.generateImage({
     request_id: "test-request",
@@ -44,8 +44,7 @@ test("image adapter blocks when character reference is missing", async () => {
     image_prompt: { prompt: "validated image prompt" }
   });
 
-  assert.equal(asset.status, "BLOCK");
-  assert.equal(asset.error.code, "GENERATION_CHARACTER_REFERENCE_MISSING");
+  assert.equal(asset.status, "READY");
 });
 
 test("video adapter preserves consecutive scene mapping and character reference", async () => {
@@ -64,7 +63,7 @@ test("video adapter preserves consecutive scene mapping and character reference"
   assert.deepEqual(asset.references[0], characterReference);
 });
 
-test("video adapter blocks when character reference is missing", async () => {
+test("video adapter uses Character Identity when character reference is missing", async () => {
   const adapter = new VideoGenerationAdapter();
   const asset = await adapter.generateVideo({
     request_id: "test-request",
@@ -73,12 +72,11 @@ test("video adapter blocks when character reference is missing", async () => {
     video_prompt: { prompt: "validated video prompt" }
   });
 
-  assert.equal(asset.status, "BLOCK");
-  assert.equal(asset.error.code, "GENERATION_CHARACTER_REFERENCE_MISSING");
+  assert.equal(asset.status, "READY");
 });
 
 test("reference contract validates character references", () => {
-  const result = validateRequiredCharacterReference(
+  const result = validateCharacterReference(
     { creator_identity: { reference: characterReference } },
     []
   );
