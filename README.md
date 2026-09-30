@@ -50,6 +50,19 @@ I will provide the generation input next.
 
 See `CHATGPT.md` for the complete workflow.
 
+## Portable AI Skill Mode
+
+AFFILIX is repository-portable. When this repository is supplied as an AI agent's workspace or project context, the agent can execute AFFILIX directly without installing a global skill or the Node.js runtime.
+
+Repository entrypoints:
+
+- `AGENTS.md` — automatic agent instructions for repository-aware hosts
+- `AFFILIX.md` — portable AFFILIX activation and execution contract
+- `SKILL.md` — canonical skill specification
+- `CHATGPT.md` — manual execution guide for hosts that do not automatically load repository instructions
+
+Use `/Affilix` as the canonical activation command. Native slash-command registration remains host-specific, but repository-based execution does not require copying AFFILIX into a global skills directory.
+
 ## End-to-End Architecture
 
 ```
