@@ -1,0 +1,70 @@
+version: "1.0"
+name: fashion-ugc-pipeline
+
+stages:
+  - id: normalize
+    type: deterministic
+    input: user_input
+    output: normalized_request
+  - id: validate_input
+    type: deterministic
+    input: normalized_request
+    output: input_validation
+  - id: product_intelligence
+    type: reasoning
+    input: normalized_request
+    output: product_intelligence
+  - id: strategy
+    type: reasoning
+    input: [normalized_request, product_intelligence]
+    output: strategy
+  - id: format
+    type: reasoning
+    input: [normalized_request, strategy]
+    output: format
+  - id: concept
+    type: creative
+    input: [normalized_request, product_intelligence, strategy, format]
+    output: concept
+  - id: script_behavior
+    type: creative
+    input: [concept, format, strategy]
+    output: script_behavior
+  - id: storyboard
+    type: creative
+    input: [concept, script_behavior, format, strategy]
+    output: storyboard
+  - id: image_prompt
+    type: rendering
+    input: [storyboard, product_intelligence]
+    output: image_prompts
+  - id: video_prompt
+    type: rendering
+    input: [storyboard, image_prompts]
+    output: video_prompts
+  - id: realism
+    type: constraint
+    input: [storyboard, image_prompts, video_prompts]
+    output: realism_constraints
+  - id: product_consistency
+    type: constraint
+    input: [product_intelligence, storyboard, image_prompts, video_prompts]
+    output: product_consistency
+  - id: qc
+    type: validation
+    input: [normalized_request, strategy, format, concept, script_behavior, storyboard, image_prompts, video_prompts, realism_constraints, product_consistency]
+    output: qc
+  - id: package
+    type: deterministic
+    input: [concept, script_behavior, storyboard, image_prompts, video_prompts, realism_constraints, product_consistency, qc]
+    output: final_ugc_package
+
+gates:
+  - after: validate_input
+    block_on: [blocking]
+  - after: storyboard
+    run: [timeline, continuity]
+  - after: product_consistency
+    run: [product_identity]
+  - after: qc
+    block_on: [blocking, major]
