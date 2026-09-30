@@ -1,0 +1,26 @@
+name: valid-vertical-slice
+request:
+  format: Silent Mirror Selfie
+  angle: Styling
+  duration: 10
+  scene_count: 5
+  objective: affiliate_conversion
+  cta: Check the Product
+expected:
+  stages_completed:
+    - normalize
+    - validate_input
+    - product_intelligence
+    - strategy
+    - format
+    - concept
+    - script_behavior
+    - storyboard
+    - image_prompt
+    - video_prompt
+    - realism
+    - product_consistency
+    - qc
+    - package
+  final_status: pass
+  package_allowed: true
