@@ -374,16 +374,39 @@ function repairGeneratedOutput(result, input) {
   return repairs;
 }
 
+const AUTO_REPAIRABLE = new Set([
+  "IMAGE_PROMPT_INVALID",
+  "SCENE_STATE_INVALID",
+  "SPEECH_MODE_CONFLICT"
+]);
+
+const NON_REPAIRABLE = new Set([
+  "IDENTITY_DRIFT",
+  "PRODUCT_DRIFT",
+  "CONTINUITY_BREAK",
+  "UNSUPPORTED_DETAIL",
+  "PRODUCT_CONFLICT",
+  "CREATOR_IDENTITY_INSUFFICIENT",
+  "VOICE_IDENTITY_INSUFFICIENT"
+]);
+
 function validateAndRepair(result, input) {
   const initialBlockers = validateGeneratedOutput(result, input);
   if (!initialBlockers.length) {
-    return { result, repairs: [], blockers: [] };
+    return { result, repairs: [], blockers: [], initialBlockers: [] };
   }
 
-  const repairs = repairGeneratedOutput(result, input);
+  const repairable = initialBlockers.filter(item => AUTO_REPAIRABLE.has(item.code));
+  const nonRepairable = initialBlockers.filter(item => NON_REPAIRABLE.has(item.code) || !AUTO_REPAIRABLE.has(item.code));
+  const repairs = repairable.length ? repairGeneratedOutput(result, input) : [];
   const remainingBlockers = validateGeneratedOutput(result, input);
 
-  return { result, repairs, blockers: remainingBlockers };
+  return {
+    result,
+    repairs,
+    blockers: [...nonRepairable, ...remainingBlockers.filter(item => !nonRepairable.some(blockerItem => blockerItem.code === item.code))],
+    initialBlockers
+  };
 }
 
 export async function runAsync(input, options = {}) {
@@ -501,7 +524,8 @@ export async function runAsync(input, options = {}) {
   result.validation.repair_actions = repairPass.repairs;
   result.validation.revalidation = {
     executed: true,
-    initial_blockers_detected: repairPass.repairs.length > 0,
+    initial_blockers_detected: repairPass.initialBlockers.length > 0,
+    initial_blocker_codes: repairPass.initialBlockers.map(item => item.code),
     remaining_blockers: repairPass.blockers.map(item => item.code)
   };
 
