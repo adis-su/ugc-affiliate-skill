@@ -1,6 +1,6 @@
 # Beauty Example — Product Application
 
-This fixture demonstrates a spoken Beauty UGC concept while keeping visual prompts independent from the full dialogue.
+This fixture demonstrates a silent Beauty UGC concept while keeping visual behavior separate from the visual prompts.
 
 ## Input
 
@@ -85,15 +85,13 @@ Starting from the exact Scene 01 state, Rositasari opens the lip product, brings
 
 Starting from the exact Scene 02 application state, Rositasari finishes the application, lowers the applicator, and moves slightly closer to the phone for shade inspection. The product and makeup state remain consistent, skin texture stays natural, and the camera reframes subtly rather than making a cinematic zoom. End in the exact Scene 03 state.
 
-### Spoken Script
+### Silent Behavior Script
 
-- Scene 01: “Aku lagi lihat shade ini dulu.”
-- Scene 02: “Coba aku pakai sedikit.”
-- Scene 03: “Kelihatan juga warnanya.”
+notice → inspect → apply → reveal
 
 ## Validation Notes
 
-- Speech is separated from visual prompts.
+- No speech is used; behavior is separated from visual prompts.
 - The example uses no unsupported product claims.
 - Application has a physical sequence.
 - The shade is described visually without inventing a named color.
