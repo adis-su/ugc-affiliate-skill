@@ -27,6 +27,47 @@ Do not invent unsupported product or creator details.
 I will provide the generation input next.
 ```
 
+## AFFILIX Activation Flow
+
+The canonical interactive entry command is:
+
+`/Affilix`
+
+When the user sends `/Affilix`:
+
+1. Welcome the user briefly.
+2. Ask only for the mandatory **Product URL**.
+3. Resolve Product Intelligence from the URL when retrieval is available.
+4. Show a concise product summary.
+5. Present the seven campaign settings together:
+   - Campaign Objective: **[choose]**
+   - Format: **Product Demo**
+   - Angle: **How I Use It**
+   - Platform: **TikTok**
+   - CTA: **Check Product**
+   - Creator: **Rositasari**
+   - Speech: **Spoken**
+6. Treat the displayed defaults as editable starting values, not locked choices.
+7. Preserve all selected values across turns.
+8. Validate incompatible combinations before generation.
+9. Start the production pipeline only after the seven settings are resolved.
+
+The user may change one or several settings by name, number, compact configuration, or natural language. Do not force the user to repeat values already selected.
+
+The guided state is:
+
+```text
+IDLE
+→ WAITING_PRODUCT_URL
+→ PRODUCT_RESOLUTION
+→ CAMPAIGN_CONFIGURATION
+→ CONFIGURATION_VALIDATION
+→ PRODUCTION
+→ FINAL_OUTPUT
+```
+
+For a direct request that already contains the required inputs, skip the conversational activation gate and execute the same underlying production rules.
+
 ## How ChatGPT Should Load the Skill
 
 Do not blindly dump every repository file into context. Humans already invented enough ways to waste context windows.
