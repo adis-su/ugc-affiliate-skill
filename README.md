@@ -89,6 +89,7 @@ OUTPUT
 
 - `SKILL.md` — canonical skill specification and execution contract
 - `CHATGPT.md` — direct ChatGPT execution layer
+- `RELEASE_READINESS.md` — v0.1.0 release gates and known limitations
 - `creators/rositasari.md` — Character and Voice Identity
 - `niches/fashion.md` — Fashion-specific rules
 - `niches/beauty.md` — Beauty-specific rules
@@ -151,7 +152,7 @@ Run:
 npm test
 ```
 
-The runtime implements the contract boundary, validation, deterministic scene-state construction, prompt contract checks, retrieval boundaries, and regression fixtures.
+The runtime implements the contract boundary, validation, deterministic scene-state construction, prompt contract checks, retrieval boundaries, repair boundaries, and regression fixtures.
 
 ## Core Runtime Rule
 
