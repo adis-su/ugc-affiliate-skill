@@ -2963,7 +2963,7 @@ Use creator information in this priority order:
 
 1. Explicit creator identity fields in the Creator Library.
 2. Optional Character Reference or Voice Reference supplied by the creator record.
-3. Directly observable attributes from an approved creator reference.
+3. Directly observable attributes from a supplied creator reference.
 4. Creative choices that do not assert identity facts.
 5. Unknown.
 
@@ -3236,10 +3236,10 @@ Do not:
 The creator retrieval stage should produce:
 
 1. Character Identity Record
-2. Character Reference status
+2. Character Reference when available
 3. Character Identity Lock
 4. Voice Identity Record when speech is used
-5. Voice Reference status when speech is used
+5. Voice Reference when available and speech is used
 6. Voice Identity Lock when speech is used
 7. Unknown Attributes
 8. Source / Conflict Notes
