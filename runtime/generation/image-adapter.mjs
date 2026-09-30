@@ -1,4 +1,4 @@
-import { validateRequiredCharacterReference, validateProductReference } from "./reference-contract.mjs";
+import { validateCharacterReference, validateProductReference } from "./reference-contract.mjs";
 
 export class ImageGenerationAdapter {
   constructor(provider = "mock") {
@@ -14,7 +14,7 @@ export class ImageGenerationAdapter {
       return { status: "BLOCK", error: { code: "GENERATION_PROMPT_MISSING", stage: "image_generation", severity: "BLOCKER", message: "Image generation requires a validated image prompt." } };
     }
 
-    const characterReference = validateRequiredCharacterReference(scene, references);
+    const characterReference = validateCharacterReference(scene, references);
     if (!characterReference.valid) {
       return { status: "BLOCK", provider: this.provider, request_id, scene_id: scene.scene_id, error: characterReference.error };
     }
@@ -27,7 +27,7 @@ export class ImageGenerationAdapter {
       request_id,
       scene_id: scene.scene_id,
       prompt: image_prompt.prompt,
-      references: [characterReference.reference, ...(productReference.reference ? [productReference.reference] : []), ...references.filter((reference) => reference !== characterReference.reference && reference !== productReference.reference)],
+      references: [...(characterReference.reference ? [characterReference.reference] : []), ...(productReference.reference ? [productReference.reference] : []), ...references.filter((reference) => reference !== characterReference.reference && reference !== productReference.reference)],
       options,
       asset_uri: null,
       validation: { status: "PENDING" }
