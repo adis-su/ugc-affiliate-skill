@@ -200,7 +200,7 @@ Internally preserve the guided flow as normalized state:
 }
 ```
 
-Duration, scene count, references, campaign stage, and other execution details are optional user constraints. The skill should derive them when safe and when the user has not specified them.
+Duration and scene count are user constraints when supplied. Generator clip durations are execution constraints derived by the skill. When Google Flow is the target, the skill must resolve the requested total duration into supported clip durations before generation. References, campaign stage, and other execution details may be derived when safe and when the user has not specified them.
 
 ### Input Handling Rules
 
@@ -311,6 +311,7 @@ Build each frame-to-frame video prompt from:
 - Camera Movement
 - Environment Movement
 - Frame Continuity
+- Generator Clip Duration
 
 ### 07. Human Realism Engine
 Apply cross-cutting realism constraints:
