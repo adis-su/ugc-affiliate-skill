@@ -1,0 +1,29 @@
+version: "1.0"
+order:
+  - normalize
+  - validate_input
+  - product_intelligence
+  - strategy
+  - format
+  - concept
+  - script_behavior
+  - storyboard
+  - image_prompt
+  - video_prompt
+  - realism
+  - product_consistency
+  - qc
+  - package
+dependencies:
+  product_intelligence: [normalize]
+  strategy: [normalize, product_intelligence]
+  format: [normalize, strategy]
+  concept: [normalize, product_intelligence, strategy, format]
+  script_behavior: [concept, format, strategy]
+  storyboard: [concept, script_behavior, format, strategy]
+  image_prompt: [storyboard, product_intelligence]
+  video_prompt: [storyboard, image_prompt]
+  realism: [storyboard, image_prompt, video_prompt]
+  product_consistency: [product_intelligence, storyboard, image_prompt, video_prompt]
+  qc: [normalize, strategy, format, concept, script_behavior, storyboard, image_prompt, video_prompt, realism, product_consistency]
+  package: [concept, script_behavior, storyboard, image_prompt, video_prompt, realism, product_consistency, qc]
