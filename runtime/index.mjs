@@ -815,3 +815,24 @@ export function finalizeAffilixConfiguration(session) {
     warnings: []
   };
 }
+
+
+export function handleAffilixInput(session, input = {}) {
+  const current = session ?? createAffilixSession();
+  if (input.command === "/Affilix") return activateAffilixSession(current);
+  if (!current.active) return current;
+
+  if (current.stage === AFFILIX_STAGES.WAITING_PRODUCT_URL && input.product_url) {
+    return { ...current, product: { ...current.product, url: input.product_url }, stage: AFFILIX_STAGES.PRODUCT_RESOLUTION };
+  }
+
+  if (current.stage === AFFILIX_STAGES.CAMPAIGN_CONFIGURATION || current.stage === AFFILIX_STAGES.CONFIGURATION_VALIDATION) {
+    return applyAffilixCampaignConfig(current, input.campaign ?? input);
+  }
+
+  return current;
+}
+
+export function isAffilixConfigurationReady(session) {
+  return validateAffilixCampaignConfig(session).status === "PASS";
+}
