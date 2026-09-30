@@ -17,7 +17,7 @@ export function validateVoiceReferenceContract(reference) {
     return { valid: false, code: "VOICE_REFERENCE_SOURCE_MISSING", message: "Voice Reference requires an id or uri." };
   }
 
-  return { valid: true, reference: { ...reference, type: REQUIRED_REFERENCE_TYPE, required: true } };
+  return { valid: true, reference: { ...reference, type: REQUIRED_REFERENCE_TYPE, required: false } };
 }
 
 export function resolveVoiceReference(voiceIdentity, references = []) {
