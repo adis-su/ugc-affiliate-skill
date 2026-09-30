@@ -31,7 +31,9 @@ User Input
   ↓
 7. Resolve Duration × Scene Count
   ↓
-8. Creative Concept
+8. Resolve Generator Clip Duration Plan
+  ↓
+9. Creative Concept
   ↓
 9. Scene State Model
   ↓
@@ -233,7 +235,7 @@ Concept fields:
 
 The concept is a planning artifact. It must not leak internal reasoning into final prompts.
 
-## Stage 9 — Scene State Model
+## Stage 10 — Scene State Model
 
 Create one state for each scene.
 
@@ -289,7 +291,7 @@ One scene has one dominant purpose.
 
 Every changed state attribute must have a cause.
 
-## Stage 10 — Content Behavior
+## Stage 11 — Content Behavior
 
 Translate scene state into:
 
@@ -317,7 +319,7 @@ Behavior hierarchy:
 
 The runtime must prefer causal behavior over decorative movement.
 
-## Stage 11 — Image Prompt Engine
+## Stage 12 — Image Prompt Engine
 
 Generate exactly one Image Prompt per scene.
 
@@ -343,7 +345,7 @@ No unsupported detail.
 
 The Image Prompt becomes the visual anchor for that scene.
 
-## Stage 12 — Video Prompt Engine
+## Stage 13 — Video Prompt Engine
 
 Generate exactly one Video Prompt per consecutive scene pair.
 
@@ -371,7 +373,7 @@ Required:
 
 The video prompt must not invent a new scene.
 
-## Stage 13 — Embedded Validation
+## Stage 14 — Embedded Validation
 
 Validation occurs inside the engines.
 
@@ -398,7 +400,7 @@ Severity:
 
 Do not polish a generation that still contains a blocker.
 
-## Stage 14 — Local Repair
+## Stage 15 — Local Repair
 
 Repair the smallest failed component.
 
@@ -416,7 +418,7 @@ Examples:
 
 Do not regenerate the entire concept for a local failure.
 
-## Stage 15 — Revalidation
+## Stage 16 — Revalidation
 
 After repair:
 
@@ -427,7 +429,7 @@ After repair:
 
 A repaired output is not final until it passes again.
 
-## Stage 16 — Final Output
+## Stage 17 — Final Output
 
 Return only user-facing generation assets and the minimum planning context needed to use them.
 
