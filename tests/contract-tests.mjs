@@ -182,3 +182,24 @@ test("creator reference is required for visual generation", () => {
   const result = run(fixture.input);
   assert.notEqual(result.validation.blockers.find((b) => b.code === "CREATOR_IDENTITY_INSUFFICIENT"), undefined);
 });
+
+
+test("spoken formats produce a voice-locked, duration-fit script", () => {
+  const fixture = fixtures.find((item) => item.id === "positive-creator-reference-injection");
+  assert.ok(fixture);
+  const input = { ...fixture.input, content: { ...fixture.input.content, format: "Talking Head", custom_instructions: "spoken dialogue" }, creator_identity: { voice: { voice_reference: "approved://voice/rositasari" } } };
+  const result = run(input);
+  assert.equal(result.validation.status, "PASS");
+  assert.equal(result.spoken_script.status, "READY");
+  assert.equal(result.spoken_script.voice_identity_lock.reference, "approved://voice/rositasari");
+  assert.equal(result.spoken_script.duration_fit, true);
+});
+
+test("silent formats produce behavior script without speech", () => {
+  const fixture = fixtures.find((item) => item.id === "positive-creator-reference-injection");
+  assert.ok(fixture);
+  const result = run(fixture.input);
+  assert.equal(result.validation.status, "PASS");
+  assert.equal(result.spoken_script, undefined);
+  assert.equal(result.silent_behavior_script.scenes.every((scene) => scene.speech === "none"), true);
+});
