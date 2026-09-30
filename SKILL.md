@@ -1654,3 +1654,417 @@ The current example fixtures provide minimum regression coverage:
 | examples/home-problem-solution.md | Home | Problem → Solution | object placement, physical causality, room continuity |
 
 Every future change to the execution contract should be checked against all fixtures to prevent regressions.
+
+
+## Runtime Execution Specification
+
+This section defines how the skill behaves when it receives a real generation request. The runtime must follow the execution order below rather than jumping directly from user input to prompt writing.
+
+### Runtime Objective
+
+Transform a validated UGC request into:
+
+1. A creative concept.
+2. A scene state model.
+3. One Image Prompt per scene.
+4. One Frame-to-Frame Video Prompt per consecutive scene pair.
+5. A Spoken Script when speech is used.
+6. A Silent Behavior Script when the format is silent.
+7. A final validation report.
+
+The runtime must preserve the same source-of-truth state across planning, image generation, video generation, and validation.
+
+### Runtime Pipeline
+
+```text
+User Input
+    ↓
+Normalize Input
+    ↓
+Validate Required Input
+    ↓
+Retrieve Product Intelligence
+    ↓
+Retrieve Creator Identity
+    ↓
+Resolve Format × Angle
+    ↓
+Resolve Duration × Scene Count
+    ↓
+Build Creative Concept
+    ↓
+Build Scene State Model
+    ↓
+Build Content Behavior
+    ↓
+Assemble Image Prompts
+    ↓
+Assemble Video Prompts
+    ↓
+Assemble Speech / Silent Behavior
+    ↓
+Run Validation
+    ↓
+Repair Blockers
+    ↓
+Run Validation Again
+    ↓
+Return Final Output
+```
+
+### Stage 1 — Normalize Input
+
+Normalize user input before creative reasoning.
+
+Normalization includes:
+
+- map equivalent niche names to the supported niche vocabulary,
+- normalize capitalization and spacing,
+- normalize CTA names,
+- normalize duration values into seconds,
+- normalize scene count into an integer or Auto,
+- normalize platform names,
+- preserve user-provided product facts exactly,
+- preserve explicit custom instructions.
+
+Normalization must not add missing facts.
+
+Example:
+
+- "fashion" → Fashion
+- "6 sec" → 6 sec
+- "mirror selfie" → Silent Mirror Selfie only when the surrounding intent clearly indicates a silent mirror format
+- "no CTA" → None
+
+When intent remains ambiguous, keep the ambiguity visible rather than guessing.
+
+### Stage 2 — Validate Required Input
+
+Run the Input Validation Tests.
+
+If a Blocker exists:
+
+- stop generation,
+- identify the missing or invalid field,
+- state the minimum correction required,
+- do not fabricate a value.
+
+If the user supplied a valid Custom value, preserve it and validate its downstream implications.
+
+### Stage 3 — Retrieve Product Intelligence
+
+If a Product URL is supplied:
+
+1. Retrieve the product information.
+2. Extract only relevant product facts.
+3. Separate retrieved facts from creative interpretation.
+4. Ignore unsupported marketing claims unless the source explicitly supports them.
+5. Use the retrieved product information as the Product Identity source of truth.
+
+If no Product URL is supplied:
+
+- use only product facts supplied by the user,
+- mark unavailable attributes as unknown,
+- do not invent packaging, material, shade, dimensions, ingredients, performance, or branding.
+
+Product retrieval failure is not permission to hallucinate product details.
+
+### Stage 4 — Retrieve Creator Identity
+
+Resolve the Creator against the Creator Library.
+
+For Rositasari:
+
+- retrieve Character Identity,
+- retrieve Character Reference when available,
+- retrieve Voice Identity when speech is used,
+- retrieve Voice Reference when available.
+
+Do not invent missing identity attributes.
+
+Character Identity is required for visual continuity.
+
+Voice Identity is required only when speech or voice-over is used.
+
+### Stage 5 — Resolve Format × Angle
+
+Use the selected niche's Format × Angle Matrix.
+
+Decision order:
+
+1. Check exact pair.
+2. If unsupported, check whether the user's intent clearly maps to a supported adjacent pair.
+3. If the mapping is unambiguous, normalize to that supported pair.
+4. If not unambiguous, block generation and report the invalid combination.
+
+Do not silently substitute a different format or angle.
+
+### Stage 6 — Resolve Duration × Scene Count
+
+Use the default duration-to-scene ranges.
+
+If Scene Count is Auto:
+
+- select the smallest scene count that can express the intended creative behavior,
+- keep the count within the typical range when possible,
+- increase count only when the selected format or angle requires additional state changes.
+
+If both duration and scene count are custom:
+
+- test temporal plausibility,
+- reject combinations that require physically impossible pacing.
+
+The runtime should prefer fewer meaningful scenes over many shallow scenes.
+
+### Stage 7 — Build Creative Concept
+
+Create one concise creative concept from:
+
+- niche,
+- product,
+- campaign objective,
+- campaign stage,
+- CTA,
+- creator,
+- format,
+- angle,
+- duration,
+- platform.
+
+The concept must explain the observable content behavior, not hidden reasoning.
+
+A valid concept answers:
+
+- What happens?
+- What does the viewer notice?
+- What product evidence is visible?
+- Why does the selected format fit the behavior?
+
+Do not turn the concept into a long script.
+
+### Stage 8 — Build Scene State Model
+
+Create the complete scene state model before writing prompts.
+
+For each scene define:
+
+- Creator State
+- Product State
+- Environment State
+- Camera State
+- Creator Action
+- Product Interaction
+- Behavior Cue
+- Transition Intent
+
+Scene N+1 must be reachable from Scene N.
+
+Every meaningful state change must have a cause.
+
+### Stage 9 — Build Content Behavior
+
+Translate the scene state model into observable human behavior.
+
+Use:
+
+- micro-movements,
+- natural pauses,
+- hand repositioning,
+- weight shifts,
+- eye direction,
+- facial reactions,
+- object handling,
+- ordinary smartphone movement.
+
+Behavior must remain appropriate to the selected format.
+
+For silent formats:
+
+- communicate through visible behavior,
+- use the Silent Behavior Script,
+- do not introduce speech.
+
+For spoken formats:
+
+- create a compact Spoken Script,
+- preserve conversational delivery,
+- use Voice Identity,
+- keep dialogue separate from visual prompts.
+
+### Stage 10 — Assemble Image Prompts
+
+For each scene, assemble exactly one Image Prompt.
+
+Use this order:
+
+1. Character Identity
+2. Product Identity
+3. Action and Visible Behavior
+4. Environment
+5. Camera and Composition
+6. Lighting
+7. UGC Realism and Continuity
+
+The Image Prompt describes only the target visual state.
+
+Do not include future actions such as "then she turns" or "will apply next."
+
+### Stage 11 — Assemble Video Prompts
+
+For each consecutive scene pair, assemble exactly one Frame-to-Frame Video Prompt.
+
+Use this order:
+
+1. Starting Frame Anchor
+2. Physical Transition
+3. Human Movement
+4. Facial Movement
+5. Product and Material Physics
+6. Camera Movement
+7. Environment Movement
+8. Ending Frame Anchor
+9. Continuity Constraints
+
+The Video Prompt must describe how the starting state physically becomes the ending state.
+
+### Stage 12 — Assemble Speech / Silent Behavior
+
+#### Spoken
+
+Generate the Spoken Script separately from the visual prompts.
+
+Requirements:
+
+- duration-fit,
+- conversational,
+- consistent with Voice Identity,
+- grounded in visible or retrieved facts,
+- no unsupported product claims.
+
+#### Silent
+
+Generate the Silent Behavior Script as a compact behavioral sequence.
+
+Example:
+
+`notice → inspect → adjust → reveal`
+
+Do not add dialogue, VO, lip-sync, or implied speech instructions.
+
+### Stage 13 — Run Validation
+
+Run the complete Validation Pass Order.
+
+Collect:
+
+- Blockers
+- Warnings
+- Contract Checks
+- Output Counts
+- Continuity Checks
+
+Do not return a final generation while a Blocker remains.
+
+### Stage 14 — Repair Blockers
+
+Repair only the failed contract.
+
+Examples:
+
+- Wrong prompt count → regenerate output structure.
+- Character drift → restore Character Identity Lock.
+- Product drift → restore Product Identity.
+- Impossible transition → rebuild the affected scene transition.
+- Unsupported claim → remove the claim.
+- Silent format contains speech → remove speech and preserve behavioral communication.
+
+Do not regenerate unrelated sections when a local repair is sufficient.
+
+### Stage 15 — Revalidate
+
+After any repair:
+
+1. rerun the affected validation checks,
+2. rerun the complete validation pass when the repair affects continuity or structure,
+3. stop only when no Blocker remains.
+
+Warnings may remain only when they do not violate the execution contract.
+
+### Stage 16 — Return Final Output
+
+Return output in this order:
+
+1. Creative Summary
+2. Scene Plan
+3. Image Prompts
+4. Frame-to-Frame Video Prompts
+5. Spoken Script when applicable
+6. Silent Behavior Script when applicable
+7. Validation Report
+
+Do not expose hidden reasoning or internal chain-of-thought.
+
+### Runtime Decision Rules
+
+#### Missing Product URL
+
+Proceed only with supplied product facts.
+
+#### Missing Creator Reference
+
+Proceed using the Creator Identity fields that exist, but do not invent visual details.
+
+#### Unsupported Format
+
+Block unless an unambiguous normalization to a supported format exists.
+
+#### Unsupported Angle
+
+Block unless an unambiguous normalization to a supported angle exists.
+
+#### Impossible Duration / Scene Count
+
+Block or reduce the scene count only when Scene Count was Auto. Never silently override an explicit user-provided count.
+
+#### Product Retrieval Failure
+
+Proceed with supplied facts only and mark unavailable product attributes as unknown.
+
+#### Conflicting User Instructions
+
+Prioritize:
+
+1. explicit current request,
+2. required execution contract,
+3. niche rules,
+4. default behavior.
+
+Never violate a hard consistency or factual-support rule merely to satisfy a stylistic preference.
+
+### Runtime Anti-Patterns
+
+Do not:
+
+- jump directly to prompt generation,
+- invent product facts to make a prompt richer,
+- redesign the creator per scene,
+- generate video prompts independently from image states,
+- add dialogue to silent formats,
+- use dialogue as a substitute for visual product evidence,
+- create unnecessary scene changes,
+- hide unsupported assumptions inside polished language,
+- regenerate the entire output for a local validation failure,
+- expose internal reasoning as final output.
+
+### Runtime Invariants
+
+The following must remain true throughout execution:
+
+- One creator identity package per generation.
+- One product identity source of truth per generation.
+- One environment continuity model per generation unless a deliberate transition is planned.
+- One scene state model shared by image and video generation.
+- One validation contract shared across all outputs.
+- No unsupported factual invention.
+- Every state change has a physical or intentional cause.
+- Every final prompt maps to a defined scene state.
