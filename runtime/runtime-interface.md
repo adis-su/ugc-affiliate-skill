@@ -711,3 +711,24 @@ Spoken output is generated only when speech mode is active. The Script Engine:
 - keeps spoken text out of image and video visual prompts.
 
 Silent formats use a separate Silent Behavior Script. It contains observable behavior cues and explicitly disables speech and lip-sync.
+
+
+## Repair Contract
+
+Validation distinguishes safe local repairs from generation blockers.
+
+Auto-repairable:
+- `IMAGE_PROMPT_INVALID` when caused by future-action language or a missing single-state anchor.
+- `SCENE_STATE_INVALID` when transition intent/cause metadata can be deterministically restored.
+- `SPEECH_MODE_CONFLICT` only when a silent output contains an accidental generated spoken field.
+
+Non-repairable:
+- `IDENTITY_DRIFT`
+- `PRODUCT_DRIFT`
+- `CONTINUITY_BREAK`
+- `UNSUPPORTED_DETAIL`
+- `PRODUCT_CONFLICT`
+- `CREATOR_IDENTITY_INSUFFICIENT`
+- `VOICE_IDENTITY_INSUFFICIENT`
+
+Non-repairable blockers remain blocking after validation. The validation report records both initial blocker codes and repair actions.
