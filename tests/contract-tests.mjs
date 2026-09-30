@@ -257,6 +257,26 @@ test("repairable prompt defects are recorded separately from generation blockers
 });
 
 
+test("every generated image and video prompt carries the canonical Rositasari identity lock", () => {
+  const fixture = fixtures.find((item) => item.id === "positive-creator-reference-injection");
+  assert.ok(fixture);
+  const result = run(fixture.input);
+  assert.ok(result.image_prompts.length > 0);
+  assert.ok(result.video_prompts.length > 0);
+  for (const prompt of result.image_prompts) {
+    assert.match(prompt.prompt, /CHARACTER IDENTITY LOCK: Rositasari/);
+    assert.match(prompt.prompt, /Hijab/);
+    assert.match(prompt.prompt, /Face\.shape: oval-rounded/);
+    assert.match(prompt.prompt, /Skin\.tone: light-medium/);
+  }
+  for (const prompt of result.video_prompts) {
+    assert.match(prompt.prompt, /CHARACTER IDENTITY LOCK: Rositasari/);
+    assert.match(prompt.prompt, /Hijab/);
+    assert.match(prompt.prompt, /Face\.shape: oval-rounded/);
+    assert.match(prompt.prompt, /Skin\.tone: light-medium/);
+  }
+});
+
 test("Rositasari character library preserves the hijab identity lock", () => {
   const creator = resolveCreator("Rositasari");
   assert.equal(creator.character_identity.hijab, "yes; hijab is part of stable visual identity");
