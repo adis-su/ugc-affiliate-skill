@@ -233,3 +233,20 @@ The engine does not:
 - add cinematic effects for spectacle
 
 Its job is to make the transition physically understandable to a video model without changing what the storyboard intended.
+
+
+## Multi-Reference Video Continuity
+
+Video prompts may inherit multiple scene references and may add frame-specific references.
+
+Use references to preserve:
+
+- creator identity
+- product identity
+- environment geometry
+- pose/interaction intent
+- composition where relevant
+
+Frame A and Frame B are the actual generated states. References support those states but do not replace them.
+
+When a frame-specific pose reference differs from the previous frame, describe the physical transition instead of snapping between reference poses. Critical creator and product references remain stable throughout the transition.
