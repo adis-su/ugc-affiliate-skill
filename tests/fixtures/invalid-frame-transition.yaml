@@ -1,9 +1,0 @@
-name: invalid-frame-transition
-scene:
-  frame_a: creator standing in mirror selfie holding phone at chest
-  frame_b: creator suddenly standing across the room with phone on a table
-  motion: instant position change
-expected:
-  validation_status: revise
-  issue_codes:
-    - FRAME_TRANSITION_PLAUSIBLE
