@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { run, runAsync, expectedVideoPromptCount } from "../runtime/index.mjs";
 import { resolveProductWithSource, fetchProductSource } from "../runtime/intelligence/product-retrieval.mjs";
+import { resolveCreator } from "../runtime/knowledge/creator-library.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixturePath = path.join(here, "fixtures", "contract-fixtures.json");
@@ -253,4 +254,12 @@ test("repairable prompt defects are recorded separately from generation blockers
   assert.equal(result.validation.revalidation.executed, true);
   assert.ok(Array.isArray(result.validation.initial_blocker_codes));
   assert.ok(Array.isArray(result.validation.repair_actions));
+});
+
+
+test("Rositasari character library preserves the hijab identity lock", () => {
+  const creator = resolveCreator("Rositasari");
+  assert.equal(creator.character_identity.hijab, "yes; hijab is part of stable visual identity");
+  assert.equal(creator.character_identity.age_appearance, "25");
+  assert.equal(creator.character_identity.ethnicity_style, "Southeast Asian visual appearance");
 });
