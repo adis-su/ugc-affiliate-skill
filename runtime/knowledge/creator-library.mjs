@@ -1,10 +1,67 @@
 export const CREATOR_LIBRARY = {
   Rositasari: {
     character_identity: {
-      age_appearance: null,
-      face: null,
+      age_appearance: "25",
+      gender: "female",
+      height: "165 cm",
+      appearance: "young adult",
+      ethnicity_style: "Southeast Asian visual appearance",
+      hijab: "yes; hijab is part of stable visual identity",
+      face: {
+        shape: "oval-rounded",
+        forehead: "moderately wide and smooth",
+        cheeks: "soft and naturally rounded",
+        jawline: "soft and rounded",
+        chin: "short-to-medium and rounded"
+      },
+      eyes: {
+        size: "medium",
+        shape: "almond-round",
+        iris_color: "very dark brown",
+        gaze: "natural and direct",
+        eyelids: "natural",
+        eyelashes: "subtle",
+        eye_spacing: "balanced"
+      },
+      eyebrows: {
+        color: "very dark brown",
+        thickness: "medium",
+        shape: "natural soft arch",
+        density: "moderately full",
+        tail: "slightly tapered"
+      },
+      nose: {
+        size: "medium",
+        bridge: "relatively straight",
+        width: "narrow-to-medium",
+        tip: "rounded",
+        nostrils: "small-to-medium",
+        appearance: "natural"
+      },
+      lips: {
+        size: "medium",
+        upper_lip: "medium-thin",
+        lower_lip: "slightly fuller",
+        cupid_bow: "soft and defined",
+        color: "natural muted pink",
+        corners: "neutral"
+      },
+      skin: {
+        tone: "light-medium",
+        undertone: "warm-neutral",
+        texture: "natural",
+        pores: "subtle",
+        facial_marks: "subtle natural marks",
+        finish: "natural skin",
+        makeup: "minimal"
+      },
+      facial_expression: {
+        default: "calm neutral",
+        personality: "approachable",
+        gaze: "natural",
+        smile: "subtle when required"
+      },
       hair: null,
-      skin: null,
       body: null,
       style: null,
       reference: null
