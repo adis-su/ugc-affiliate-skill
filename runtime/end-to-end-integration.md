@@ -187,7 +187,32 @@ If no safe interpretation exists, block.
 
 ## Stage 7 — Resolve Duration × Scene Count
 
-Use the requested scene count when explicit.
+Scene count is a narrative constraint, not a generator clip count.
+
+For N scenes, the default transition count is N−1. The target duration must be exactly partitionable into supported Google Flow clip durations.
+
+Current documented generation durations are 4s / 6s / 8s for Veo 3.1 Lite, Fast, and Quality, and 4s / 6s / 8s / 10s for Gemini Omni Flash 1.1.
+
+Example: 18s + 5 scenes → 4 transitions → 4s + 4s + 4s + 6s.
+
+If no exact partition exists, preserve creative intent, merge/reduce scene boundaries when safe, or block. Never invent an unsupported clip duration.
+
+## Stage 8 — Resolve Generator Clip Duration Plan
+
+Output:
+
+Flow Timeline
+├── generator: Google Flow
+├── target_duration_sec
+├── scene_count
+├── transition_count
+└── clip_durations[]
+
+Invariant: SUM(clip_durations) = target_duration_sec.
+
+Every clip duration must be supported by the active model.
+
+## Stage 9 — Creative Concept
 
 Approximate density:
 
