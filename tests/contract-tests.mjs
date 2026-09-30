@@ -144,6 +144,29 @@ test("blocked requests do not enter generation", () => {
   assert.equal(result.video_prompts.length, 0);
 });
 
+test("sync and async runtimes preserve the same structural contract", async () => {
+  const fixture = fixtures.find((item) => item.id === "positive-fashion-silent-mirror");
+  assert.ok(fixture);
+  const sync = run(fixture.input);
+  const asyncResult = await runAsync(fixture.input, {
+    retrieved_product_source: null
+  });
+  assert.equal(asyncResult.validation.status, sync.validation.status);
+  assert.deepEqual(asyncResult.validation.output_counts, sync.validation.output_counts);
+  assert.deepEqual(
+    asyncResult.scene_plan.map((scene) => scene.scene_id),
+    sync.scene_plan.map((scene) => scene.scene_id)
+  );
+});
+
+test("generation fault codes are preserved in the initial blocker audit", () => {
+  const fixture = fixtures.find((item) => item.id === "negative-character-drift");
+  assert.ok(fixture);
+  const result = run(fixture.input);
+  assert.equal(result.validation.status, "BLOCK");
+  assert.ok(result.validation.initial_blocker_codes.includes("IDENTITY_DRIFT"));
+});
+
 test("product source merge preserves explicit facts and provenance", () => {
   const input = {
     product: {
