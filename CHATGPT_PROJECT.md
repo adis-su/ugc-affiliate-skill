@@ -82,6 +82,55 @@ Voice Identity:
 
 An actual approved Character Reference and Voice Reference must be supplied before their corresponding generation paths are allowed to proceed. Never fabricate an approved reference.
 
+## Guided User Input Flow
+
+Collect user input progressively in this order:
+
+1. Product / Product URL
+2. Campaign Objective
+3. Content Format
+4. Angle
+5. Platform
+6. CTA
+7. Creator
+8. Speech
+
+Do not present this as one large form unless the user explicitly asks for a batch input format.
+
+After each answer:
+- preserve the value in the current project context,
+- validate it,
+- resolve any relevant intelligence,
+- use it to contextualize the next question,
+- do not ask for execution-level details that the skill can derive safely.
+
+The user input describes intent and constraints. The skill derives execution details such as scene mechanics, camera behavior, lighting, gestures, continuity, and prompt wording.
+
+Minimum required decisions:
+- Product / Product URL
+- Campaign Objective
+- Content Format
+- Platform
+- Creator
+- Speech mode
+
+Angle should normally be collected, but may be proposed by the skill when the user has not supplied one. CTA is required when appropriate to the campaign objective or format and may otherwise be omitted.
+
+When Product URL is provided, resolve Product Intelligence before continuing when retrieval is available.
+
+When Speech is Silent:
+- do not create dialogue,
+- do not create voice-over,
+- do not create lip-sync.
+
+When Speech is Spoken:
+- require Voice Identity,
+- require an approved Voice Reference for production voice generation,
+- return a structured blocker if the approved Voice Reference is missing,
+- never fabricate a voice reference.
+
+If a later answer changes an earlier assumption, update dependent state instead of restarting the whole flow.
+
 ## Required Workflow
 
 1. Validate user input.
