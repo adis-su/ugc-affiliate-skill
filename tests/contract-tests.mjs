@@ -209,3 +209,23 @@ test("silent formats produce behavior script without speech", () => {
   assert.equal(result.spoken_script, undefined);
   assert.equal(result.silent_behavior_script.scenes.every((scene) => scene.speech === "none"), true);
 });
+
+
+test("generation faults remain blocking and are not auto-repaired", () => {
+  for (const id of ["negative-character-drift", "negative-product-teleportation", "negative-unsupported-detail"]) {
+    const fixture = fixtures.find((item) => item.id === id);
+    assert.ok(fixture);
+    const result = run(fixture.input);
+    assert.equal(result.validation.status, "BLOCK");
+    assert.equal(result.validation.initial_blocker_codes.some((code) => fixture.expected.errors.includes(code)), true);
+  }
+});
+
+test("repairable prompt defects are recorded separately from generation blockers", () => {
+  const fixture = fixtures.find((item) => item.id === "positive-fashion-silent-mirror");
+  assert.ok(fixture);
+  const result = run(fixture.input);
+  assert.equal(result.validation.revalidation.executed, true);
+  assert.ok(Array.isArray(result.validation.initial_blocker_codes));
+  assert.ok(Array.isArray(result.validation.repair_actions));
+});
