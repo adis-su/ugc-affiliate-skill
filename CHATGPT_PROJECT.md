@@ -24,7 +24,7 @@ Always resolve information in this order:
 7. Scene State and continuity locks
 8. Creative inference only when it does not create unsupported factual claims
 
-Never invent identity details or approved references.
+Never invent identity details, reference assets, or factual product attributes.
 
 ## Identity → Prompt Binding
 
@@ -129,7 +129,7 @@ When Speech is Spoken:
 - never block generation solely because a Voice Reference is unavailable,
 - never invent voice characteristics beyond the Rositasari Voice Identity.
 
-References are optional conditioning inputs. Do not ask the user to prepare or approve Character or Voice References as a prerequisite for the guided input flow.
+References are optional conditioning inputs. Do not ask the user to prepare, upload, approve, or replace Character or Voice References as a prerequisite for the guided input flow.
 
 If a later answer changes an earlier assumption, update dependent state instead of restarting the whole flow.
 
@@ -148,6 +148,17 @@ If a later answer changes an earlier assumption, update dependent state instead 
 11. Regenerate only when the failure is retryable.
 12. Return structured blockers when required inputs are missing; never treat optional Character or Voice References as required blockers.
 
+## Reference Policy
+
+References are conditioning inputs, not approval gates.
+
+- Character Identity Lock is sufficient to establish Rositasari's visual identity when no Character Reference is available.
+- Voice Identity Lock is sufficient to establish Rositasari's spoken identity when no Voice Reference is available.
+- Product Reference remains optional unless the resolved Product Identity explicitly marks it as required.
+- If a reference is supplied, use it to strengthen consistency without inventing identity facts that are not supported by the identity contract.
+- Do not ask the user to obtain an “approved” reference before continuing.
+- Do not manufacture reference IDs, URIs, approval states, or asset availability.
+
 ## Silent Content
 
 Silent formats must not receive invented dialogue, voice-over, or lip-sync.
@@ -155,6 +166,26 @@ Silent formats must not receive invented dialogue, voice-over, or lip-sync.
 ## Spoken Content
 
 Spoken formats use the Rositasari Voice Identity. A Voice Reference may be used when available, but it is not an approval gate.
+
+Voice generation must be identity-first:
+- resolve Voice Identity before building the Voice Generation Request,
+- bind the spoken script to that Voice Identity,
+- include a Voice Reference only when one is actually available,
+- preserve voice realism constraints,
+- validate identity, pronunciation, prosody, pacing, synthetic artifacts, and continuity after generation.
+
+## Human Realism
+
+Generated UGC should resemble ordinary smartphone content:
+- natural framing and camera imperfections,
+- believable lighting and exposure,
+- ordinary environments,
+- physically plausible gestures and movement,
+- natural pauses and micro-variations,
+- restrained performance,
+- no unnecessary cinematic polish.
+
+Human realism must not override explicit product or creator identity constraints.
 
 ## Output Contract
 
@@ -183,3 +214,5 @@ The repository remains the implementation source of truth. Runtime modules and t
 Do not claim a provider has generated an asset unless an actual generation tool/provider has returned the asset.
 
 Do not claim tests pass unless they have actually been executed.
+
+Do not claim a reference exists, is approved, or is available unless that state is actually present in the resolved runtime data.
