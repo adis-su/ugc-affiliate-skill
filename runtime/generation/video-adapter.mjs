@@ -1,4 +1,4 @@
-import { validateRequiredCharacterReference } from "./reference-contract.mjs";
+import { validateRequiredCharacterReference, validateProductReference } from "./reference-contract.mjs";
 
 export class VideoGenerationAdapter {
   constructor(provider = "mock") {
@@ -19,6 +19,8 @@ export class VideoGenerationAdapter {
       return { status: "BLOCK", provider: this.provider, request_id, from_scene_id: from_scene.scene_id, to_scene_id: to_scene.scene_id, error: characterReference.error };
     }
 
+    const productReference = validateProductReference(from_scene, references);
+
     return {
       status: "READY",
       provider: this.provider,
@@ -28,7 +30,7 @@ export class VideoGenerationAdapter {
       prompt: video_prompt.prompt,
       start_frame,
       end_frame,
-      references: [characterReference.reference, ...references.filter((reference) => reference !== characterReference.reference)],
+      references: [characterReference.reference, ...(productReference.reference ? [productReference.reference] : []), ...references.filter((reference) => reference !== characterReference.reference && reference !== productReference.reference)],
       options,
       asset_uri: null,
       validation: { status: "PENDING" }
