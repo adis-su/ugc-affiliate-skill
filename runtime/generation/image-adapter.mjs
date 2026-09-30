@@ -1,4 +1,4 @@
-import { validateRequiredCharacterReference } from "./reference-contract.mjs";
+import { validateRequiredCharacterReference, validateProductReference } from "./reference-contract.mjs";
 
 export class ImageGenerationAdapter {
   constructor(provider = "mock") {
@@ -19,13 +19,15 @@ export class ImageGenerationAdapter {
       return { status: "BLOCK", provider: this.provider, request_id, scene_id: scene.scene_id, error: characterReference.error };
     }
 
+    const productReference = validateProductReference(scene, references);
+
     return {
       status: "READY",
       provider: this.provider,
       request_id,
       scene_id: scene.scene_id,
       prompt: image_prompt.prompt,
-      references: [characterReference.reference, ...references.filter((reference) => reference !== characterReference.reference)],
+      references: [characterReference.reference, ...(productReference.reference ? [productReference.reference] : []), ...references.filter((reference) => reference !== characterReference.reference && reference !== productReference.reference)],
       options,
       asset_uri: null,
       validation: { status: "PENDING" }
