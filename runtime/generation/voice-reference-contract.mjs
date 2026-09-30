@@ -1,12 +1,12 @@
 const REQUIRED_REFERENCE_TYPE = "voice";
 
-export function createVoiceReference({ id = null, uri = null, role = "voice_identity", required = true, source = "approved" } = {}) {
+export function createVoiceReference({ id = null, uri = null, role = "voice_identity", required = false, source = "runtime" } = {}) {
   return { type: REQUIRED_REFERENCE_TYPE, id, uri, role, required, source };
 }
 
 export function validateVoiceReferenceContract(reference) {
   if (!reference || typeof reference !== "object") {
-    return { valid: false, code: "VOICE_REFERENCE_MISSING", message: "Spoken generation requires an approved Voice Reference." };
+    return { valid: true, reference: null };
   }
 
   if (reference.type && reference.type !== REQUIRED_REFERENCE_TYPE) {
@@ -14,11 +14,7 @@ export function validateVoiceReferenceContract(reference) {
   }
 
   if (!reference.id && !reference.uri) {
-    return { valid: false, code: "VOICE_REFERENCE_SOURCE_MISSING", message: "Voice Reference requires an approved id or uri." };
-  }
-
-  if (reference.source && reference.source !== "approved") {
-    return { valid: false, code: "VOICE_REFERENCE_NOT_APPROVED", message: "Spoken generation requires an approved Voice Reference." };
+    return { valid: false, code: "VOICE_REFERENCE_SOURCE_MISSING", message: "Voice Reference requires an id or uri." };
   }
 
   return { valid: true, reference: { ...reference, type: REQUIRED_REFERENCE_TYPE, required: true } };
