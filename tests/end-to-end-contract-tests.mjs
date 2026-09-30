@@ -26,7 +26,7 @@ test("visual generation requires character identity and can carry product identi
   assert.equal(result.status, "READY");
 });
 
-test("spoken generation requires approved voice reference", () => {
+test("spoken generation uses voice identity without requiring a voice reference", () => {
   const result = validateGenerationIdentityContract({
     scene,
     speech_required: true,
@@ -35,8 +35,7 @@ test("spoken generation requires approved voice reference", () => {
       { type: "product", id: "product-v1" }
     ]
   });
-  assert.equal(result.status, "BLOCK");
-  assert.equal(result.blockers[0].code, "VOICE_REFERENCE_MISSING");
+  assert.equal(result.status, "READY");
 });
 
 test("end-to-end request preserves all identity locks", () => {
