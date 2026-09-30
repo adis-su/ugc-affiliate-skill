@@ -76,7 +76,7 @@ The release includes:
 
 Rositasari's actual Character Reference and Voice Reference are intentionally not fabricated in the repository.
 
-Generation that requires these references should remain blocked until approved references are supplied.
+Character Identity and Voice Identity are sufficient for the corresponding generation paths. References are optional conditioning inputs and do not create approval gates.
 
 ### Live Product Retrieval
 
@@ -114,11 +114,11 @@ v0.1.0 is structurally ready when:
 
 1. the test suite passes;
 2. no release blocker remains;
-3. creator references required for production are supplied;
+3. optional creator references are supplied when stronger reference conditioning is desired;
 4. representative generated outputs pass human realism and continuity review.
 
-## Next Architecture Stage
+## Current Generation Integration Status
 
-After v0.1.0 contract hardening, the next stage is **Real Generation Integration**.
+The repository now includes provider-neutral adapters plus real image, video, and voice provider boundaries, post-generation validation, and regeneration policies. Provider credentials and endpoints remain environment-specific.
 
-That stage connects the validated scene-state contracts to actual image/video generation workflows without weakening the repository's existing invariants.
+The remaining production work is operational provider configuration and human review of representative generated assets. These steps must not weaken the identity, product, continuity, or unsupported-detail contracts.
