@@ -257,7 +257,14 @@ function buildVideoPrompts(scenes, input, product) {
         "preserve environment geometry and smartphone UGC camera behavior",
         `end on exact visual state of ${to.scene_id}`,
         "no teleportation, identity drift, or unexplained state changes"
-      ].join("; ")
+      ].join("; "),
+      continuity_anchors: [
+        from.scene_id,
+        to.scene_id,
+        "Character Identity Lock",
+        "Product Identity Lock",
+        "Environment Continuity"
+      ]
     };
   });
 }
