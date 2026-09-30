@@ -2,9 +2,34 @@
 title: Prompt Output
 type: object
 additionalProperties: false
-required: [scene_id, prompt, continuity_anchors, negative_constraints]
+required: [prompt_package]
 properties:
-  scene_id: {type: integer, minimum: 1}
-  prompt: {type: string, minLength: 1}
-  continuity_anchors: {type: array, items: {type: string}}
-  negative_constraints: {type: array, items: {type: string}}
+  prompt_package:
+    type: object
+    additionalProperties: false
+    required: [image_prompts, video_prompts]
+    properties:
+      image_prompts:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [scene_id, prompt, continuity_anchors, negative_constraints]
+          properties:
+            scene_id: {type: integer, minimum: 1}
+            prompt: {type: string, minLength: 1}
+            continuity_anchors: {type: array, items: {type: string}}
+            negative_constraints: {type: array, items: {type: string}}
+      video_prompts:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [scene_id, frame_a, frame_b, prompt, continuity_anchors, negative_constraints]
+          properties:
+            scene_id: {type: integer, minimum: 1}
+            frame_a: {type: string, minLength: 1}
+            frame_b: {type: string, minLength: 1}
+            prompt: {type: string, minLength: 1}
+            continuity_anchors: {type: array, items: {type: string}}
+            negative_constraints: {type: array, items: {type: string}}
